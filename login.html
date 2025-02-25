@@ -39,10 +39,32 @@
         }
      
     </style>
+    <script type="module">
+        import { auth, signInWithEmailAndPassword } from "./firebase.js";
+
+        document.getElementById("logInBtn").addEventListener("click",function(event){
+            event.preventDefault();
+
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
+
+            signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+            const user = userCredential.user;
+            alert("Login successful! 🎉");
+            console.log("User logged in:", user);
+            window.location.href = "dashboard.html"; // Redirect to dashboard
+            })
+            .catch((error) => {
+            alert("Invalid email or password! ❌");
+            console.error(error);
+            });
+        });
+    </script>
 </head>
 <body>
     
-    <form action="login.php" method="post">
+    <form >
         <div id="containerDiv" style="width: 300px; height: 300px ; ">
             <div>
                 <h2 id="loginTxt" style="color: azure;">LOGIN</h2>
