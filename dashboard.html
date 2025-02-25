@@ -1,34 +1,100 @@
 <!DOCTYPE html>
 <html>
-<<<<<<< HEAD
-<body>
-
-<h2>Floating Images</h2>
-<p><strong>Float the image to the right:</strong></p>
-
-<p>
-<img src="smiley.gif" alt="Smiley face" style="float:right;width:42px;height:42px;">
-A paragraph with a floating image. A paragraph with a floating image. A paragraph with a floating image.
-</p>
-
-<p><strong>Float the image to the left:</strong></p>
-<p>
-<img src="smiley.gif" alt="Smiley face" style="float:left;width:42px;height:42px;">
-A paragraph with a floating image. A paragraph with a floating image. A paragraph with a floating image.  
-</p>
-
-</body>
-</html>
-
-=======
 
 <head>
     <title>DashBoard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--CSS-->
+    <link rel="stylesheet" href="dashboardStyle.css">
+
+    <!--Boxicons CSS-->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <style>
+
+    </style>
 </head>
 
 <body>
-    Hello World!
+    <nav class="sidebar close">
+    <header>
+        <div class="image-text">
+            <span class="image">
+                <img src="logo.jpg" alt="logo">
+            </span>
+            <div class = "text header-text">
+                <span class="name">Galoya</span>
+                <span class="profession">Milky Products</span>
+            </div>
+        </div>
+
+        <i class='bx bx-chevron-right toggle'></i>
+    </header>
+
+    <div class="menu-bar">
+        <div class="menu">
+            <li class="search-box">                  
+                <i class='bx bx-search-alt icon'></i>
+                        <input type="search" placeholder="Search...">
+            </li>
+            <div class="menu-links">
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bx-home icon'></i>
+                        <span class="text nav-text">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="menu-links">
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bx-food-menu icon'></i>
+                        <span class="text nav-text">Products</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="menu-links">
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bx-category icon'></i>
+                        <span class="text nav-text">Categories</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="menu-links">
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bx-child icon'></i>
+                        <span class="text nav-text">Dilussan</span>
+                    </a>
+                </li>
+            </div>
+
+            <div class="bottom-content">
+                <li class="">
+                    <a href="#">
+                        <i class='bx bx-log-out icon'></i>
+                        <span class="text nav-text">Logout</span>
+                    </a>
+                </li>
+
+            <li class="mode">
+                <div class="moon-sun">
+                        <i class='bx bx-moon icon moon'></i>
+                        <i class='bx bx-sun icon sun'></i>
+                </div>
+                <span class="text nav-text">Dark Mode</span>
+                <div class="toggle-switch">
+                    <span class="switch"></span>
+                </div>
+            </li>           
+        </div>
+    </div>
+    </nav>
+
+    <script src="script.js"></script>
 </body>
 
 </html>
->>>>>>> 7de25828e7fa677784081b7e2dcf05eb4633628d
