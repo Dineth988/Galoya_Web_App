@@ -41,7 +41,8 @@ body.dark{
     --text-color: #CCC;
 }
 
-/*--reusable-Css--*/
+
+/*--sidebar--*/
 .sidebar .text{
     font-size: 16px;
     font-weight: 500;
@@ -52,16 +53,22 @@ body.dark{
 }
 
 .sidebar .image{
+    min-height: 60px;
     min-width: 60px;
     display: flex;
     align-items: center;
+    justify-content: center;
+}
+
+.sidebar .menu{
+    margin-top: 35px;
 }
 
 .sidebar.close{
     width: 88px;
 }
 
-/*--sidebar--*/
+
 .sidebar{
     position: fixed;
     top: 0;
@@ -71,6 +78,7 @@ body.dark{
     padding: 10px 14px;
     background: var(--sidebar-color);
     transition: var(--tran-05);
+    z-index: 100;
 }
 
 .sidebar.close .text{
@@ -142,7 +150,6 @@ header .image-text .header-text{
 }
 
 .sidebar.close header .toggle{
-    
     transform: translateY(-50%);
 }
 
@@ -164,6 +171,7 @@ body.dark .sidebar header .toggle{
 .sidebar .search-box{
     background: var(--primary-color-light);
     border-radius: 6px;
+    transition: var(--tran-05);
 }
 
 .search-box input{
@@ -173,7 +181,12 @@ body.dark .sidebar header .toggle{
     outline: none;
     border: none;
     border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: var(--tran-05);
+    color: var(--text-color);
 }
+
 
 .sidebar li a:hover{
     background: var(--primary-color);
@@ -204,6 +217,7 @@ body.dark .sidebar li a:hover .text{
     border-radius: 6px;
     cursor: pointer;
     background: var(--primary-color-light);
+    background: var(--tran-05);
 }
 
 .toggle-switch .switch{
@@ -253,6 +267,20 @@ body.dark .switch::before{
 
 .menu-bar .mode i{
     position: absolute;
+}
+
+.product{
+    position: relative;
+    left: 250px;
+    height: 100vh;
+    width: calc(100% - 250px);
+    background: var(--body-coler); 
+    transition: var(--tran-05);
+}
+
+.sidebar.close ~ .product{
+    left: 88px;
+    width: calc(100% - 88px);
 }
 
 
