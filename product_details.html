@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .breadcrumb {
+            background: none;
+            font-size: 1.1rem;
+        }
+
+        #contentDiv {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            padding: 30px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        #imgDiv {
+            padding: 20px;
+            text-align: center;
+        }
+
+        #bigimg {
+            width: 100%;
+            max-width: 350px;
+            min-height: 250px;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        #bigimg:hover {
+            transform: scale(1.05);
+        }
+
+        #smlimgsDiv {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .smimgs {
+            height: 70px;
+            width: 70px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            margin: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease, border 0.3s ease;
+        }
+
+        .smimgs:hover {
+            border-color: #007bff;
+            transform: scale(1.1);
+        }
+
+        #detailsDiv {
+            padding: 20px;
+        }
+
+        #title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #description {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        #price {
+            font-size: 1.7rem;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        #btnDiv {
+            margin-top: 15px;
+        }
+
+        .btn-custom {
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-custom:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="product.html">Home</a></li>
+                <li class="breadcrumb-item"><a id="catlink" href="#">Category</a></li>
+                <li id="titleli" class="breadcrumb-item active" aria-current="page">Product Name</li>
+            </ol>
+        </nav>
+
+        <div id="contentDiv" class="row">
+            <!-- Image Section -->
+            <div id="imgDiv" class="col-md-6">
+                <div id="bigimgDiv">
+                    <img id="bigimg" src="bottledshake.jpg" alt="Product Image">
+                </div>
+                <div id="smlimgsDiv">
+                    <img class="smimgs" src="bottledshake.jpg" onclick="changeBigImage(this)">
+                    <img class="smimgs" src="drink.webp" onclick="changeBigImage(this)">
+                    <img class="smimgs" src="bottledshake.jpg" onclick="changeBigImage(this)">
+                    <img class="smimgs" src="drink.webp" onclick="changeBigImage(this)">
+                </div>
+            </div>
+
+            <!-- Details Section -->
+            <div id="detailsDiv" class="col-md-6">
+                <h4 id="title">Product Name</h4>
+                <p id="description">This is a premium product offering high quality and value. Designed for those who appreciate quality.</p>
+                <h3 id="price">Rs. 1300</h3>
+                <div id="btnDiv">
+                    <button class="btn btn-lg btn-warning btn-custom mr-2">Add to Cart</button>
+                    <button class="btn btn-lg btn-primary btn-custom">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function changeBigImage(img) {
+            document.getElementById('bigimg').src = img.src;
+        }
+    </script>
+    
+</body>
+</html>
