@@ -41,24 +41,33 @@
     </style>
     <script type="module">
         import { auth, signInWithEmailAndPassword } from "./firebase.js";
+        import { db,doc, getDoc } from "./firebase.js";
 
-        document.getElementById("logInBtn").addEventListener("click",function(event){
+        document.getElementById("logInBtn").addEventListener("click",async function(event){
             event.preventDefault();
 
             const email = document.getElementById("loginEmail").value;
             const password = document.getElementById("loginPassword").value;
 
-            signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
+            try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            alert("Login successful! 🎉");
-            console.log("User logged in:", user);
-            window.location.href = "dashboard.html"; // Redirect to dashboard
-            })
-            .catch((error) => {
+
+            // Fetch user data from Firestore
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+            const userData = userDoc.data();
+            console.log("User data:", userData);
+            alert(`Welcome, ${userData.username}!`);
+            window.location.href = "dashboard.html";
+            } else {
+            console.log("No user data found!");
+            }
+           } 
+            catch (error) {
             alert("Invalid email or password! ❌");
             console.error(error);
-            });
+           }
         });
     </script>
 </head>
@@ -69,8 +78,8 @@
             <div>
                 <h2 id="loginTxt" style="color: azure;">LOGIN</h2>
                 <div id="textBoxDiv" style="display: flex; flex-direction: column;">
-                     <input id="loginEmail" name="loginEmail" type="text" style="width: 200px; height:30px; text-align: center; margin-bottom: 20px; border-radius: 10px; border: 1px ;" placeholder="Username">
-                     <input id="loginPassword" name="loginPassword" type="text" style="width: 200px; height:30px; text-align: center; margin-bottom: 40px; border-radius: 10px; border: 1px;" placeholder="Password">
+                     <input id="loginEmail" name="loginEmail" type="text" style="width: 200px; height:30px; text-align: center; margin-bottom: 20px; border-radius: 10px; border: 1px ; padding-left: 10px;" placeholder="Username">
+                     <input id="loginPassword" name="loginPassword" type="text" style="width: 200px; height:30px; text-align: center; margin-bottom: 40px; border-radius: 10px; border: 1px; padding-left: 10px;" placeholder="Password">
                 </div>
                     
                      <button name="loginBtn" type="submit" id="logInBtn" style="width: 200px; height: 30px; border-radius: 20px;">Log in</button>

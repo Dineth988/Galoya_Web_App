@@ -4,7 +4,8 @@
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
   import { getFirestore } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-auth.js"; // 🔥 Import Firebase Auth
-  
+  import { doc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+  import { getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
   // Your web app's Firebase configuration
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -22,7 +23,8 @@
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const db = getFirestore(app); 
-  const auth = getAuth(app); // 🔥 Initialize Firebase Auth
+  const auth = getAuth(app);
 
-  export { db, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut };
+
+  export { db, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, doc, setDoc, getDoc, app  };
  
