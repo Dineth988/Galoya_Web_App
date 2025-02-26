@@ -47,6 +47,40 @@
     
        
     </style>
+    <script type="module">
+        import { auth, db, createUserWithEmailAndPassword } from "./firebase.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
+        document.getElementById("signUpBtn").addEventListener("click",async function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById("emailTxt").value;
+            const username = document.getElementById("usernameTxt").value;
+            const contactNumber = document.getElementById("contactNumberTxt").value;
+            const password = document.getElementById("passwordTxt").value;
+
+            try{
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "users", user.uid), {
+                email: email,
+                username: username,
+                conatactNumber: contactNumber,
+                
+                createdAt: new Date()
+                });
+
+                alert("Signup successful! 🎉");
+                console.log("User registered:", user);
+                window.location.href = "dashboard.html";
+            }
+            catch (error) {
+            alert(error.message);
+            console.error("Error:", error);
+            }
+        })
+    </script>
 </head>
 <body>
 
@@ -55,28 +89,28 @@
 
       </div> 
         <div>
-           <form action="register.php" method="post">
+           <form >
                 <div id="formDiv" style="display: flex; flex-direction: column;">
                     <div>
                         <p style="font-size: large;">Welcome to Galoya products</p>
                         <h1 style="font-size: 60px; margin-top: 6px;">Sign up</h1>
                     </div>
                     <P>Email</P>
-                    <input type="text" name="emailTxt" style="border-radius: 5px; width: 400px; height: 30px; border: 2px solid gray;">
+                    <input type="text" id="emailTxt" style="border-radius: 5px; width: 410px; height: 30px; border: 2px solid gray; padding-left: 10px;">
                     <div style="display: flex; width: 400px;">
                         <div>
                             <p>Username</p>
-                            <input type="text" name="usernameTxt" style="width: 187px; height: 30px; border-radius: 5px; margin-right: 20px; border: 2px solid gray;">
+                            <input type="text" id="usernameTxt" style="width: 187px; height: 30px; border-radius: 5px; margin-right: 20px; border: 2px solid gray; padding-left: 10px;">
                         </div>
                         <div>
                             <p>Contact number</p>
-                            <input type="text" name="contactNumberTxt" style="width: 187px; height: 30px; border-radius: 5px; border: 2px solid gray;">
+                            <input type="text" id="contactNumberTxt" style="width: 187px; height: 30px; border-radius: 5px; border: 2px solid gray; padding-left: 10px;">
                         </div>
                         
                     </div>
                     <p>Password</p>
-                    <input type="text" name="passwordTxt" style="border-radius: 5px; width: 400px; height: 30px; border: 2px solid gray;">
-                    <button name="signUpBtn" style="border-radius: 10px; width: 410px; height: 35px; margin-top: 60px;" id="signUpBtn">Sign up</button>
+                    <input type="text" id="passwordTxt" style="border-radius: 5px; width: 410px; height: 30px; border: 2px solid gray; padding-left: 10px;">
+                    <button name="signUpBtn" style="border-radius: 5px; width: 425px; height: 35px; margin-top: 60px;" id="signUpBtn">Sign up</button>
                 </div>
            </form> 
         </div>
