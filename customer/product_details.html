@@ -2,155 +2,599 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <title>Product Details - Galoya Milk Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
+        /* General Styles */
         body {
+            font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .breadcrumb {
-            background: none;
-            font-size: 1.1rem;
-        }
-
-        #contentDiv {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            padding: 30px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        #imgDiv {
-            padding: 20px;
-            text-align: center;
-        }
-
-        #bigimg {
-            width: 100%;
-            max-width: 350px;
-            min-height: 250px;
-            max-height: 400px;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        #bigimg:hover {
-            transform: scale(1.05);
-        }
-
-        #smlimgsDiv {
-            display: flex;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .smimgs {
-            height: 70px;
-            width: 70px;
-            border-radius: 8px;
-            border: 2px solid #ddd;
-            margin: 5px;
-            cursor: pointer;
-            transition: transform 0.3s ease, border 0.3s ease;
-        }
-
-        .smimgs:hover {
-            border-color: #007bff;
-            transform: scale(1.1);
-        }
-
-        #detailsDiv {
-            padding: 20px;
-        }
-
-        #title {
-            font-size: 1.8rem;
-            font-weight: bold;
             color: #333;
         }
 
-        #description {
-            font-size: 1.1rem;
-            color: #555;
-            line-height: 1.6;
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            font-size: 24px;
+            z-index: 10;
+        }
+
+        .arrow:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .arrow-left {
+            left: 10px;
+        }
+
+        .arrow-right {
+            right: 10px;
+        }
+
+        .product-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2d3e50;
+        }
+
+        .product-price {
+            font-size: 32px;
+            font-weight: 700;
+            color: #5e72e4;
             margin-bottom: 15px;
         }
 
-        #price {
-            font-size: 1.7rem;
-            font-weight: bold;
-            color: #28a745;
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ffc107;
+            margin-bottom: 20px;
         }
 
-        #btnDiv {
-            margin-top: 15px;
+        .product-rating i {
+            font-size: 24px;
         }
 
-        .btn-custom {
-            font-size: 1.1rem;
-            padding: 10px 20px;
+        .product-description {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: 600;
             border-radius: 8px;
-            transition: background 0.3s ease, transform 0.2s ease;
         }
 
-        .btn-custom:hover {
-            transform: scale(1.05);
+        .btn-primary {
+            background-color: #5e72e4;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #4a5bbf;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #5e72e4;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .back-to-home i {
+            margin-right: 8px;
+        }
+
+        .back-to-home:hover {
+            text-decoration: underline;
+        }
+
+        /* Review Section */
+        .review-section {
+            margin-top: 40px;
+        }
+
+        .review-section h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2d3e50;
+        }
+
+        .review-form {
+            margin-bottom: 30px;
+        }
+
+        .review-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .review-form label {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .review-form textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            resize: vertical;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .star-rating i {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+        }
+
+        .star-rating i.active {
+            color: #ffc107;
+        }
+
+        .review-list {
+            margin-top: 20px;
+        }
+
+        .review-item {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-item .review-rating {
+            display: flex;
+            gap: 5px;
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .review-item .review-rating i {
+            font-size: 16px;
+        }
+
+        .review-item .review-text {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="product.html">Home</a></li>
-                <li class="breadcrumb-item"><a id="catlink" href="#">Category</a></li>
-                <li id="titleli" class="breadcrumb-item active" aria-current="page">Product Name</li>
-            </ol>
-        </nav>
+        <!-- Back to Home Button -->
+        <a href="customer-products.html" class="back-to-home">
+            <i class='bx bx-arrow-back'></i> Back to Home
+        </a>
 
-        <div id="contentDiv" class="row">
-            <!-- Image Section -->
-            <div id="imgDiv" class="col-md-6">
-                <div id="bigimgDiv">
-                    <img id="bigimg" src="images/bottledshake.jpg" alt="Product Image">
-                </div>
-                <div id="smlimgsDiv">
-                    <img class="smimgs" src="images/bottledshake.jpg" onclick="changeBigImage(this)">
-                    <img class="smimgs" src="images/drink.webp" onclick="changeBigImage(this)">
-                    <img class="smimgs" src="images/bottledshake.jpg" onclick="changeBigImage(this)">
-                    <img class="smimgs" src="images/drink.webp" onclick="changeBigImage(this)">
-                </div>
+        <!-- Product Details -->
+        <div id="productDetails">
+            <!-- Image Container with Navigation Arrows -->
+            <div class="image-container">
+                <img src="" alt="Product Image" class="product-image" id="productImage">
+                <button class="arrow arrow-left" id="prevImage"><i class='bx bx-chevron-left'></i></button>
+                <button class="arrow arrow-right" id="nextImage"><i class='bx bx-chevron-right'></i></button>
             </div>
 
-            <!-- Details Section -->
-            <div id="detailsDiv" class="col-md-6">
-                <h4 id="title">Product Name</h4>
-                <p id="description">This is a premium product offering high quality and value. Designed for those who appreciate quality.</p>
-                <h3 id="price">Rs. 1300</h3>
-                <div id="btnDiv">
-                    <button class="btn btn-lg btn-warning btn-custom mr-2">Add to Cart</button>
-                    <button class="btn btn-lg btn-primary btn-custom">Buy Now</button>
+            <!-- Product Title, Price, Rating, and Description -->
+            <div class="product-title" id="productTitle"></div>
+            <div class="product-price" id="productPrice"></div>
+            <div class="product-rating" id="productRating"></div>
+            <div class="product-description" id="productDescription"></div>
+
+            <!-- Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-primary" id="addToCartButton">Add to Cart</button>
+                <button class="btn btn-success">Buy Now</button>
+            </div>
+        </div>
+
+        <!-- Review Section -->
+        <div class="review-section">
+            <h3>Customer Reviews</h3>
+
+            <!-- Review Form -->
+            <div class="review-form">
+                <div class="form-group">
+                    <label for="reviewRating">Your Rating</label>
+                    <div class="star-rating" id="reviewRating">
+                        <i class='bx bx-star' data-rating="1"></i>
+                        <i class='bx bx-star' data-rating="2"></i>
+                        <i class='bx bx-star' data-rating="3"></i>
+                        <i class='bx bx-star' data-rating="4"></i>
+                        <i class='bx bx-star' data-rating="5"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewText">Your Review</label>
+                    <textarea id="reviewText" rows="4" placeholder="Write your review..."></textarea>
+                </div>
+                <button class="btn btn-primary" id="submitReview">Submit Review</button>
+            </div>
+
+            <!-- Review List -->
+            <div class="review-list" id="reviewList">
+                <!-- Reviews will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Your Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cartItems">
+                        <!-- Cart items will be dynamically inserted here -->
+                    </div>
+                    <div class="total-amount">
+                        <h5>Total: <span id="cartTotal">Rs. 0.00</span></h5>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="checkoutButton">Checkout</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        function changeBigImage(img) {
-            document.getElementById('bigimg').src = img.src;
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase Integration -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            get,
+            set,
+            push,
+            onValue,
+        } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
+            projectId: "galoya-web-app",
+            storageBucket: "gs://galoya-web-app.firebasestorage.app",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Get product ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get("id");
+        console.log("Product ID from URL:", productId);
+
+        // Fetch product details
+        async function fetchProductDetails() {
+            const productRef = ref(database, `Products/${productId}`);
+            console.log("Fetching product from Firebase...");
+            const snapshot = await get(productRef);
+
+            if (snapshot.exists()) {
+                const product = snapshot.val();
+                console.log("Product found:", product);
+                displayProductDetails(product);
+                loadReviews();
+            } else {
+                console.log("Product not found.");
+                document.getElementById("productDetails").innerHTML = `<p class="text-danger">Product not found.</p>`;
+            }
         }
+
+        // Display product details
+        function displayProductDetails(product) {
+            const productImage = document.getElementById("productImage");
+            const productTitle = document.getElementById("productTitle");
+            const productPrice = document.getElementById("productPrice");
+            const productRating = document.getElementById("productRating");
+            const productDescription = document.getElementById("productDescription");
+
+            // Set initial image
+            let currentImageIndex = 0;
+            const images = product.ImageLinks;
+            productImage.src = images[currentImageIndex];
+
+            // Update product details
+            productTitle.textContent = product.name;
+            productPrice.textContent = `Rs. ${product.Price}`;
+            productRating.innerHTML = generateRatingStars(product.Rating);
+            productDescription.textContent = product.Description;
+
+            // Add event listeners for arrow buttons
+            document.getElementById("prevImage").addEventListener("click", () => {
+                currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+                productImage.src = images[currentImageIndex];
+            });
+
+            document.getElementById("nextImage").addEventListener("click", () => {
+                currentImageIndex = (currentImageIndex + 1) % images.length;
+                productImage.src = images[currentImageIndex];
+            });
+
+            // Add to Cart button functionality
+            document.getElementById("addToCartButton").addEventListener("click", () => {
+                const productToAdd = {
+                    id: productId,
+                    name: product.name,
+                    Price: product.Price,
+                    quantity: 1,
+                };
+                addToCart(productToAdd);
+                openCartModal();
+            });
+        }
+
+        // Generate rating stars
+        function generateRatingStars(rating) {
+            let stars = "";
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars += `<i class='bx bxs-star'></i>`;
+                } else if (i - 0.5 === rating) {
+                    stars += `<i class='bx bxs-star-half'></i>`;
+                } else {
+                    stars += `<i class='bx bx-star'></i>`;
+                }
+            }
+            return stars;
+        }
+
+        // Star Rating for Review Form
+        const starRating = document.querySelectorAll("#reviewRating i");
+        let selectedRating = 0;
+
+        starRating.forEach((star) => {
+            star.addEventListener("click", () => {
+                selectedRating = star.getAttribute("data-rating");
+                starRating.forEach((s, index) => {
+                    if (index < selectedRating) {
+                        s.classList.add("active");
+                        s.classList.remove("bx-star");
+                        s.classList.add("bxs-star");
+                    } else {
+                        s.classList.remove("active");
+                        s.classList.remove("bxs-star");
+                        s.classList.add("bx-star");
+                    }
+                });
+            });
+        });
+
+        // Submit Review
+        document.getElementById("submitReview").addEventListener("click", () => {
+            const reviewText = document.getElementById("reviewText").value.trim();
+            if (selectedRating === 0 || reviewText === "") {
+                alert("Please select a rating and write a review.");
+                return;
+            }
+
+            const review = {
+                rating: selectedRating,
+                text: reviewText,
+                timestamp: new Date().toISOString(),
+            };
+
+            const reviewsRef = ref(database, `Products/${productId}/Reviews`);
+            push(reviewsRef, review)
+                .then(() => {
+                    alert("Review submitted successfully!");
+                    document.getElementById("reviewText").value = "";
+                    selectedRating = 0;
+                    starRating.forEach((star) => {
+                        star.classList.remove("active");
+                        star.classList.remove("bxs-star");
+                        star.classList.add("bx-star");
+                    });
+                    loadReviews();
+                })
+                .catch((error) => {
+                    console.error("Error submitting review:", error);
+                });
+        });
+
+        // Load Reviews
+        function loadReviews() {
+            const reviewsRef = ref(database, `Products/${productId}/Reviews`);
+            onValue(reviewsRef, (snapshot) => {
+                const reviews = snapshot.val();
+                const reviewList = document.getElementById("reviewList");
+                reviewList.innerHTML = "";
+
+                if (reviews) {
+                    Object.values(reviews).forEach((review) => {
+                        const reviewItem = document.createElement("div");
+                        reviewItem.classList.add("review-item");
+                        reviewItem.innerHTML = `
+                            <div class="review-rating">
+                                ${generateRatingStars(review.rating)}
+                            </div>
+                            <div class="review-text">${review.text}</div>
+                        `;
+                        reviewList.appendChild(reviewItem);
+                    });
+                } else {
+                    reviewList.innerHTML = `<p>No reviews yet. Be the first to review!</p>`;
+                }
+            });
+        }
+
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        // Function to add an item to the cart
+        function addToCart(product) {
+            const existingItem = cart.find((item) => item.id === product.id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCart();
+        }
+
+        // Function to remove an item from the cart
+        function removeFromCart(productId) {
+            cart = cart.filter((item) => item.id !== productId);
+            updateCart();
+        }
+
+        // Function to update the quantity of an item in the cart
+        function updateQuantity(productId, newQuantity) {
+            const item = cart.find((item) => item.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    updateCart();
+                }
+            }
+        }
+
+        // Function to update the cart UI and localStorage
+        function updateCart() {
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCartItems();
+            updateCartTotal();
+        }
+
+        // Function to render cart items in the modal
+        function renderCartItems() {
+            const cartItemsContainer = document.getElementById("cartItems");
+            cartItemsContainer.innerHTML = "";
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+                return;
+            }
+
+            cart.forEach((item) => {
+                const cartItem = document.createElement("div");
+                cartItem.classList.add("cart-item");
+                cartItem.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6>${item.name}</h6>
+                            <p>Rs. ${item.Price} x ${item.quantity}</p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${item.id}', ${item.quantity - 1})">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity('${item.id}', ${item.quantity + 1})">+</button>
+                            <button class="btn btn-sm btn-danger" onclick="removeFromCart('${item.id}')">Remove</button>
+                        </div>
+                    </div>
+                `;
+                cartItemsContainer.appendChild(cartItem);
+            });
+        }
+
+        // Function to update the total amount in the cart
+        function updateCartTotal() {
+            const total = cart.reduce((sum, item) => sum + item.Price * item.quantity, 0);
+            document.getElementById("cartTotal").textContent = `Rs. ${total.toFixed(2)}`;
+        }
+
+        // Function to open the cart modal
+        function openCartModal() {
+            renderCartItems();
+            updateCartTotal();
+            new bootstrap.Modal(document.getElementById("cartModal")).show();
+        }
+
+        // Add event listener to the "Checkout" button
+        document.getElementById("checkoutButton").addEventListener("click", () => {
+            alert("Order placed successfully!");
+            cart = [];
+            updateCart();
+            new bootstrap.Modal(document.getElementById("cartModal")).hide();
+        });
+
+        // Fetch product details when the page loads
+        fetchProductDetails();
     </script>
     
+    <script src="cart.js"></script>
 </body>
 </html>

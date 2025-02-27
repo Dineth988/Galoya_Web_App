@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Galoya Milk Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #5e72e4;
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff !important;
+        }
+
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            font-weight: 500;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/background.webp');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .hero-section .btn {
+            font-size: 18px;
+            padding: 10px 30px;
+        }
+
+        .featured-products, .categories, .deals {
+            padding: 50px 0;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #5b6979;
+        }
+
+        .product-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding: 20px;
+        }
+
+        .product-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2d3e50;
+        }
+
+        .product-price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #5e72e4;
+            margin-bottom: 15px;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+
+        .product-rating i {
+            font-size: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+        .btn-primary {
+            background-color: #5e72e4;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #4a5bbf;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .cart-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #5e72e4;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        .footer {
+            background-color: #2d3e50;
+            color: #fff;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #5e72e4;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Galoya Milk</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Deals</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>Welcome to Galoya Milk Products</h1>
+            <p>Discover the finest dairy products for your family.</p>
+            <a href="#featured-products" class="btn btn-primary">Shop Now</a>
+        </div>
+    </section>
+
+        <!-- Deals -->
+        <section class="deals">
+            <div class="container">
+                <h2 class="section-title">Hot Deals</h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="product-card">
+                            <img src="images/bottledshake.jpg" alt="Deal 1" class="product-image">
+                            <div class="product-details">
+                                <h3 class="product-title">Special Offer</h3>
+                                <p class="product-price">Rs. 500</p>
+                                <a href="#" class="btn btn-success">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="product-card">
+                            <img src="images/drink.webp" alt="Deal 2" class="product-image">
+                            <div class="product-details">
+                                <h3 class="product-title">Limited Time Offer</h3>
+                                <p class="product-price">Rs. 700</p>
+                                <a href="#" class="btn btn-success">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="product-card">
+                            <img src="images/packet.avif" alt="Deal 3" class="product-image">
+                            <div class="product-details">
+                                <h3 class="product-title">Exclusive Deal</h3>
+                                <p class="product-price">Rs. 900</p>
+                                <a href="#" class="btn btn-success">Buy Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <!-- Categories -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <img src="images/drink.webp" alt="Milk" class="product-image">
+                        <div class="product-details">
+                            <h3 class="product-title">Milk</h3>
+                            <a href="#" class="btn btn-primary">View Products</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <img src="images/yoghurt.jpg" alt="Cheese" class="product-image">
+                        <div class="product-details">
+                            <h3 class="product-title">Cheese</h3>
+                            <a href="#" class="btn btn-primary">View Products</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <img src="images/yoghurt.jpg" alt="Yogurt" class="product-image">
+                        <div class="product-details">
+                            <h3 class="product-title">Yogurt</h3>
+                            <a href="#" class="btn btn-primary">View Products</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section id="featured-products" class="featured-products">
+        <div class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="row" id="productList">
+                <!-- Products will be dynamically inserted here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Galoya Milk Products. All rights reserved.</p>
+            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </footer>
+
+    <!-- Cart Icon -->
+    <div class="cart-icon" onclick="openCartModal()">
+        <i class='bx bx-cart'></i>
+        <span class="cart-badge" id="cartBadge">0</span>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Your Cart</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cartItems">
+                        <!-- Cart items will be dynamically inserted here -->
+                    </div>
+                    <div class="total-amount">
+                        <h5>Total: <span id="cartTotal">Rs.</span></h5>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <a href="cart.html" class="btn btn-primary">View Cart</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Firebase Integration -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import {
+            getDatabase,
+            ref,
+            get,
+        } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
+            projectId: "galoya-web-app",
+            storageBucket: "gs://galoya-web-app.firebasestorage.app",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Fetch all products
+        async function fetchProducts() {
+            const productsRef = ref(database, "Products");
+            const snapshot = await get(productsRef);
+
+            if (snapshot.exists()) {
+                const products = snapshot.val();
+                renderProducts(products);
+            } else {
+                console.log("No products found.");
+            }
+        }
+
+        // Render products
+        function renderProducts(products) {
+            const productList = document.getElementById("productList");
+            productList.innerHTML = "";
+
+            Object.keys(products).forEach((key) => {
+                const product = products[key];
+                const productCard = document.createElement("div");
+                productCard.classList.add("col-md-4", "mb-4");
+                productCard.innerHTML = `
+                    <div class="product-card">
+                        <img src="${product.ImageLinks[0]}" alt="${product.name}" class="product-image">
+                        <div class="product-details">
+                            <h3 class="product-title">${product.ProductTitle}</h3>
+                            <p class="product-price">Rs. ${product.Price}</p>
+                            <div class="product-rating">
+                                ${generateRatingStars(product.Rating)}
+                            </div>
+                            <div class="btn-group">
+                                <a href="product_details.html?id=${key}" class="btn btn-primary">View Details</a>
+                                <button class="btn btn-success" onclick="addToCart({
+                                    id: '${key}',
+                                    name: '${product.name}',
+                                    Price: ${product.Price},
+                                    quantity: 1
+                                })">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                productList.appendChild(productCard);
+            });
+        }
+
+        // Generate rating stars
+        function generateRatingStars(rating) {
+            let stars = "";
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    stars += `<i class='bx bxs-star'></i>`;
+                } else if (i - 0.5 === rating) {
+                    stars += `<i class='bx bxs-star-half'></i>`;
+                } else {
+                    stars += `<i class='bx bx-star'></i>`;
+                }
+            }
+            return stars;
+        }
+
+        // Fetch products when the page loads
+        fetchProducts();
+    </script>
+
+    <!-- Cart Script -->
+    <script>
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        function addToCart(product) {
+            const existingItem = cart.find((item) => item.id === product.id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    ProductTitle: product.ProductTitle,
+                    Price: product.Price,
+                    quantity: 1,
+                });
+            }
+            updateCart();
+            openCartModal();
+        }
+
+        function updateCart() {
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById("cartBadge").textContent = totalItems;
+        }
+
+        function openCartModal() {
+            new bootstrap.Modal(document.getElementById("cartModal")).show();
+        }
+    </script>
+    <script src="cart.js"></script>
+</body>
+</html>
