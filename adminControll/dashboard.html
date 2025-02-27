@@ -98,12 +98,12 @@
 </head>
 
 <body>
-    <!-- Sidebar (Unchanged) -->
+    <!-- Sidebar -->
     <nav class="sidebar close">
         <header>
             <div class="image-text">
                 <span class="image">
-                    <img src="logo.jpg" alt="logo">
+                    <img src="images/logo.jpg" alt="logo">
                 </span>
                 <div class="text header-text">
                     <span class="name">Galoya</span>
@@ -121,25 +121,25 @@
                 </li>
                 <div class="menu-links">
                     <li class="nav-link">
-                        <a href="#">
+                        <a href="#" id="dashboardLink">
                             <i class='bx bx-home icon'></i>
                             <span class="text nav-text">Dashboard</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="#">
+                        <a href="#" id="productsLink">
                             <i class='bx bx-food-menu icon'></i>
                             <span class="text nav-text">Products</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="#">
+                        <a href="#" id="categoriesLink">
                             <i class='bx bx-category icon'></i>
                             <span class="text nav-text">Categories</span>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="#">
+                        <a href="#" id="staffLink">
                             <i class='bx bx-child icon'></i>
                             <span class="text nav-text">Staff</span>
                         </a>
@@ -149,7 +149,7 @@
 
             <div class="bottom-content">
                 <li class="">
-                    <a href="#">
+                    <a href="#" id="logoutLink">
                         <i class='bx bx-log-out icon'></i>
                         <span class="text nav-text">Logout</span>
                     </a>
@@ -171,7 +171,7 @@
 
     <!-- Main Content -->
     <div id="productContainer">
-        <!-- Dashboard Cards -->
+        <!-- Default Dashboard Content -->
         <div class="dashboard-cards">
             <div class="card">
                 <h3>Total Products</h3>
@@ -211,15 +211,15 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getDatabase, ref, get, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
             authDomain: "galoya-web-app.firebaseapp.com",
-            databaseURL: "https://galoya-web-app-default-rtdb.firebaseio.com/",
+            databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
             projectId: "galoya-web-app",
-            storageBucket: "galoya-web-app.appspot.com",
+            storageBucket: "gs://galoya-web-app.firebasestorage.app",
             messagingSenderId: "272214790341",
             appId: "1:272214790341:web:4b7238b47d601a378da0ac",
             measurementId: "G-322L3R40GC"
@@ -260,6 +260,139 @@
         // Fetch data when the page loads
         fetchTotalProducts();
         fetchTotalCategories();
+
+        // Load product.html content when the "Products" link is clicked
+        document.getElementById("productsLink").addEventListener("click", function (e) {
+            e.preventDefault(); // Prevent default link behavior
+            loadProductPage();
+        });
+
+        // Function to load product.html content
+        async function loadProductPage() {
+            const response = await fetch("product.html"); // Fetch product.html
+            const html = await response.text(); // Get the HTML content
+            document.getElementById("productContainer").innerHTML = html; // Insert into productContainer
+
+            // Reinitialize any scripts from product.html
+            const scripts = document.getElementById("productContainer").getElementsByTagName("script");
+            for (let script of scripts) {
+                const newScript = document.createElement("script");
+                newScript.type = script.type;
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
+                }
+                document.body.appendChild(newScript).remove(); // Execute the script
+            }
+        }
+
+        // Load category.html content when the "Categories" link is clicked
+        document.getElementById("categoriesLink").addEventListener("click", function (e) {
+            e.preventDefault(); // Prevent default link behavior
+            loadCategoryPage();
+        });
+
+        // Function to load category.html content
+        async function loadCategoryPage() {
+            const response = await fetch("category.html"); // Fetch category.html
+            const html = await response.text(); // Get the HTML content
+            document.getElementById("productContainer").innerHTML = html; // Insert into productContainer
+
+            // Reinitialize any scripts from category.html
+            const scripts = document.getElementById("productContainer").getElementsByTagName("script");
+            for (let script of scripts) {
+                const newScript = document.createElement("script");
+                newScript.type = script.type;
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
+                }
+                document.body.appendChild(newScript).remove(); // Execute the script
+            }
+        }
+
+        // Load staff.html content when the "Staff" link is clicked
+        document.getElementById("staffLink").addEventListener("click", function (e) {
+            e.preventDefault(); // Prevent default link behavior
+            loadStaffPage();
+        });
+
+        // Function to load staff.html content
+        async function loadStaffPage() {
+            const response = await fetch("staffDetail.html"); // Fetch staff.html
+            const html = await response.text(); // Get the HTML content
+            document.getElementById("productContainer").innerHTML = html; // Insert into productContainer
+
+            // Reinitialize any scripts from staff.html
+            const scripts = document.getElementById("productContainer").getElementsByTagName("script");
+            for (let script of scripts) {
+                const newScript = document.createElement("script");
+                newScript.type = script.type;
+                if (script.src) {
+                    newScript.src = script.src;
+                } else {
+                    newScript.textContent = script.textContent;
+                }
+                document.body.appendChild(newScript).remove(); // Execute the script
+            }
+        }
+
+        // Redirect to dashboard when the dashboard link is clicked
+        document.getElementById("dashboardLink").addEventListener("click", function (e) {
+            e.preventDefault(); // Prevent default link behavior
+            window.location.href = "dashboard.html"; // Redirect to dashboard
+        });
+
+        // Logout functionality
+        document.getElementById("logoutLink").addEventListener("click", function (e) {
+            e.preventDefault(); // Prevent default link behavior
+            logoutUser();
+        });
+
+        // Function to log out the user
+        function logoutUser() {
+            // Clear any user session or token (if applicable)
+            localStorage.removeItem("user"); // Example: Remove user data from localStorage
+            alert("You have been logged out.");
+            window.location.href = "staffLogin.html"; // Redirect to login page
+        }
+
+        // Function to log activities
+        async function logActivity(activity) {
+            const activitiesRef = ref(database, "Activities");
+            await push(activitiesRef, {
+                activity: activity,
+                timestamp: new Date().toLocaleString(),
+            });
+        }
+        // Fetch and display recent activities
+        function fetchRecentActivities() {
+        const activitiesRef = ref(database, "Activities");
+        onValue(activitiesRef, (snapshot) => {
+        const activitiesDiv = document.querySelector(".recent-activities");
+        activitiesDiv.innerHTML = "<h2>Recent Activities</h2>";
+
+        if (snapshot.exists()) {
+            const activities = snapshot.val();
+            Object.values(activities).forEach((activity) => {
+                const activityItem = document.createElement("div");
+                activityItem.classList.add("activity-item");
+                activityItem.innerHTML = `
+                    <i class='bx bx-plus'></i>
+                    <span>${activity.activity} - ${activity.timestamp}</span>
+                `;
+                activitiesDiv.appendChild(activityItem);
+            });
+        } else {
+            activitiesDiv.innerHTML = "<p>No recent activities found.</p>";
+        }
+        });
+        }
+
+        // Fetch activities when the page loads
+        fetchRecentActivities();
     </script>
 
     <!-- Your Existing Sidebar Script -->

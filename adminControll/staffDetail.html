@@ -305,6 +305,32 @@
             })
             })
 
+            // Log activity when a staff member is added
+            document.getElementById("confirm").addEventListener("click", async function (event) {
+                event.preventDefault();
+
+                const name = document.getElementById("nameStaff").value;
+                const email = document.getElementById("emailStaff").value;
+                const role = document.getElementById("role").value;
+
+                try {
+                    const docRef = await addDoc(collection(db, "staff"), {
+                        name: name,
+                        email: email,
+                        role: role,
+                        password: 123456
+                     });
+
+                    // Log activity
+                    const activity = `New staff member "${name}" added.`;
+                    logActivity(activity);
+
+                    alert("Staff added");
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                }
+            });
+
         </script>
 
 </head>
@@ -315,7 +341,7 @@
         <a href="#divOne"><button id="addStaffBtn">Add Staff</button></a>
     </div>
     
-    <table border="1">
+    <table boder="1">
         <thead>
             <tr class="headTr">
                 <th>Name</th>
@@ -397,5 +423,6 @@
             </form>
         </div>
     </div>
+    
 </body>
 </html>
