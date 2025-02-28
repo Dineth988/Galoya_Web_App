@@ -7,108 +7,150 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-        /* Add your custom styles here */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
         .order-card {
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 20px;
             margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        .order-card:hover {
+            transform: translateY(-5px);
         }
         .order-card h3 {
+            font-size: 24px;
+            font-weight: 600;
             margin-bottom: 10px;
+            color: #5e72e4;
         }
-        .order-card p {
-            margin: 5px 0;
+        .order-card p, .order-card ul {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #4a5568;
+        }
+        .btn-cancel {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-cancel:hover {
+            background-color: #c0392b;
+        }
+        .no-orders {
+            text-align: center;
+            font-size: 18px;
+            color: #666;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">Galoya Milk</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="customer-products.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="myorders.html">My Orders</a>
-                    </li>
-                </ul>
-            </div>
+    <div class="container">
+        <h1><i class='bx bx-package'></i> My Orders</h1>
+        <div id="ordersList"></div>
+        <div id="noOrdersMessage" class="no-orders hidden">
+            
         </div>
-    </nav>
+    </div>
 
-    <!-- My Orders Section -->
-    <section class="container my-5">
-        <h2>My Orders</h2>
-        <div id="ordersList">
-            <!-- Orders will be dynamically inserted here -->
-        </div>
-    </section>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Firebase Integration -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
             authDomain: "galoya-web-app.firebaseapp.com",
-            databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
             projectId: "galoya-web-app",
-            storageBucket: "gs://galoya-web-app.firebasestorage.app",
+            storageBucket: "gs://galoya-web-app.appspot.com",
             messagingSenderId: "272214790341",
             appId: "1:272214790341:web:4b7238b47d601a378da0ac",
             measurementId: "G-322L3R40GC"
         };
 
         const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Fetch orders for the current user
-        async function fetchOrders() {
-            const userId = "user123"; // Replace with the actual user ID
-            const ordersRef = ref(database, `Orders/${userId}`);
-            const snapshot = await get(ordersRef);
+        async function fetchOrders(email) {
+            const ordersList = document.getElementById("ordersList");
+            const noOrdersMessage = document.getElementById("noOrdersMessage");
 
-            if (snapshot.exists()) {
-                const orders = snapshot.val();
-                renderOrders(orders);
+            const ordersRef = collection(db, "orders");
+            const q = query(ordersRef, where("email", "==", email));
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                noOrdersMessage.classList.remove("hidden");
+                ordersList.innerHTML = "";
             } else {
-                document.getElementById("ordersList").innerHTML = "<p>No orders found.</p>";
+                noOrdersMessage.classList.add("hidden");
+                ordersList.innerHTML = "";
+
+                querySnapshot.forEach((docSnapshot) => {
+                    const order = docSnapshot.data();
+                    const orderCard = document.createElement("div");
+                    orderCard.classList.add("order-card");
+                    orderCard.innerHTML = `
+                        <h3>Order ID: ${docSnapshot.id}</h3>
+                        <p><strong>Date:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
+                        <p><strong>Total Amount:</strong> Rs. ${order.totalAmount}</p>
+                        <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+                        <p><strong>Delivery Address:</strong> ${order.address}</p>
+                        <p><strong>Items:</strong></p>
+                        <ul>
+                            ${order.items.map(item => `<li>${item.name} - Rs. ${item.price} x ${item.quantity}</li>`).join("")}
+                        </ul>
+                        <button class="btn-cancel" data-id="${docSnapshot.id}">Cancel Order</button>
+                    `;
+                    ordersList.appendChild(orderCard);
+                });
+
+                document.querySelectorAll(".btn-cancel").forEach(button => {
+                    button.addEventListener("click", async (event) => {
+                        const orderId = event.target.dataset.id;
+                        const confirmCancel = confirm("Are you sure you want to cancel this order?");
+                        if (confirmCancel) {
+                            await deleteDoc(doc(db, "orders", orderId));
+                            alert("Order canceled successfully.");
+                            fetchOrders(email);
+                        }
+                    });
+                });
             }
         }
 
-        // Render orders
-        function renderOrders(orders) {
-            const ordersList = document.getElementById("ordersList");
-            ordersList.innerHTML = "";
-
-            Object.keys(orders).forEach((key) => {
-                const order = orders[key];
-                const orderCard = document.createElement("div");
-                orderCard.classList.add("order-card");
-                orderCard.innerHTML = `
-                    <h3>Order ID: ${key}</h3>
-                    <p>Total: Rs. ${order.total}</p>
-                    <p>Status: ${order.status}</p>
-                    <a href="order_details.html?id=${key}" class="btn btn-primary">View Details</a>
-                `;
-                ordersList.appendChild(orderCard);
-            });
-        }
-
-        // Fetch orders when the page loads
-        fetchOrders();
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                fetchOrders(user.email);
+            } else {
+                window.location.href = "login.html";
+            }
+        });
     </script>
 </body>
 </html>

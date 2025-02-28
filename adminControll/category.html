@@ -13,7 +13,6 @@
             color: #333;
             padding: 20px;
         }
-
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -22,29 +21,17 @@
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
         h2 {
             text-align: center;
             margin-bottom: 20px;
             color: #2d3e50;
         }
-
         .form-group {
             margin-bottom: 15px;
         }
-
         .form-group label {
             font-weight: 600;
         }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
         .btn {
             padding: 10px 20px;
             border-radius: 5px;
@@ -53,49 +40,45 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-
         .btn-primary {
             background-color: #5e72e4;
             color: white;
             border: none;
         }
-
         .btn-primary:hover {
             background-color: #4857c9;
         }
-
         .btn-danger {
             background-color: #dc3545;
             color: white;
             border: none;
         }
-
         .btn-danger:hover {
             background-color: #c82333;
         }
-
         .category-list {
             margin-top: 20px;
         }
-
         .category-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             padding: 10px;
             border: 1px solid #e0e0e0;
             border-radius: 5px;
             margin-bottom: 10px;
             background-color: #f9f9f9;
         }
-
+        .category-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
         .category-item span {
             font-size: 16px;
             font-weight: 500;
-        }
-
-        .category-item button {
-            margin-left: 10px;
+            flex-grow: 1;
         }
     </style>
 </head>
@@ -106,19 +89,22 @@
         <!-- Add Category Form -->
         <div class="form-group">
             <label for="categoryName">Category Name</label>
-            <input type="text" id="categoryName" placeholder="Enter category name">
+            <input type="text" id="categoryName" class="form-control" placeholder="Enter category name">
         </div>
-        <button id="addCategoryBtn" class="btn btn-primary">Add Category</button>
+        <div class="form-group">
+            <label for="categoryImage">Category Image</label>
+            <input type="file" id="categoryImage" class="form-control" accept="image/*">
+        </div>
+        <button id="addCategoryBtn" class="btn btn-primary btn-block">Add Category</button>
 
         <!-- Category List -->
-        <div class="category-list" id="categoryList">
-            <!-- Categories will be dynamically inserted here -->
-        </div>
+        <div class="category-list" id="categoryList"></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, set, get, remove, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -135,9 +121,11 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+        const storage = getStorage(app);
 
         // DOM Elements
         const categoryNameInput = document.getElementById("categoryName");
+        const categoryImageInput = document.getElementById("categoryImage");
         const addCategoryBtn = document.getElementById("addCategoryBtn");
         const categoryList = document.getElementById("categoryList");
 
@@ -163,21 +151,19 @@
             const categoryItem = document.createElement("div");
             categoryItem.classList.add("category-item");
 
+            const categoryImage = document.createElement("img");
+            categoryImage.src = value.imageURL;
+            
             const categoryText = document.createElement("span");
-            categoryText.textContent = value;
-
-            const updateBtn = document.createElement("button");
-            updateBtn.classList.add("btn", "btn-primary");
-            updateBtn.textContent = "Update";
-            updateBtn.onclick = () => updateCategory(key);
+            categoryText.textContent = value.name;
 
             const deleteBtn = document.createElement("button");
             deleteBtn.classList.add("btn", "btn-danger");
             deleteBtn.textContent = "Delete";
             deleteBtn.onclick = () => deleteCategory(key);
 
+            categoryItem.appendChild(categoryImage);
             categoryItem.appendChild(categoryText);
-            categoryItem.appendChild(updateBtn);
             categoryItem.appendChild(deleteBtn);
 
             categoryList.appendChild(categoryItem);
@@ -186,58 +172,57 @@
         // Add a new category
         addCategoryBtn.addEventListener("click", () => {
             const categoryName = categoryNameInput.value.trim();
-            if (categoryName) {
-                const newCategoryRef = ref(database, `Categories/${Date.now()}`);
-                set(newCategoryRef, categoryName)
-                    .then(() => {
-                        alert("Category added successfully!");
-                        categoryNameInput.value = ""; // Clear input
-                        fetchCategories(); // Refresh the list
-                    })
-                    .catch((error) => {
-                        console.error("Error adding category: ", error);
-                        alert("Error adding category. Please try again.");
-                    });
-            } else {
-                alert("Please enter a category name.");
-            }
-        });
+            const file = categoryImageInput.files[0];
 
-        // Update a category
-        function updateCategory(key) {
-            const newName = prompt("Enter the new category name:");
-            if (newName) {
-                const categoryRef = ref(database, `Categories/${key}`);
-                update(categoryRef, newName)
-                    .then(() => {
-                        alert("Category updated successfully!");
-                        fetchCategories(); // Refresh the list
-                    })
-                    .catch((error) => {
-                        console.error("Error updating category: ", error);
-                        alert("Error updating category. Please try again.");
-                    });
+            if (!categoryName || !file) {
+                alert("Please enter a category name and select an image.");
+                return;
             }
-        }
+
+            // Upload Image to Firebase Storage
+            const storagePath = `categoryImages/${Date.now()}_${file.name}`;
+            const imageRef = storageRef(storage, storagePath);
+            const uploadTask = uploadBytesResumable(imageRef, file);
+
+            uploadTask.on("state_changed",
+                null,
+                (error) => {
+                    console.error("Error uploading image: ", error);
+                    alert("Error uploading image.");
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        const newCategoryRef = ref(database, `Categories/${Date.now()}`);
+                        set(newCategoryRef, {
+                            name: categoryName,
+                            imageURL: downloadURL
+                        }).then(() => {
+                            alert("Category added successfully!");
+                            categoryNameInput.value = "";
+                            categoryImageInput.value = "";
+                            fetchCategories();
+                        }).catch((error) => {
+                            console.error("Error adding category: ", error);
+                            alert("Error adding category.");
+                        });
+                    });
+                }
+            );
+        });
 
         // Delete a category
         function deleteCategory(key) {
-            const confirmDelete = confirm("Are you sure you want to delete this category?");
-            if (confirmDelete) {
-                const categoryRef = ref(database, `Categories/${key}`);
-                remove(categoryRef)
+            if (confirm("Are you sure you want to delete this category?")) {
+                remove(ref(database, `Categories/${key}`))
                     .then(() => {
                         alert("Category deleted successfully!");
-                        fetchCategories(); // Refresh the list
+                        fetchCategories();
                     })
-                    .catch((error) => {
-                        console.error("Error deleting category: ", error);
-                        alert("Error deleting category. Please try again.");
-                    });
+                    .catch(error => console.error("Error deleting category: ", error));
             }
         }
 
-        // Fetch categories when the page loads
+        // Fetch categories on page load
         fetchCategories();
     </script>
 </body>

@@ -204,7 +204,7 @@
                 for (const category of Object.values(categories)) {
                     const option = document.createElement("option");
                     option.value = category;
-                    option.textContent = category;
+                    option.textContent = category.name;
                     catinp.appendChild(option);
                 }
             } else {

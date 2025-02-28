@@ -126,6 +126,10 @@
                 <label>Phone Number</label>
                 <input type="text" id="codPhoneNumber" class="form-control">
             </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="codEmail" class="form-control" placeholder="example@example.com">
+            </div>
             <button class="btn-next" id="previewOrderBtnCod">Preview Order</button>
         </div>
 
@@ -145,7 +149,8 @@
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -153,7 +158,7 @@
             authDomain: "galoya-web-app.firebaseapp.com",
             databaseURL: "galoya-web-app-default-rtdb.firebaseio.com",
             projectId: "galoya-web-app",
-            storageBucket: "gs://galoya-web-app.firebasestorage.app",
+            storageBucket: "gs://galoya-web-app.appspot.com",
             messagingSenderId: "272214790341",
             appId: "1:272214790341:web:4b7238b47d601a378da0ac",
             measurementId: "G-322L3R40GC"
@@ -163,6 +168,29 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        function fetchUserShippingDetails(user) {
+            const userRef = doc(db, "users", user.uid);
+            getDoc(userRef).then(userSnapshot => {
+                if (userSnapshot.exists()) {
+                    const userData = userSnapshot.data();
+                    document.getElementById("fullName").value = userData.shippingInfo.fullName || '';
+                    document.getElementById("address").value = userData.shippingInfo.address || '';
+                    document.getElementById("phoneNumber").value = userData.shippingInfo.phoneNumber || '';
+                    document.getElementById("email").value = userData.email || '';
+                    document.getElementById("codFullName").value = userData.shippingInfo.fullName || '';
+                    document.getElementById("codAddress").value = userData.shippingInfo.address || '';
+                    document.getElementById("codPhoneNumber").value = userData.shippingInfo.phoneNumber || '';
+                    document.getElementById("codEmail").value = userData.email || '';
+                } else {
+                    alert("User data not found.");
+                }
+            }).catch(error => {
+                alert("Error fetching user data.");
+            });
+        }
+
 
         // Load cart items from localStorage
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -225,60 +253,55 @@
 
         // Confirm the order and upload to Firestore
         async function confirmOrder() {
-    const paymentMethod = document.getElementById("paymentMethod").value;
-    const fullName = paymentMethod === "cod" ? document.getElementById("codFullName").value.trim() : document.getElementById("fullName").value.trim();
-    const address = paymentMethod === "cod" ? document.getElementById("codAddress").value.trim() : document.getElementById("address").value.trim();
-    const phoneNumber = paymentMethod === "cod" ? document.getElementById("codPhoneNumber").value.trim() : document.getElementById("phoneNumber").value.trim();
+            const paymentMethod = document.getElementById("paymentMethod").value;
+            const fullName = paymentMethod === "cod" ? document.getElementById("codFullName").value.trim() : document.getElementById("fullName").value.trim();
+            const address = paymentMethod === "cod" ? document.getElementById("codAddress").value.trim() : document.getElementById("address").value.trim();
+            const phoneNumber = paymentMethod === "cod" ? document.getElementById("codPhoneNumber").value.trim() : document.getElementById("phoneNumber").value.trim();
 
-    // Validate required fields
-    if (!fullName || !address || !phoneNumber) {
-        alert("Please fill in all required fields.");
-        return;
-    }
+            // Validate required fields
+            if (!fullName || !address || !phoneNumber) {
+                alert("Please fill in all required fields.");
+                return;
+            }
 
-    // Calculate total amount
-    const totalAmount = cart.reduce((total, item) => total + item.Price * item.quantity, 0);
+            // Get the current authenticated user
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to place an order.");
+                return;
+            }
 
-    // Get the current authenticated user
-    const user = auth.currentUser;
-    if (!user) {
-        alert("You must be logged in to place an order.");
-        return;
-    }
+            // Calculate total amount
+            const totalAmount = cart.reduce((total, item) => total + item.Price * item.quantity, 0);
 
-    // Prepare order data
-    const orderData = {
-        userId: user.uid,
-        paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment",
-        fullName,
-        address,
-        phoneNumber,
-        items: cart.map(item => ({
-            name: item.name || "Unknown", // Ensure name is defined
-            price: item.Price || 0, // Ensure price is defined
-            quantity: item.quantity || 1 // Ensure quantity is defined
-        })),
-        totalAmount: totalAmount || 0, // Ensure total amount is defined
-        timestamp: new Date()
-    };
+            // Prepare order data
+            const orderData = {
+                
+                paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment",
+                fullName,
+                address,
+                phoneNumber,
+                items: cart.map(item => ({
+                    name: item.name,
+                    price: item.Price,
+                    quantity: item.quantity
+                })),
+                totalAmount,
+                timestamp: new Date().toISOString()
+            };
 
-    try {
-        // Add the order to Firestore
-        const ordersCollection = collection(db, "orders");
-        const docRef = await addDoc(ordersCollection, orderData);
-        alert(`Order confirmed! Your order ID is: ${docRef.id}`);
-        localStorage.removeItem("cart"); // Clear the cart
-        window.location.href = "customer-products.html"; // Redirect after confirmation
-    } catch (error) {
-        console.error("Error adding order to Firestore: ", error);
-        alert("There was an error confirming your order. Please try again.");
-    }
-}
-
-
-// Add event listener for confirm order button
-document.getElementById("confirmOrderBtn").addEventListener("click", confirmOrder);
-
+            // Save the order to Firestore
+            const ordersRef = collection(db, "orders");
+            try {
+                await addDoc(ordersRef, orderData);
+                alert("Order confirmed successfully!");
+                localStorage.removeItem("cart"); // Clear the cart
+                window.location.href = "customer-products.html"; // Redirect after confirmation
+            } catch (error) {
+                console.error("Error adding order to Firestore: ", error);
+                alert("There was an error confirming your order. Please try again.");
+            }
+        }
 
         // Event Listeners
         document.getElementById("paymentMethod").addEventListener("change", showPaymentMethodSection);
