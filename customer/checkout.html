@@ -20,44 +20,13 @@
             border-radius: 15px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
         }
-        .step {
+        .hidden {
             display: none;
-        }
-        .step.active {
-            display: block;
-        }
-        .step h2 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #2c3e50;
-            display: flex;
-            align-items: center;
-        }
-        .step h2 i {
-            margin-right: 10px;
-            font-size: 28px;
-        }
-        .form-group {
-            margin-bottom: 20px;
         }
         .form-group label {
             font-weight: 600;
-            margin-bottom: 5px;
-            color: #34495e;
         }
-        .form-control {
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            padding: 10px 15px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
-        .form-control:focus {
-            border-color: #5e72e4;
-            box-shadow: 0 0 5px rgba(94, 114, 228, 0.3);
-        }
-        .btn-next, .btn-confirm {
+        .btn-next, .btn-select {
             background-color: #5e72e4;
             color: #fff;
             font-size: 16px;
@@ -66,51 +35,49 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        .btn-next i, .btn-confirm i {
-            margin-left: 8px;
-        }
-        .btn-next:hover, .btn-confirm:hover {
+        .btn-next:hover, .btn-select:hover {
             background-color: #4a5bbf;
         }
-        .confirmation-details {
-            background: #f8f9fa;
+        .order-summary {
+            margin-top: 30px;
             padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
+            background: #f9fafb;
+            border-radius: 12px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
         }
-        .confirmation-details p {
-            margin: 10px 0;
-            font-size: 16px;
-            color: #555;
-        }
-        .confirmation-details strong {
+        .order-summary h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
             color: #2c3e50;
+        }
+        .order-summary p {
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #4a5568;
+        }
+        .order-summary strong {
+            color: #2c3e50;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div class="checkout-container">
-        <!-- Step 1: Payment Method -->
-        <div id="step1" class="step active">
-            <h2><i class='bx bx-credit-card'></i>Select Payment Method</h2>
-            <div class="form-group">
-                <label>Choose a payment method:</label>
-                <select id="paymentMethod" class="form-control">
-                    <option value="debit">Debit Card</option>
-                    <option value="credit">Credit Card</option>
-                    <option value="cod">Cash on Delivery</option>
-                </select>
-            </div>
-            <button class="btn-next" onclick="nextStep(2)">Next <i class='bx bx-chevron-right'></i></button>
+        <h2><i class='bx bx-credit-card'></i> Select Payment Method</h2>
+        <div class="form-group">
+            <label>Choose a payment method:</label>
+            <select id="paymentMethod" class="form-control">
+                <option value="credit">Credit Card</option>
+                <option value="debit">Debit Card</option>
+                <option value="cod">Cash on Delivery</option>
+            </select>
         </div>
 
-        <!-- Step 2: Card Details (for Debit/Credit Card) -->
-        <div id="step2" class="step">
-            <h2><i class='bx bx-card'></i>Enter Card Details</h2>
+        <!-- Credit/Debit card details -->
+        <div id="cardDetails" class="hidden">
+            <h2><i class='bx bx-card'></i> Enter Card Details</h2>
             <div class="form-group">
                 <label>Card Number</label>
                 <input type="text" id="cardNumber" class="form-control" placeholder="1234 5678 9012 3456">
@@ -123,68 +90,194 @@
                 <label>CVV</label>
                 <input type="text" id="cvv" class="form-control" placeholder="123">
             </div>
-            <button class="btn-next" onclick="nextStep(3)">Next <i class='bx bx-chevron-right'></i></button>
+            <button class="btn-next" id="nextToDelivery">Next</button>
         </div>
 
-        <!-- Step 3: Address and Phone Number -->
-        <div id="step3" class="step">
-            <h2><i class='bx bx-map'></i>Enter Delivery Details</h2>
+        <!-- Delivery details for Credit/Debit Card -->
+        <div id="deliveryDetails" class="hidden">
+            <h2><i class='bx bx-map'></i> Delivery Information</h2>
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" id="fullName" class="form-control" placeholder="John Doe">
+                <input type="text" id="fullName" class="form-control">
             </div>
             <div class="form-group">
                 <label>Address</label>
-                <textarea id="address" class="form-control" placeholder="123 Main St, City, Country"></textarea>
+                <textarea id="address" class="form-control"></textarea>
             </div>
             <div class="form-group">
                 <label>Phone Number</label>
-                <input type="text" id="phoneNumber" class="form-control" placeholder="+94 77 123 4567">
+                <input type="text" id="phoneNumber" class="form-control">
             </div>
-            <button class="btn-next" onclick="nextStep(4)">Next <i class='bx bx-chevron-right'></i></button>
+            <button class="btn-next" id="previewOrderBtn">Preview Order</button>
         </div>
 
-        <!-- Step 4: Confirm Order -->
-        <div id="step4" class="step">
-            <h2><i class='bx bx-check-circle'></i>Confirm Your Order</h2>
-            <div class="confirmation-details">
-                <p><strong>Payment Method:</strong> <span id="confirmPaymentMethod"></span></p>
-                <p><strong>Card Number:</strong> <span id="confirmCardNumber"></span></p>
-                <p><strong>Address:</strong> <span id="confirmAddress"></span></p>
-                <p><strong>Phone Number:</strong> <span id="confirmPhoneNumber"></span></p>
+        <!-- Delivery details for Cash on Delivery -->
+        <div id="codDetails" class="hidden">
+            <h2><i class='bx bx-map'></i> Delivery Information</h2>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="codFullName" class="form-control">
             </div>
-            <button class="btn-confirm" onclick="confirmOrder()">Confirm Order <i class='bx bx-check'></i></button>
+            <div class="form-group">
+                <label>Address</label>
+                <textarea id="codAddress" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" id="codPhoneNumber" class="form-control">
+            </div>
+            <button class="btn-next" id="previewOrderBtnCod">Preview Order</button>
+        </div>
+
+        <!-- Order Summary -->
+        <div id="orderSummary" class="order-summary hidden">
+            <h3><i class='bx bx-receipt'></i> Order Summary</h3>
+            <div id="summaryContent"></div>
+            <button id="confirmOrderBtn" class="btn-next">Confirm Order <i class='bx bx-check'></i></button>
         </div>
     </div>
 
-    <script>
-        let currentStep = 1;
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-        function nextStep(step) {
-            // Hide current step
-            document.getElementById(`step${currentStep}`).classList.remove('active');
-            // Show next step
-            document.getElementById(`step${step}`).classList.add('active');
-            currentStep = step;
+    <!-- Firebase Integration -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-            // Update confirmation details
-            if (step === 4) {
-                const paymentMethod = document.getElementById('paymentMethod').value;
-                const cardNumber = document.getElementById('cardNumber').value;
-                const address = document.getElementById('address').value;
-                const phoneNumber = document.getElementById('phoneNumber').value;
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
+            projectId: "galoya-web-app",
+            storageBucket: "gs://galoya-web-app.firebasestorage.app",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC"
+        };
 
-                document.getElementById('confirmPaymentMethod').textContent = paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod;
-                document.getElementById('confirmCardNumber').textContent = cardNumber || 'N/A';
-                document.getElementById('confirmAddress').textContent = address;
-                document.getElementById('confirmPhoneNumber').textContent = phoneNumber;
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app); // Realtime Database
+        const auth = getAuth(app);
+
+        // Load cart items from localStorage
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        if (!Array.isArray(cart)) {
+            console.error("Invalid cart data in localStorage");
+            cart = [];
+        }
+
+        // Show payment method section based on selection
+        function showPaymentMethodSection() {
+            const paymentMethod = document.getElementById("paymentMethod").value;
+
+            // Hide all sections first
+            document.getElementById("cardDetails").classList.add("hidden");
+            document.getElementById("codDetails").classList.add("hidden");
+            document.getElementById("deliveryDetails").classList.add("hidden");
+            document.getElementById("orderSummary").classList.add("hidden");
+
+            // Show relevant section based on selected payment method
+            if (paymentMethod === "credit" || paymentMethod === "debit") {
+                document.getElementById("cardDetails").classList.remove("hidden");
+            } else if (paymentMethod === "cod") {
+                document.getElementById("codDetails").classList.remove("hidden");
             }
         }
 
-        function confirmOrder() {
-            alert('Your order has been confirmed! Thank you for shopping with Galoya Milk.');
-            window.location.href = "customer-products.html";
+        // Show delivery details section for credit card payments
+        function showDeliveryDetails() {
+            document.getElementById("deliveryDetails").classList.remove("hidden");
         }
+
+        // Preview the order
+        function previewOrder() {
+            const paymentMethod = document.getElementById("paymentMethod").value;
+            const fullName = paymentMethod === "cod" ? document.getElementById("codFullName").value : document.getElementById("fullName").value;
+            const address = paymentMethod === "cod" ? document.getElementById("codAddress").value : document.getElementById("address").value;
+            const phoneNumber = paymentMethod === "cod" ? document.getElementById("codPhoneNumber").value : document.getElementById("phoneNumber").value;
+
+            // Calculate total amount
+            const totalAmount = cart.reduce((total, item) => total + item.Price * item.quantity, 0);
+
+            // Display order summary
+            document.getElementById("summaryContent").innerHTML = `
+                <p><strong>Payment Method:</strong> ${paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment"}</p>
+                <p><strong>Full Name:</strong> ${fullName}</p>
+                <p><strong>Address:</strong> ${address}</p>
+                <p><strong>Phone Number:</strong> ${phoneNumber}</p>
+                <p><strong>Items:</strong></p>
+                <ul>
+                    ${cart.map(item => `
+                        <li>${item.name} - Rs. ${item.Price} x ${item.quantity}</li>
+                    `).join("")}
+                </ul>
+                <p><strong>Total Amount:</strong> Rs. ${totalAmount.toFixed(2)}</p>
+            `;
+
+            // Show the order summary section
+            document.getElementById("orderSummary").classList.remove("hidden");
+        }
+
+        // Confirm the order and upload to Realtime Database
+        async function confirmOrder() {
+            const paymentMethod = document.getElementById("paymentMethod").value;
+            const fullName = paymentMethod === "cod" ? document.getElementById("codFullName").value : document.getElementById("fullName").value;
+            const address = paymentMethod === "cod" ? document.getElementById("codAddress").value : document.getElementById("address").value;
+            const phoneNumber = paymentMethod === "cod" ? document.getElementById("codPhoneNumber").value : document.getElementById("phoneNumber").value;
+
+            // Calculate total amount
+            const totalAmount = cart.reduce((total, item) => total + item.Price * item.quantity, 0);
+
+            // Get the current authenticated user
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to place an order.");
+                return;
+            }
+
+            // Prepare order data
+            const orderData = {
+                userId: user.uid,
+                paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment",
+                fullName,
+                address,
+                phoneNumber,
+                items: cart.map(item => ({
+                    name: item.name,
+                    price: item.Price,
+                    quantity: item.quantity
+                })),
+                totalAmount,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                // Add the order to Realtime Database
+                const ordersRef = ref(database, "orders");
+                const newOrderRef = push(ordersRef, orderData);
+                alert(`Order confirmed! Your order ID is: ${newOrderRef.key}`);
+                localStorage.removeItem("cart"); // Clear the cart
+                window.location.href = "customer-products.html"; // Redirect after confirmation
+            } catch (error) {
+                console.error("Error adding order to Realtime Database: ", error);
+                alert("There was an error confirming your order. Please try again.");
+            }
+        }
+
+        // Event Listeners
+        document.getElementById("paymentMethod").addEventListener("change", showPaymentMethodSection);
+        document.getElementById("nextToDelivery").addEventListener("click", showDeliveryDetails);
+        document.getElementById("previewOrderBtn").addEventListener("click", previewOrder);
+        document.getElementById("previewOrderBtnCod").addEventListener("click", previewOrder);
+        document.getElementById("confirmOrderBtn").addEventListener("click", confirmOrder);
+
+        // Initialize payment method section on page load
+        showPaymentMethodSection();
     </script>
 </body>
 </html>

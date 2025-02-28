@@ -98,6 +98,8 @@
         // Load cart items from localStorage
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+        
+
         // Render cart items
         function renderCartItems() {
             const cartItemsContainer = document.getElementById("cartItems");
@@ -146,8 +148,8 @@
 
         // Proceed to checkout
         function proceedToCheckout() {
-            alert("Proceeding to checkout...");
-            // Add your checkout logic here
+            // Redirect to checkout.html
+            window.location.href = "checkout.html";
         }
 
         // Render cart items when the page loads
