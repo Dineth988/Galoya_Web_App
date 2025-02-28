@@ -18,9 +18,7 @@
   const firebaseConfig = {
     apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
     authDomain: "galoya-web-app.firebaseapp.com",
-    databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
     projectId: "galoya-web-app",
-    storageBucket: "gs://galoya-web-app.firebasestorage.app",
     messagingSenderId: "272214790341",
     appId: "1:272214790341:web:4b7238b47d601a378da0ac",
     measurementId: "G-322L3R40GC"

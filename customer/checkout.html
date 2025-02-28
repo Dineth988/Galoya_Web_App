@@ -144,14 +144,14 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, set, get, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
         // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
             authDomain: "galoya-web-app.firebaseapp.com",
-            databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
+            databaseURL: "galoya-web-app-default-rtdb.firebaseio.com",
             projectId: "galoya-web-app",
             storageBucket: "gs://galoya-web-app.firebasestorage.app",
             messagingSenderId: "272214790341",
@@ -161,7 +161,7 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app); // Realtime Database
+        const db = getFirestore(app);
         const auth = getAuth(app);
 
         // Load cart items from localStorage
@@ -223,51 +223,62 @@
             document.getElementById("orderSummary").classList.remove("hidden");
         }
 
-        // Confirm the order and upload to Realtime Database
+        // Confirm the order and upload to Firestore
         async function confirmOrder() {
-            const paymentMethod = document.getElementById("paymentMethod").value;
-            const fullName = paymentMethod === "cod" ? document.getElementById("codFullName").value : document.getElementById("fullName").value;
-            const address = paymentMethod === "cod" ? document.getElementById("codAddress").value : document.getElementById("address").value;
-            const phoneNumber = paymentMethod === "cod" ? document.getElementById("codPhoneNumber").value : document.getElementById("phoneNumber").value;
+    const paymentMethod = document.getElementById("paymentMethod").value;
+    const fullName = paymentMethod === "cod" ? document.getElementById("codFullName").value.trim() : document.getElementById("fullName").value.trim();
+    const address = paymentMethod === "cod" ? document.getElementById("codAddress").value.trim() : document.getElementById("address").value.trim();
+    const phoneNumber = paymentMethod === "cod" ? document.getElementById("codPhoneNumber").value.trim() : document.getElementById("phoneNumber").value.trim();
 
-            // Calculate total amount
-            const totalAmount = cart.reduce((total, item) => total + item.Price * item.quantity, 0);
+    // Validate required fields
+    if (!fullName || !address || !phoneNumber) {
+        alert("Please fill in all required fields.");
+        return;
+    }
 
-            // Get the current authenticated user
-            const user = auth.currentUser;
-            if (!user) {
-                alert("You must be logged in to place an order.");
-                return;
-            }
+    // Calculate total amount
+    const totalAmount = cart.reduce((total, item) => total + item.Price * item.quantity, 0);
 
-            // Prepare order data
-            const orderData = {
-                userId: user.uid,
-                paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment",
-                fullName,
-                address,
-                phoneNumber,
-                items: cart.map(item => ({
-                    name: item.name,
-                    price: item.Price,
-                    quantity: item.quantity
-                })),
-                totalAmount,
-                timestamp: new Date().toISOString()
-            };
+    // Get the current authenticated user
+    const user = auth.currentUser;
+    if (!user) {
+        alert("You must be logged in to place an order.");
+        return;
+    }
 
-            try {
-                // Add the order to Realtime Database
-                const ordersRef = ref(database, "orders");
-                const newOrderRef = push(ordersRef, orderData);
-                alert(`Order confirmed! Your order ID is: ${newOrderRef.key}`);
-                localStorage.removeItem("cart"); // Clear the cart
-                window.location.href = "customer-products.html"; // Redirect after confirmation
-            } catch (error) {
-                console.error("Error adding order to Realtime Database: ", error);
-                alert("There was an error confirming your order. Please try again.");
-            }
-        }
+    // Prepare order data
+    const orderData = {
+        userId: user.uid,
+        paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment",
+        fullName,
+        address,
+        phoneNumber,
+        items: cart.map(item => ({
+            name: item.name || "Unknown", // Ensure name is defined
+            price: item.Price || 0, // Ensure price is defined
+            quantity: item.quantity || 1 // Ensure quantity is defined
+        })),
+        totalAmount: totalAmount || 0, // Ensure total amount is defined
+        timestamp: new Date()
+    };
+
+    try {
+        // Add the order to Firestore
+        const ordersCollection = collection(db, "orders");
+        const docRef = await addDoc(ordersCollection, orderData);
+        alert(`Order confirmed! Your order ID is: ${docRef.id}`);
+        localStorage.removeItem("cart"); // Clear the cart
+        window.location.href = "customer-products.html"; // Redirect after confirmation
+    } catch (error) {
+        console.error("Error adding order to Firestore: ", error);
+        alert("There was an error confirming your order. Please try again.");
+    }
+}
+
+
+// Add event listener for confirm order button
+document.getElementById("confirmOrderBtn").addEventListener("click", confirmOrder);
+
 
         // Event Listeners
         document.getElementById("paymentMethod").addEventListener("change", showPaymentMethodSection);

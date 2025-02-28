@@ -18,13 +18,11 @@
   const firebaseConfig = {
     apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
     authDomain: "galoya-web-app.firebaseapp.com",
-    databaseURL: "galoya-web-app-default-rtdb.firebaseio.com",
     projectId: "galoya-web-app",
-    storageBucket: "gs://galoya-web-app.firebasestorage.app",
     messagingSenderId: "272214790341",
     appId: "1:272214790341:web:4b7238b47d601a378da0ac",
     measurementId: "G-322L3R40GC"
-  };
+};
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
@@ -33,7 +31,7 @@
   const auth = getAuth(app);
 
 
-  export { db, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut };
+  
   export { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } 
   export { getDatabase, ref, set, child, get} 
 
