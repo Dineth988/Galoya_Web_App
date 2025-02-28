@@ -146,14 +146,15 @@
        
             // Import Firebase modules
             import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-            import { getDatabase, ref, get, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-            import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+            import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+            import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";            
+            import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
             // Firebase configuration
             const firebaseConfig = {
                 apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
                 authDomain: "galoya-web-app.firebaseapp.com",
-                databaseURL: "https://galoya-web-app-default-rtdb.firebaseio.com",
+                databaseURL: "galoya-web-app-default-rtdb.firebaseio.com",
                 projectId: "galoya-web-app",
                 storageBucket: "gs://galoya-web-app.appspot.com",
                 messagingSenderId: "272214790341",
@@ -164,6 +165,8 @@
             // Initialize Firebase
             const app = initializeApp(firebaseConfig);
             const database = getDatabase(app);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
 
             // Get product ID from URL
             const urlParams = new URLSearchParams(window.location.search);
@@ -186,7 +189,7 @@
             // Display product details
             function displayProductDetails(product) {
                 const summaryContent = document.getElementById("summaryContent");
-                summaryContent.innerHTML = `
+                summaryContent.innerHTML = ` 
                     <p><strong>Product:</strong> ${product.ProductTitle}</p>
                     <p><strong>Price:</strong> Rs. ${product.Price}</p>
                     <p><strong>Quantity:</strong> 1</p>
@@ -225,7 +228,7 @@
                 const phoneNumber = paymentMethod === "cod" ? document.getElementById("codPhoneNumber").value : document.getElementById("phoneNumber").value;
 
                 // Display order summary
-                document.getElementById("summaryContent").innerHTML += `
+                document.getElementById("summaryContent").innerHTML += ` 
                     <p><strong>Payment Method:</strong> ${paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment"}</p>
                     <p><strong>Full Name:</strong> ${fullName}</p>
                     <p><strong>Address:</strong> ${address}</p>
@@ -236,7 +239,7 @@
                 document.getElementById("orderSummary").classList.remove("hidden");
             }
 
-            // Confirm the order
+            // Confirm the order and upload to Firestore
             async function confirmOrder() {
                 const paymentMethod = document.getElementById("paymentMethod").value;
                 const fullName = paymentMethod === "cod" ? document.getElementById("codFullName").value.trim() : document.getElementById("fullName").value.trim();
@@ -255,27 +258,33 @@
                 const product = snapshot.val();
 
                 // Prepare order data
-                const orderData = {
-                    productId,
-                    productName: product.ProductTitle,
-                    price: product.Price,
-                    quantity: 1,
-                    paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment",
-                    fullName,
+                const orderData = {       
                     address,
+                    fullName,
+                    items: [
+                        {
+                            name: product.ProductTitle,
+                            price: product.Price,
+                            quantity: 1
+                        }
+                    ],
+                    paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment",
                     phoneNumber,
-                    timestamp: new Date().toISOString()
+                    timestamp: new Date(),
                 };
 
-                // Save the order to Firebase
-                const ordersRef = ref(database, "Orders");
+                // Log the order data for debugging
+                console.log("Order Data:", orderData);
+
+                // Save the order to Firestore
+                const ordersRef = collection(db, "orders");
                 try {
-                    await push(ordersRef, orderData); // Use the imported `push` function
+                    await addDoc(ordersRef, orderData); 
                     alert("Order confirmed successfully!");
-                    window.location.href = "customer-products.html"; // Redirect after confirmation
+                    window.location.href = "customer-products.html"; 
                 } catch (error) {
-                    console.error("Error confirming order:", error);
-                    alert("Failed to confirm order. Please try again.");
+                    console.error("Error adding order to Firestore: ", error);
+                    alert("There was an error confirming your order. Please try again.");
                 }
             }
 

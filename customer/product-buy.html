@@ -106,7 +106,7 @@
             if (snapshot.exists()) {
                 const product = snapshot.val();
                 document.getElementById("productImage").src = product.ImageLinks[0];
-                document.getElementById("productTitle").textContent = product.name;
+                document.getElementById("productTitle").textContent = product.ProductTitle;
                 document.getElementById("productPrice").textContent = `Rs. ${product.Price}`;
             } else {
                 document.getElementById("productDetails").innerHTML = `<p class='text-danger'>Product not found.</p>`;
