@@ -208,10 +208,10 @@
             <input type="text" id="updateTitle" required />
           </div>
 
-          <div class="modal-element">
+          <!-- <div class="modal-element">
             <label>Price (Rs):</label>
             <input type="number" id="updatePrice" required />
-          </div>
+          </div> -->
 
           <div class="modal-element">
             <label>Stock:</label>
@@ -350,7 +350,7 @@
           const product = snapshot.val();
           document.getElementById("productId").value = productId;
           document.getElementById("updateTitle").value = product.ProductTitle;
-          document.getElementById("updatePrice").value = product.Price;
+          //document.getElementById("updatePrice").value = product.Price;
           document.getElementById("updateStock").value = product.Stock || 0;
           document.getElementById("updateImage").value =
             product.ImageLinks?.[0] || "";
@@ -366,7 +366,7 @@
 
         const productId = document.getElementById("productId").value;
         const updatedTitle = document.getElementById("updateTitle").value;
-        const updatedPrice = document.getElementById("updatePrice").value;
+        //const updatedPrice = document.getElementById("updatePrice").value;
         const updatedStock = document.getElementById("updateStock").value;
         const updatedImage = document.getElementById("updateImage").value;
 
@@ -375,7 +375,7 @@
         try {
           await update(productRef, {
             ProductTitle: updatedTitle,
-            Price: updatedPrice,
+            // Price: updatedPrice,
             Stock: updatedStock,
             ImageLinks: [updatedImage], // Assuming ImageLinks is an array
           });
