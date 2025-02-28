@@ -16,7 +16,7 @@
   // Your web app's Firebase configuration
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
   const firebaseConfig = {
-    apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
+    apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
     authDomain: "galoya-web-app.firebaseapp.com",
     projectId: "galoya-web-app",
     messagingSenderId: "272214790341",
@@ -31,7 +31,7 @@
   const auth = getAuth(app);
 
 
-  export { db, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut };
+  
   export { getStorage, ref as sRef, uploadBytesResumable, getDownloadURL } 
   export { getDatabase, ref, set, child, get} 
 

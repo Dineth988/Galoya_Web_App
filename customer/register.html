@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('https://th.bing.com/th/id/R.fe26d3c4a72e919e161b497568bd7696?rik=NXsyTNxZ7Hynag&pid=ImgRaw&r=0') no-repeat center;
+            background-size: cover;
+            margin: 0;
+        }
+        #register-container {
+            width: 350px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            text-align: center;
+        }
+        input, button {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            text-align: center;
+        }
+        button {
+            background: blue;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: darkblue;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="register-container">
+        <h2 style="color: white;">Sign Up</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="text" id="username" placeholder="Username">
+        <input type="text" id="contact" placeholder="Contact Number">
+        <input type="password" id="password" placeholder="Password">
+        <button id="registerBtn">Sign Up</button>
+        <p style="color: white;">Already have an account? <a href="login.html">Login</a></p>
+    </div>
+
+    <script type="module">
+        import { auth, db, createUserWithEmailAndPassword } from "./firebase.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
+        document.getElementById("registerBtn").addEventListener("click", async () => {
+            const email = document.getElementById("email").value;
+            const username = document.getElementById("username").value;
+            const contact = document.getElementById("contact").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "users", user.uid), {
+                    email,
+                    username,
+                    contact,
+                    createdAt: new Date()
+                });
+
+                alert("Registration successful! ✅");
+                window.location.href = "customer-products.html";
+            } catch (error) {
+                alert(error.message);
+                console.error(error);
+            }
+        });
+    </script>
+
+</body>
+</html>
