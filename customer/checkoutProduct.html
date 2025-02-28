@@ -171,31 +171,33 @@
             // Get product ID from URL
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get("id");
+            const quantity = urlParams.get("qty");
+            const totalAmount = urlParams.get("totalAmount");
 
             // Fetch product details
             async function fetchProductDetails() {
-                const productRef = ref(database, `Products/${productId}`);
-                const snapshot = await get(productRef);
+        const productRef = ref(database, `Products/${productId}`);
+        const snapshot = await get(productRef);
 
-                if (snapshot.exists()) {
-                    const product = snapshot.val();
-                    displayProductDetails(product);
-                } else {
-                    alert("Product not found.");
-                    window.location.href = "customer-products.html"; // Redirect if product not found
-                }
-            }
+        if (snapshot.exists()) {
+            const product = snapshot.val();
+            displayProductDetails(product);
+        } else {
+            alert("Product not found.");
+            window.location.href = "customer-products.html"; // Redirect if product not found
+        }
+    }
 
             // Display product details
             function displayProductDetails(product) {
-                const summaryContent = document.getElementById("summaryContent");
-                summaryContent.innerHTML = ` 
-                    <p><strong>Product:</strong> ${product.ProductTitle}</p>
-                    <p><strong>Price:</strong> Rs. ${product.Price}</p>
-                    <p><strong>Quantity:</strong> 1</p>
-                    <p><strong>Total:</strong> Rs. ${product.Price}</p>
-                `;
-            }
+        const summaryContent = document.getElementById("summaryContent");
+        summaryContent.innerHTML = ` 
+            <p><strong>Product:</strong> ${product.ProductTitle}</p>
+            <p><strong>Price:</strong> Rs. ${product.Price}</p>
+            <p><strong>Quantity:</strong> ${quantity}</p>
+            <p><strong>Total:</strong> Rs. ${totalAmount}</p>
+        `;
+    }
 
             // Show payment method section based on selection
             function showPaymentMethodSection() {
@@ -258,18 +260,20 @@
                 const product = snapshot.val();
 
                 // Prepare order data
-                const orderData = {       
+                const orderData = {    
+                     
                     address,
                     fullName,
                     items: [
                         {
                             name: product.ProductTitle,
                             price: product.Price,
-                            quantity: 1
+                            quantity: quantity
                         }
                     ],
                     paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment",
                     phoneNumber,
+                    totalAmount,
                     timestamp: new Date(),
                 };
 

@@ -116,7 +116,7 @@
         totalAmount += item.Price * item.quantity;
         return `
             <div class="cart-item">
-                <h5>${item.ProductTitle}</h5> 
+                <h5>${product.ProductTitle}</h5> 
                 <p>Price: Rs. ${item.Price}</p>
                 <p>Quantity: <input type="number" value="${item.quantity}" min="1" max="${item.Stock}" onchange="updateQuantity(${index}, this.value)"></p>
                 <p>Total: Rs. ${item.Price * item.quantity}</p>

@@ -77,7 +77,7 @@
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-
+    
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
@@ -89,20 +89,20 @@
             appId: "1:272214790341:web:4b7238b47d601a378da0ac",
             measurementId: "G-322L3R40GC"
         };
-
+    
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
-
+    
         // Get product ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get("id");
-
+    
         // Fetch product details
         async function fetchProductDetails() {
             const productRef = ref(database, `Products/${productId}`);
             const snapshot = await get(productRef);
-
+    
             if (snapshot.exists()) {
                 const product = snapshot.val();
                 document.getElementById("productImage").src = product.ImageLinks[0];
@@ -112,7 +112,7 @@
                 document.getElementById("productDetails").innerHTML = `<p class='text-danger'>Product not found.</p>`;
             }
         }
-
+    
         // Quantity control
         const quantityInput = document.getElementById("quantity");
         document.getElementById("decreaseQty").addEventListener("click", () => {
@@ -125,15 +125,20 @@
             let currentQty = parseInt(quantityInput.value);
             quantityInput.value = currentQty + 1;
         });
-
-        // Confirm purchase
+    
+        // Confirm purchase and pass quantity and total amount
         document.getElementById("confirmPurchase").addEventListener("click", () => {
             const quantity = quantityInput.value;
-            window.location.href = `checkoutProduct.html?id=${productId}&qty=${quantity}`;
+            const price = document.getElementById("productPrice").textContent.replace('Rs. ', ''); // Remove Rs. and get the numeric value
+            const totalAmount = parseInt(quantity) * parseInt(price);
+    
+            // Pass productId, quantity, and totalAmount to checkoutProduct.html
+            window.location.href = `checkoutProduct.html?id=${productId}&qty=${quantity}&totalAmount=${totalAmount}`;
         });
-
+    
         // Fetch product details when the page loads
         fetchProductDetails();
     </script>
+    
 </body>
 </html>
