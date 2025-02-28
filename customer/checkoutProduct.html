@@ -271,6 +271,29 @@
             `;
         }
 
+
+        function downloadPDF(orderData) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.text("Order Receipt", 20, 20);
+            doc.text(`Order ID: ${Date.now()}`, 20, 30);
+            doc.text(`Name: ${orderData.fullName}`, 20, 40);
+            doc.text(`Email: ${orderData.email}`, 20, 50);
+            doc.text(`Phone: ${orderData.phoneNumber}`, 20, 60);
+            doc.text(`Payment Method: ${orderData.paymentMethod}`, 20, 70);
+            doc.text(`Total Amount: Rs. ${orderData.totalAmount}`, 20, 80);
+
+            let y = 90;
+            orderData.items.forEach(item => {
+                doc.text(`${item.name} (x${item.quantity}) - Rs. ${item.price * item.quantity}`, 20, y);
+                y += 10;
+            });
+
+            doc.save("Order_Receipt.pdf");
+        }
+
+
         // Confirm order
         async function confirmOrder() {
             const paymentMethod = document.getElementById("paymentMethod").value;
@@ -340,5 +363,6 @@
         document.getElementById("previewOrderBtnCod").addEventListener("click", previewOrder);
         document.getElementById("confirmOrderBtn").addEventListener("click", confirmOrder);
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </body>
 </html>
