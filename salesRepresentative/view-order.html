@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orders</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f8f8f8;
+      }
+
+      h2 {
+        text-align: center;
+      }
+
+      .filter-buttons {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .filter-buttons button {
+        margin: 5px;
+        padding: 10px 15px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .filter-buttons button:hover {
+        background-color: #0056b3;
+      }
+
+      .orders-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+      }
+
+      .order-card {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: 0.3s;
+      }
+
+      .order-card:hover {
+        transform: scale(1.02);
+      }
+
+      .order-card h3 {
+        margin: 0;
+        color: #333;
+      }
+
+      .order-card p {
+        margin: 5px 0;
+        font-size: 14px;
+        color: #555;
+      }
+
+      .order-card strong {
+        color: #222;
+      }
+
+      .divider {
+        border-top: 1px solid #ddd;
+        margin: 10px 0;
+      }
+
+      .completed {
+        background-color: #28a745; /* Green color */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      .remove {
+        background-color: #dc3545; /* Red color */
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+
+      .highlight {
+        border: 2px solid #28a745;
+        background-color: #e6f9e6;
+      }
+
+      .notification {
+        background-color: #28a745;
+        color: white;
+        padding: 10px;
+        margin-top: 20px;
+        text-align: center;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>View Order</h2>
+    <div class="filter-buttons" id="filterButtons"></div>
+    <div class="orders-container" id="orders"></div>
+    <div class="notification" id="notification" style="display: none"></div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+        doc,
+        updateDoc,
+      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+        authDomain: "galoya-web-app.firebaseapp.com",
+        projectId: "galoya-web-app",
+        storageBucket: "gs://galoya-web-app.appspot.com",
+        messagingSenderId: "272214790341",
+        appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+        measurementId: "G-322L3R40GC",
+      };
+
+      // Initialize Firebase & Firestore
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      const ordersDiv = document.getElementById("orders");
+      const filterButtonsDiv = document.getElementById("filterButtons");
+
+      let ordersData = []; // Store all orders
+
+      async function fetchOrders() {
+        try {
+          const querySnapshot = await getDocs(collection(db, "orders"));
+          ordersData = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          renderOrders(ordersData);
+          generateFilterButtons(ordersData);
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        }
+      }
+
+      function renderOrders(orders) {
+        ordersDiv.innerHTML = "";
+        orders.forEach((order) => {
+          const orderHTML = `
+                    <div class="order-card" id="order-${order.id}">
+                        <h3>Order ID: ${order.id}</h3>
+                        <p><strong>Name:</strong> ${order.fullName}</p>
+                        <p><strong>Address:</strong> ${order.address}</p>
+                        <p><strong>City:</strong> ${order.city}</p>
+                        <p><strong>Phone:</strong> ${order.phoneNumber}</p>
+                        <p><strong>Payment:</strong> ${order.paymentMethod}</p>
+                        <p><strong>Total:</strong> $${order.totalAmount}</p>
+                        <p><strong>Items:</strong> ${
+                          Array.isArray(order.items)
+                            ? order.items.join(", ")
+                            : order.items
+                        }</p>
+                        <p><strong>Timestamp:</strong> ${
+                          order.timestamp
+                            ? new Date(
+                                order.timestamp.seconds * 1000
+                              ).toLocaleString()
+                            : "N/A"
+                        }</p>
+                        <div class="divider"></div>
+                        <button class="completed" onclick="markCompleted('${
+                          order.id
+                        }')">Completed</button>
+                        <button class="remove" onclick="removeOrder('${
+                          order.id
+                        }')">Remove</button>
+                    </div>
+                `;
+          ordersDiv.innerHTML += orderHTML;
+        });
+      }
+
+      function generateFilterButtons(orders) {
+        const locations = [...new Set(orders.map((order) => order.city))]; // Get unique locations
+        filterButtonsDiv.innerHTML = `<button onclick="filterOrders('all')">Show All</button>`;
+
+        locations.forEach((location) => {
+          filterButtonsDiv.innerHTML += `<button onclick="filterOrders('${location}')">${location}</button>`;
+        });
+      }
+
+      window.filterOrders = (location) => {
+        if (location === "all") {
+          renderOrders(ordersData);
+        } else {
+          const filteredOrders = ordersData.filter(
+            (order) => order.city === location
+          );
+          renderOrders(filteredOrders);
+        }
+      };
+
+      window.markCompleted = async (orderId) => {
+        const orderCard = document.getElementById(`order-${orderId}`);
+        orderCard.classList.add("highlight");
+
+        // Show notification
+        const notification = document.getElementById("notification");
+        notification.innerText = `Order ID: ${orderId} has been completed.`;
+        notification.style.display = "block";
+
+        // Update the order's status to "completed" in Firestore
+        const orderRef = doc(db, "orders", orderId); // Get reference to the specific order
+        await updateDoc(orderRef, {
+          status: "completed", // Update the status field to "completed"
+        });
+
+        setTimeout(() => {
+          notification.style.display = "none";
+        }, 3000);
+      };
+
+      window.removeOrder = (orderId) => {
+        const orderCard = document.getElementById(`order-${orderId}`);
+        orderCard.remove();
+      };
+
+      // Fetch and display orders
+      fetchOrders();
+    </script>
+  </body>
+</html>
