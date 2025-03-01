@@ -11,13 +11,27 @@
             margin: 10px;
             border-radius: 5px;
             display: inline-block;
-            width: 250px;
+            width: 280px;
+            height: 380px;
             text-align: center;
         }
         .offer-card img {
             width: 100%;
-            height: auto;
+            height: 180px;
             border-radius: 5px;
+        }
+        .buyBtn{
+            background-color: #28a745;
+            border: none;
+            width: 100px;
+            height: 30px;
+            border-radius: 10px;
+            color: #f8f7f7;
+            font-weight: bold;
+
+        }
+        .buyBtn:hover{
+            background-color: #218838;
         }
     </style>
     <script type="module">
@@ -50,8 +64,7 @@
 
                 for (const doc of offersSnapshot.docs) {
                     let offerData = doc.data();
-                    let productId = offerData.products[0];  // Assuming only one product per offer
-                    let categoryId = offerData.categories[0];
+                    let categoryId = offerData.categories[0]; // Assuming one category per offer
 
                     offers.push({
                         id: doc.id,
@@ -59,24 +72,27 @@
                         discount: offerData.discount,
                         validFrom: offerData.validFrom,
                         validTo: offerData.validTo,
-                        productId,
                         categoryId
                     });
                 }
 
                 if (offers.length > 0) {
-                    let productDetails = await fetchProductDetails(offers.map(o => o.productId));
                     let categoryDetails = await fetchCategoryDetails(offers.map(o => o.categoryId));
+                    let categoryProducts = await fetchProductsByCategories(offers.map(o => o.categoryId));
 
-                    // Map products and categories to offers
-                    offers = offers.map(offer => ({
-                        ...offer,
-                        productName: productDetails[offer.productId]?.name || "Unknown Product",
-                        originalPrice: productDetails[offer.productId]?.price || "N/A",
-                        productImage: productDetails[offer.productId]?.image || "default.jpg",
-                        category: categoryDetails[offer.categoryId] || "Unknown Category",
-                        discountPrice: calculateDiscountedPrice(productDetails[offer.productId]?.price, offer.discount)
-                    }));
+                    // Map products to offers
+                    offers = offers.flatMap(offer => {
+                        const productsInCategory = categoryProducts[offer.categoryId] || [];
+                        return productsInCategory.map(product => ({
+                            ...offer,
+                            productId: product.id,
+                            productName: product.name,
+                            originalPrice: product.price,
+                            productImage: product.image,
+                            category: categoryDetails[offer.categoryId] || "Unknown Category",
+                            discountPrice: calculateDiscountedPrice(product.price, offer.discount)
+                        }));
+                    });
 
                     displayOffers(offers);
                 }
@@ -84,7 +100,6 @@
                 console.error("Error fetching offers:", error);
             }
         }
-
         // Fetch Product Details
         async function fetchProductDetails(productIds) {
             let products = {};
@@ -101,6 +116,58 @@
             }
             return products;
         }
+
+        async function fetchProductsByCategories(categoryIds) {
+            let categoryProducts = {};
+
+            for (const categoryId of categoryIds) {
+                // Fetch category name using categoryId
+                const categorySnapshot = await get(ref(realtimeDb, `Categories/${categoryId}`));
+                if (categorySnapshot.exists()) {
+                    const categoryData = categorySnapshot.val();
+                    const categoryName = categoryData.name; // Get category name
+                    
+                    if (!categoryName) {
+                        console.warn(`Category name not found for ID: ${categoryId}`);
+                        continue;
+                    }
+
+                    // Fetch all products
+                    const productsSnapshot = await get(ref(realtimeDb, `Products`));
+                    if (productsSnapshot.exists()) {
+                        let products = [];
+                        const allProducts = productsSnapshot.val();
+
+                        for (const productId in allProducts) {
+                            let productData = allProducts[productId];
+                            
+                            // FIX: Ensure it checks `Category` (not `CategoryName`)
+                            if (productData.Category && productData.Category === categoryName) {
+                                products.push({
+                                    id: productId,
+                                    name: productData.ProductTitle || "Unknown Product",
+                                    price: parseFloat(productData.Price || 0),
+                                    image: productData.ImageLinks ? productData.ImageLinks[0] : "default.jpg"
+                                });
+                            }
+                        }
+
+                        if (products.length === 0) {
+                            console.warn(`No products found under category: ${categoryName}`);
+                        }
+
+                        categoryProducts[categoryId] = products;
+                    } else {
+                        console.warn(`Products collection is empty or not found.`);
+                    }
+                } else {
+                    console.warn(`Category ID: ${categoryId} not found in database.`);
+                }
+            }
+
+            return categoryProducts;
+        }
+
 
         // Fetch Category Details
         async function fetchCategoryDetails(categoryIds) {
@@ -130,8 +197,9 @@
                         <img src="${offer.productImage}" alt="${offer.productName}">
                         <h3>${offer.productName}</h3>
                         <p>Category: ${offer.category}</p>
-                        <p>Original Price: <s>$${offer.originalPrice}</s></p>
-                        <p>Discounted Price: <strong>$${offer.discountPrice}</strong> (${offer.discount}% off)</p>
+                        <p>Original Price: <s>Rs ${offer.originalPrice}</s></p>
+                        <p>Discounted Price: <strong>Rs ${offer.discountPrice}</strong> (${offer.discount}% off)</p>
+                        <button class="buyBtn">Buy Now</button>
                     </div>
                 `;
                 offersContainer.innerHTML += offerCard;

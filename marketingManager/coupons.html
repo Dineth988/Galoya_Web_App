@@ -189,6 +189,8 @@
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-analytics.js";
         import { getFirestore } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
         import { addDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+        import { doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
         
         const firebaseConfig = {
             apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
@@ -218,11 +220,13 @@
                 categoryDropdown.innerHTML = "<option value=''>Select a category</option>";
 
                 if (categories) {
-                    Object.entries(categories).forEach(([categoryId, categoryName]) => {
-                        const option = document.createElement("option");
-                        option.value = categoryId; // Store the ID as value
-                        option.textContent = categoryName; // Display the category name
-                        categoryDropdown.appendChild(option);
+                    Object.entries(categories).forEach(([categoryId, categoryData]) => {
+                        if (categoryData.name) {  // Extract the name property
+                            const option = document.createElement("option");
+                            option.value = categoryId; // Store the ID as value
+                            option.textContent = categoryData.name; // Display the category name
+                            categoryDropdown.appendChild(option);
+                        }
                     });
                 } else {
                     categoryDropdown.innerHTML = "<option value=''>No categories found</option>";
@@ -232,6 +236,7 @@
                 document.getElementById("couponCategory").innerHTML = "<option value=''>Error loading categories</option>";
             }
         }
+
 
 
 
@@ -285,6 +290,7 @@
             }
         }
 
+
         // Display Coupon in List
         async function getCategoryName(categoryId) {
             try {
@@ -292,12 +298,13 @@
                 if (!response.ok) throw new Error("Failed to fetch categories");
 
                 const categories = await response.json();
-                return categories[categoryId] || "Unknown Category"; // Return category name or default
+                return categories[categoryId]?.name || "Unknown Category"; // Extract 'name' property
             } catch (error) {
                 console.error("Error fetching category name:", error);
                 return "Unknown Category";
             }
         }
+
 
         async function displayCoupon(id, code, discount, categoryId) {
             const categoryName = await getCategoryName(categoryId); // Fetch category name
@@ -316,15 +323,26 @@
         async function removeCoupon(event) {
             if (event.target.classList.contains("delete-btn")) {
                 const id = event.target.getAttribute("data-id");
+
+                if (!id) {
+                    console.error("Error: Missing coupon ID.");
+                    return;
+                }
+
                 try {
-                    await deleteDoc(doc(db, "coupons", id));
-                    event.target.parentElement.remove();
+                    await deleteDoc(doc(db, "coupons", id)); // Delete from Firestore
+
+                    // Find and remove the closest list item or card containing the button
+                    const couponElement = event.target.closest(".coupon-item"); // Adjust selector if needed
+                    if (couponElement) couponElement.remove();
+
                     console.log(`Deleted coupon: ${id}`);
                 } catch (error) {
                     console.error("Error deleting coupon:", error);
                 }
             }
         }
+
 
         // Add Event Listeners
         document.getElementById("addCouponBtn").addEventListener("click", addCoupon);

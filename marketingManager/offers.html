@@ -58,33 +58,36 @@
 
            
             async function loadCategories() {
-            try {
-                const categoryDropdown = document.getElementById("categories");
-                if (!categoryDropdown) {
-                    console.error("Element #categories not found.");
-                    return;
+                try {
+                    const categoryDropdown = document.getElementById("categories");
+                    if (!categoryDropdown) {
+                        console.error("Element #categories not found.");
+                        return;
+                    }
+
+                    categoryDropdown.innerHTML = "<option value=''>Select a category</option>";
+
+                    const categoriesRef = ref(database, "Categories"); // Use correct reference
+                    const snapshot = await get(categoriesRef); // Fetch data
+
+                    if (snapshot.exists()) {
+                        const categories = snapshot.val();
+                        Object.entries(categories).forEach(([categoryId, categoryData]) => {
+                            if (categoryData.name) { // Ensure `name` property exists
+                                const option = document.createElement("option");
+                                option.value = categoryId; // Store ID as value
+                                option.textContent = categoryData.name; // Display category name
+                                categoryDropdown.appendChild(option);
+                            }
+                        });
+                    } else {
+                        categoryDropdown.innerHTML = "<option value=''>No categories found</option>";
+                    }
+                } catch (error) {
+                    console.error("Error loading categories:", error);
                 }
-
-                categoryDropdown.innerHTML = "<option value=''>Select a category</option>";
-
-                const categoriesRef = ref(database, "Categories"); // Firebase reference
-                const snapshot = await get(categoriesRef); // Fetch data
-
-                if (snapshot.exists()) {
-                    const categories = snapshot.val();
-                    Object.entries(categories).forEach(([categoryId, categoryName]) => {
-                        const option = document.createElement("option");
-                        option.value = categoryId; // Store ID as value
-                        option.textContent = categoryName; // Display category name
-                        categoryDropdown.appendChild(option);
-                    });
-                } else {
-                    categoryDropdown.innerHTML = "<option value=''>No categories found</option>";
-                }
-            } catch (error) {
-                console.error("Error loading categories:", error);
             }
-        }
+
 
 
             // ✅ Load Products from Firebase Realtime Database

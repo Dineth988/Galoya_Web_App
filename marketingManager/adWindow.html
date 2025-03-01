@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Management</title>
+
+    <style>
+        /* Modal Styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; /* Initially hidden */
+            align-items: center;
+            justify-content: center;
+        }
+    
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            text-align: center;
+        }
+    
+        /* Input Fields */
+        .input-field {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: block;
+        }
+    
+        /* Image Preview */
+        .image-preview {
+            width: 100%;
+            height: 200px;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f4f4f4;
+            margin-bottom: 10px;
+        }
+    
+        .hidden {
+            display: none;
+        }
+    
+        /* Buttons */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+    
+        .btn-save {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    
+        .btn-cancel {
+            background: #999;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    
+        .btn-save:hover {
+            background: #0056b3;
+        }
+    
+        .btn-cancel:hover {
+            background: #777;
+        }
+
+        /* Ad Display Section */
+        .ad-container {
+            width: 80%;
+            margin: auto;
+            text-align: center;
+        }
+
+        .ad-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .ad-item img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ad-container">
+        <h2>Current Ads</h2>
+        <button onclick="openAdModal()">Add New Ad</button>
+        <div id="adList">
+            <p>No ads available.</p>
+        </div>
+    </div>
+
+    <div id="addAdModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Ad</h2>
+    
+            <!-- Ad Title -->
+            <label for="adTitle">Ad Title</label>
+            <input type="text" id="adTitle" class="input-field" placeholder="Enter ad title">
+    
+            <!-- Ad Description -->
+            <label for="adDescription">Description</label>
+            <textarea id="adDescription" class="input-field" placeholder="Enter description"></textarea>
+    
+            <!-- Image Upload -->
+            <label for="adImageInput">Upload Image</label>
+            <input type="file" id="adImageInput" class="input-field" accept="image/*">
+    
+            <!-- Image Preview -->
+            <div class="image-preview">
+                <img id="adImagePreview" class="hidden">
+                <span id="noImageText">No image selected</span>
+            </div>
+    
+            <!-- Buttons -->
+            <div class="button-container">
+                <button onclick="saveAd()" class="btn-save">Save</button>
+                <button onclick="closeAdModal()" class="btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openAdModal() {
+            document.getElementById("addAdModal").style.display = "flex";
+        }
+    
+        function closeAdModal() {
+            document.getElementById("addAdModal").style.display = "none";
+        }
+    </script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-storage.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            projectId: "galoya-web-app",
+            storageBucket: "galoya-web-app.appspot.com",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC"
+        };
+    
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+    
+        async function saveAd() {
+            const title = document.getElementById("adTitle").value;
+            const description = document.getElementById("adDescription").value;
+            const imageInput = document.getElementById("adImageInput");
+            const file = imageInput.files[0];
+    
+            if (!title || !description) {
+                alert("Please enter a title and description.");
+                return;
+            }
+    
+            let imageUrl = "";
+    
+            if (file) {
+                try {
+                    // Upload image to Firebase Storage
+                    const storageRef = ref(storage, `ads/${file.name}`);
+                    const uploadTask = await uploadBytesResumable(storageRef, file);
+                    imageUrl = await getDownloadURL(uploadTask.ref);
+                } catch (error) {
+                    console.error("Error uploading image:", error);
+                    alert("Image upload failed. Try again.");
+                    return;
+                }
+            }
+    
+            try {
+                // Save ad data to Firestore
+                await addDoc(collection(db, "ads"), {
+                    title,
+                    description,
+                    imageUrl
+                });
+    
+                alert("Ad saved successfully!");
+                displayAds();
+                closeAdModal();
+            } catch (error) {
+                console.error("Error saving ad:", error);
+            }
+        }
+    
+        async function displayAds() {
+            const adList = document.getElementById("adList");
+            adList.innerHTML = "";
+    
+            try {
+                const querySnapshot = await getDocs(collection(db, "ads"));
+    
+                if (querySnapshot.empty) {
+                    adList.innerHTML = `<p>No ads available.</p>`;
+                    return;
+                }
+    
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const adCard = document.createElement("div");
+                    adCard.classList.add("ad-card");
+    
+                    adCard.innerHTML = `
+                        ${data.imageUrl ? `<img src="${data.imageUrl}" alt="Ad Image" class="ad-image">` : ""}
+                        <h3>${data.title}</h3>
+                        <p>${data.description}</p>
+                    `;
+    
+                    adList.appendChild(adCard);
+                });
+            } catch (error) {
+                console.error("Error fetching ads:", error);
+            }
+        }
+    
+        // Expose saveAd globally
+        window.saveAd = saveAd;
+    
+        // Fetch ads on page load
+        window.onload = displayAds;
+    </script>
+    
+
+</body>
+</html>
