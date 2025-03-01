@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers</title>
+    <style>
+        .offer-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            width: 250px;
+            text-align: center;
+        }
+        .offer-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+      
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            databaseURL: "https://galoya-web-app-default-rtdb.firebaseio.com/",
+            projectId: "galoya-web-app",
+            storageBucket: "galoya-web-app.appspot.com",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const realtimeDb = getDatabase(app);
+
+        // Fetch Offers
+        async function fetchOffers() {
+            try {
+                const offersSnapshot = await getDocs(collection(db, "offers"));
+                let offers = [];
+
+                for (const doc of offersSnapshot.docs) {
+                    let offerData = doc.data();
+                    let productId = offerData.products[0];  // Assuming only one product per offer
+                    let categoryId = offerData.categories[0];
+
+                    offers.push({
+                        id: doc.id,
+                        title: offerData.title,
+                        discount: offerData.discount,
+                        validFrom: offerData.validFrom,
+                        validTo: offerData.validTo,
+                        productId,
+                        categoryId
+                    });
+                }
+
+                if (offers.length > 0) {
+                    let productDetails = await fetchProductDetails(offers.map(o => o.productId));
+                    let categoryDetails = await fetchCategoryDetails(offers.map(o => o.categoryId));
+
+                    // Map products and categories to offers
+                    offers = offers.map(offer => ({
+                        ...offer,
+                        productName: productDetails[offer.productId]?.name || "Unknown Product",
+                        originalPrice: productDetails[offer.productId]?.price || "N/A",
+                        productImage: productDetails[offer.productId]?.image || "default.jpg",
+                        category: categoryDetails[offer.categoryId] || "Unknown Category",
+                        discountPrice: calculateDiscountedPrice(productDetails[offer.productId]?.price, offer.discount)
+                    }));
+
+                    displayOffers(offers);
+                }
+            } catch (error) {
+                console.error("Error fetching offers:", error);
+            }
+        }
+
+        // Fetch Product Details
+        async function fetchProductDetails(productIds) {
+            let products = {};
+            for (const productId of productIds) {
+                const productSnapshot = await get(ref(realtimeDb, `Products/${productId}`));
+                if (productSnapshot.exists()) {
+                    let productData = productSnapshot.val();
+                    products[productId] = {
+                        name: productData.ProductTitle || "Unknown Product",
+                        price: parseFloat(productData.Price || 0),
+                        image: productData.ImageLinks ? productData.ImageLinks[0] : "default.jpg"
+                    };
+                }
+            }
+            return products;
+        }
+
+        // Fetch Category Details
+        async function fetchCategoryDetails(categoryIds) {
+            let categories = {};
+            for (const categoryId of categoryIds) {
+                const categorySnapshot = await get(ref(realtimeDb, `Categories/${categoryId}`));
+                if (categorySnapshot.exists()) {
+                    categories[categoryId] = categorySnapshot.val().name;
+                }
+            }
+            return categories;
+        }
+
+        // Calculate Discounted Price
+        function calculateDiscountedPrice(originalPrice, discount) {
+            return originalPrice ? (originalPrice - (originalPrice * discount / 100)).toFixed(2) : "N/A";
+        }
+
+        // Display Offers
+        function displayOffers(offers) {
+            const offersContainer = document.getElementById("offersList");
+            offersContainer.innerHTML = ""; // Clear previous content
+
+            offers.forEach(offer => {
+                const offerCard = `
+                    <div class="offer-card">
+                        <img src="${offer.productImage}" alt="${offer.productName}">
+                        <h3>${offer.productName}</h3>
+                        <p>Category: ${offer.category}</p>
+                        <p>Original Price: <s>$${offer.originalPrice}</s></p>
+                        <p>Discounted Price: <strong>$${offer.discountPrice}</strong> (${offer.discount}% off)</p>
+                    </div>
+                `;
+                offersContainer.innerHTML += offerCard;
+            });
+        }
+
+        // Fetch offers on page load
+        document.addEventListener("DOMContentLoaded", fetchOffers);
+    </script>
+</head>
+<body>
+    <div id="offersList">
+        <!-- Offers will be loaded here dynamically -->
+    </div>
+</body>
+</html>
