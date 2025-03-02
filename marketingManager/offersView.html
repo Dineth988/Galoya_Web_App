@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers</title>
+    <style>
+        .offer-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 5px;
+            display: inline-block;
+            width: 280px;
+            height: 380px;
+            text-align: center;
+        }
+        .offer-card img {
+            width: 100%;
+            height: 180px;
+            border-radius: 5px;
+        }
+        .buyBtn{
+            background-color: #28a745;
+            border: none;
+            width: 100px;
+            height: 30px;
+            border-radius: 10px;
+            color: #f8f7f7;
+            font-weight: bold;
+
+        }
+        .buyBtn:hover{
+            background-color: #218838;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+      
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            databaseURL: "https://galoya-web-app-default-rtdb.firebaseio.com/",
+            projectId: "galoya-web-app",
+            storageBucket: "galoya-web-app.appspot.com",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const realtimeDb = getDatabase(app);
+
+        // Fetch Offers
+        async function fetchOffers() {
+            try {
+                const offersSnapshot = await getDocs(collection(db, "offers"));
+                let offers = [];
+
+                for (const doc of offersSnapshot.docs) {
+                    let offerData = doc.data();
+                    let categoryId = offerData.categories[0]; // Assuming one category per offer
+
+                    offers.push({
+                        id: doc.id,
+                        title: offerData.title,
+                        discount: offerData.discount,
+                        validFrom: offerData.validFrom,
+                        validTo: offerData.validTo,
+                        categoryId
+                    });
+                }
+
+                if (offers.length > 0) {
+                    let categoryDetails = await fetchCategoryDetails(offers.map(o => o.categoryId));
+                    let categoryProducts = await fetchProductsByCategories(offers.map(o => o.categoryId));
+
+                    // Map products to offers
+                    offers = offers.flatMap(offer => {
+                        const productsInCategory = categoryProducts[offer.categoryId] || [];
+                        return productsInCategory.map(product => ({
+                            ...offer,
+                            productId: product.id,
+                            productName: product.name,
+                            originalPrice: product.price,
+                            productImage: product.image,
+                            category: categoryDetails[offer.categoryId] || "Unknown Category",
+                            discountPrice: calculateDiscountedPrice(product.price, offer.discount)
+                        }));
+                    });
+
+                    displayOffers(offers);
+                }
+            } catch (error) {
+                console.error("Error fetching offers:", error);
+            }
+        }
+        // Fetch Product Details
+        async function fetchProductDetails(productIds) {
+            let products = {};
+            for (const productId of productIds) {
+                const productSnapshot = await get(ref(realtimeDb, `Products/${productId}`));
+                if (productSnapshot.exists()) {
+                    let productData = productSnapshot.val();
+                    products[productId] = {
+                        name: productData.ProductTitle || "Unknown Product",
+                        price: parseFloat(productData.Price || 0),
+                        image: productData.ImageLinks ? productData.ImageLinks[0] : "default.jpg"
+                    };
+                }
+            }
+            return products;
+        }
+
+        async function fetchProductsByCategories(categoryIds) {
+            let categoryProducts = {};
+
+            for (const categoryId of categoryIds) {
+                // Fetch category name using categoryId
+                const categorySnapshot = await get(ref(realtimeDb, `Categories/${categoryId}`));
+                if (categorySnapshot.exists()) {
+                    const categoryData = categorySnapshot.val();
+                    const categoryName = categoryData.name; // Get category name
+                    
+                    if (!categoryName) {
+                        console.warn(`Category name not found for ID: ${categoryId}`);
+                        continue;
+                    }
+
+                    // Fetch all products
+                    const productsSnapshot = await get(ref(realtimeDb, `Products`));
+                    if (productsSnapshot.exists()) {
+                        let products = [];
+                        const allProducts = productsSnapshot.val();
+
+                        for (const productId in allProducts) {
+                            let productData = allProducts[productId];
+                            
+                            // FIX: Ensure it checks `Category` (not `CategoryName`)
+                            if (productData.Category && productData.Category === categoryName) {
+                                products.push({
+                                    id: productId,
+                                    name: productData.ProductTitle || "Unknown Product",
+                                    price: parseFloat(productData.Price || 0),
+                                    image: productData.ImageLinks ? productData.ImageLinks[0] : "default.jpg"
+                                });
+                            }
+                        }
+
+                        if (products.length === 0) {
+                            console.warn(`No products found under category: ${categoryName}`);
+                        }
+
+                        categoryProducts[categoryId] = products;
+                    } else {
+                        console.warn(`Products collection is empty or not found.`);
+                    }
+                } else {
+                    console.warn(`Category ID: ${categoryId} not found in database.`);
+                }
+            }
+
+            return categoryProducts;
+        }
+
+
+        // Fetch Category Details
+        async function fetchCategoryDetails(categoryIds) {
+            let categories = {};
+            for (const categoryId of categoryIds) {
+                const categorySnapshot = await get(ref(realtimeDb, `Categories/${categoryId}`));
+                if (categorySnapshot.exists()) {
+                    categories[categoryId] = categorySnapshot.val().name;
+                }
+            }
+            return categories;
+        }
+
+        // Calculate Discounted Price
+        function calculateDiscountedPrice(originalPrice, discount) {
+            return originalPrice ? (originalPrice - (originalPrice * discount / 100)).toFixed(2) : "N/A";
+        }
+
+        // Display Offers
+        function displayOffers(offers) {
+            const offersContainer = document.getElementById("offersList");
+            offersContainer.innerHTML = ""; // Clear previous content
+
+            offers.forEach(offer => {
+                const offerCard = `
+                    <div class="offer-card">
+                        <img src="${offer.productImage}" alt="${offer.productName}">
+                        <h3>${offer.productName}</h3>
+                        <p>Category: ${offer.category}</p>
+                        <p>Original Price: <s>Rs ${offer.originalPrice}</s></p>
+                        <p>Discounted Price: <strong>Rs ${offer.discountPrice}</strong> (${offer.discount}% off)</p>
+                        <button class="buyBtn">Buy Now</button>
+                    </div>
+                `;
+                offersContainer.innerHTML += offerCard;
+            });
+        }
+
+        // Fetch offers on page load
+        document.addEventListener("DOMContentLoaded", fetchOffers);
+    </script>
+</head>
+<body>
+    <div id="offersList">
+        <!-- Offers will be loaded here dynamically -->
+    </div>
+</body>
+</html>

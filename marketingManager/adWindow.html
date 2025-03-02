@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Management</title>
+
+    <style>
+        /* Modal Styling */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; /* Initially hidden */
+            align-items: center;
+            justify-content: center;
+        }
+    
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            text-align: center;
+        }
+    
+        /* Input Fields */
+        .input-field {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: block;
+        }
+    
+        /* Image Preview */
+        #adImagePreview {
+            max-width: 100%;
+            max-height: 180px; /* 20px less than container for padding */
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .image-preview {
+            overflow: hidden; /* Prevent image overflow */
+            padding: 10px; /* Add some spacing */
+        }
+            
+        .hidden {
+            display: none;
+        }
+    
+        /* Buttons */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+    
+        .btn-save {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    
+        .btn-cancel {
+            background: #999;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    
+        .btn-save:hover {
+            background: #0056b3;
+        }
+    
+        .btn-cancel:hover {
+            background: #777;
+        }
+
+        /* Ad Display Section */
+        .ad-container {
+        width: 95%; /* Increased from 90% */
+        max-width: 1400px; /* Add maximum width constraint */
+        }
+
+    .ad-item {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+        transition: transform 0.2s;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ad-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .ad-image-container {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+        border-bottom: 1px solid #eee;
+    }
+
+    .ad-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .ad-item:hover img {
+        transform: scale(1.05);
+    }
+
+    .ad-content {
+        padding: 15px;
+        flex-grow: 1;
+    }
+
+    .ad-item h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-size: 1.2em;
+    }
+
+    .ad-item p {
+        color: #666;
+        font-size: 0.9em;
+        line-height: 1.4;
+        margin: 0;
+        max-height: 60px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Add New Ad Button */
+    .ad-container > button {
+        grid-column: 1 / -1;
+        max-width: 200px;
+        margin: 0 auto;
+        padding: 12px 25px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background 0.3s;
+    }
+
+    .ad-container > button:hover {
+        background: #0056b3;
+    }
+    .remove-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.9;
+        transition: opacity 0.2s;
+    }
+
+    .remove-btn:hover {
+        opacity: 1;
+        background: #c82333;
+    }
+
+    .ad-image-container {
+        position: relative; /* Add this for absolute positioning of remove button */
+    }
+    </style>
+</head>
+<body>
+
+    <div class="ad-container">
+        <h2>Current Ads</h2>
+        <button onclick="openAdModal()">Add New Ad</button>
+        <div id="adList">
+            <p>No ads available.</p>
+        </div>
+    </div>
+
+    <div id="addAdModal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Ad</h2>
+    
+            <!-- Ad Title -->
+            <label for="adTitle">Ad Title</label>
+            <input type="text" id="adTitle" class="input-field" placeholder="Enter ad title">
+    
+            <!-- Ad Description -->
+            <label for="adDescription">Description</label>
+            <textarea id="adDescription" class="input-field" placeholder="Enter description"></textarea>
+    
+            <!-- Image Upload -->
+            <label for="adImageInput">Upload Image</label>
+            <input type="file" id="adImageInput" class="input-field" accept="image/*">
+    
+           
+            <div class="image-preview">
+                <img id="adImagePreview" class="hidden" style="max-width: 100%; max-height: 180px;">
+                <span id="noImageText">No image selected</span>
+            </div>
+    
+            <!-- Buttons -->
+            <div class="button-container">
+                <button onclick="saveAd()" class="btn-save">Save</button>
+                <button onclick="closeAdModal()" class="btn-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function openAdModal() {
+            document.getElementById("addAdModal").style.display = "flex";
+        }
+    
+        function closeAdModal() {
+            document.getElementById("addAdModal").style.display = "none";
+        }
+    </script>
+    
+    <script type="module">
+       // Replace all import links with:
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+        import { deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { deleteObject, ref as storageRef } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            projectId: "galoya-web-app",
+            storageBucket: "gs://galoya-web-app.firebasestorage.app",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        async function saveAd() {
+            const title = document.getElementById("adTitle").value;
+            const description = document.getElementById("adDescription").value;
+            const imageInput = document.getElementById("adImageInput");
+
+            if (!title || !description) {
+                alert("Please enter a title and description.");
+                return;
+            }
+
+            if (!imageInput.files.length) {
+                alert("Please select an image.");
+                return;
+            }
+
+            const file = imageInput.files[0]; // ✅ Define file here
+            const metadata = { contentType: file.type }; // ✅ Move metadata inside function
+
+            const storageRef = ref(storage, `ads/${file.name}`);
+            const uploadTask = uploadBytesResumable(storageRef, file, metadata);
+
+            uploadTask.on(
+                "state_changed",
+                (snapshot) => {
+                    // Optional: Track progress
+                },
+                (error) => {
+                    console.error("Error uploading image:", error);
+                },
+                async () => {
+                    const imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+
+                    try {
+                        await addDoc(collection(db, "ads"), {
+                            title,
+                            description,
+                            imageUrl,
+                        });
+                        alert("Ad saved successfully!");
+                        displayAds();
+                        closeAdModal();
+                    } catch (error) {
+                        console.error("Error saving ad:", error);
+                    }
+                }
+            );
+        }
+
+            async function deleteAd(docId, imageUrl) {
+            if (!confirm("Are you sure you want to delete this ad?")) return;
+
+            try {
+                // Delete Firestore document
+                await deleteDoc(doc(db, "ads", docId));
+                
+                // Delete image from Storage
+                if (imageUrl) {
+                    const imageRef = storageRef(storage, imageUrl);
+                    await deleteObject(imageRef);
+                }
+
+                // Refresh ads list
+                displayAds();
+            } catch (error) {
+                console.error("Error deleting ad:", error);
+                alert("Error deleting ad: " + error.message);
+            }
+        }
+
+        async function displayAds() {
+        const adList = document.getElementById("adList");
+        adList.innerHTML = "";
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "ads"));
+
+            if (querySnapshot.empty) {
+                adList.innerHTML = `<p>No ads available.</p>`;
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const adCard = document.createElement("div");
+                adCard.classList.add("ad-item");
+                adCard.dataset.docId = doc.id; // Store document ID
+
+                adCard.innerHTML = `
+                    <div class="ad-image-container">
+                        ${data.imageUrl ? 
+                            `<img src="${data.imageUrl}" alt="${data.title}" loading="lazy">` : 
+                            `<div class="no-image">No Image</div>`
+                        }
+                        <button class="remove-btn">×</button>
+                    </div>
+                    <div class="ad-content">
+                        <h3>${data.title}</h3>
+                        <p>${data.description}</p>
+                    </div>
+                `;
+
+                // Add delete functionality
+                const deleteButton = adCard.querySelector('.remove-btn');
+                deleteButton.addEventListener('click', () => {
+                    const imagePath = data.imageUrl?.split('?alt=media')[0]?.split('/o/')[1];
+                    deleteAd(doc.id, decodeURIComponent(imagePath));
+                });
+
+                adList.appendChild(adCard);
+            });
+        } catch (error) {
+            console.error("Error fetching ads:", error);
+        }
+    }
+
+        document.getElementById('adImageInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('adImagePreview');
+        const noImageText = document.getElementById('noImageText');
+
+        // Reset preview
+        preview.classList.add('hidden');
+        noImageText.classList.remove('hidden');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+                noImageText.classList.add('hidden');
+                
+                // Ensure image fits container
+                preview.style.maxWidth = "100%";
+                preview.style.maxHeight = "180px";
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+        // Expose saveAd globally
+        window.saveAd = saveAd;
+
+        // Fetch ads on page load
+        window.onload = displayAds;
+
+    </script>
+    
+
+</body>
+</html>

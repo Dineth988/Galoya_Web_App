@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketing Manager Dashboard</title>
+    
+
+    <style>
+        * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: Arial, sans-serif;
+            }
+
+            body {
+                display: flex;
+            }
+
+            .dashboard {
+                display: flex;
+                width: 100%;
+            }
+
+            .sidebar {
+                width: 250px;
+                background: #2c3e50;
+                color: white;
+                padding: 20px;
+                height: 100vh;
+            }
+
+            .sidebar h2 {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            .sidebar ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .sidebar ul li {
+                margin: 15px 0;
+            }
+
+            .sidebar ul li a {
+                text-decoration: none;
+                color: white;
+                display: block;
+                padding: 10px;
+                border-radius: 5px;
+                transition: 0.3s;
+            }
+
+            .sidebar ul li a:hover {
+                background: #1abc9c;
+            }
+
+            .content {
+                flex-grow: 1;
+                padding: 20px;
+                background: #ecf0f1;
+            }
+            
+    </style>
+    <script>
+     function loadPage(page, event) {
+        event.preventDefault();
+        document.getElementById("pageFrame").src = page;
+    }
+
+
+
+    </script>
+
+</head>
+<body>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <h2>Marketing Dashboard</h2>
+            <ul>
+                <li><a href="offers.html" onclick="loadPage('offers.html', event)">Manage Offers</a></li>
+                <li><a href="/adminControll/coupons.html" onclick="loadPage('coupons.html', event)">Coupons & Vouchers</a></li>
+                <li><a href="adWindow.html" onclick="loadPage('adWindow.html', event)">Run Ads</a></li>
+                <li><a href="emails.html" onclick="loadPage('emails.html', event)">Send Emails</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="content" id="content">
+            <iframe id="pageFrame" src="welcome.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+
+   
+</body>
+</html>

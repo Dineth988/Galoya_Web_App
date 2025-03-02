@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Offer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .container {
+            width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input, select, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 8px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+    </style>
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+            import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-database.js";
+            import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+
+            // Initialize Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+                authDomain: "galoya-web-app.firebaseapp.com",
+                databaseURL: "https://galoya-web-app-default-rtdb.firebaseio.com/",
+                projectId: "galoya-web-app",
+                storageBucket: "galoya-web-app.appspot.com",
+                messagingSenderId: "272214790341",
+                appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+                measurementId: "G-322L3R40GC"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const database = getDatabase(app);
+            const firestore = getFirestore(app);
+
+
+           
+            async function loadCategories() {
+                try {
+                    const categoryDropdown = document.getElementById("categories");
+                    if (!categoryDropdown) {
+                        console.error("Element #categories not found.");
+                        return;
+                    }
+
+                    categoryDropdown.innerHTML = "<option value=''>Select a category</option>";
+
+                    const categoriesRef = ref(database, "Categories"); // Use correct reference
+                    const snapshot = await get(categoriesRef); // Fetch data
+
+                    if (snapshot.exists()) {
+                        const categories = snapshot.val();
+                        Object.entries(categories).forEach(([categoryId, categoryData]) => {
+                            if (categoryData.name) { // Ensure `name` property exists
+                                const option = document.createElement("option");
+                                option.value = categoryId; // Store ID as value
+                                option.textContent = categoryData.name; // Display category name
+                                categoryDropdown.appendChild(option);
+                            }
+                        });
+                    } else {
+                        categoryDropdown.innerHTML = "<option value=''>No categories found</option>";
+                    }
+                } catch (error) {
+                    console.error("Error loading categories:", error);
+                }
+            }
+
+
+
+            // ✅ Load Products from Firebase Realtime Database
+            async function loadProducts() {
+                try {
+                    const productsRef = ref(database, "Products");
+                    const snapshot = await get(productsRef);
+                    const productsDropdown = document.getElementById("Products");
+
+                    productsDropdown.innerHTML = "<option value=''>Select a product</option>"; 
+
+                    if (snapshot.exists()) {
+                        const products = snapshot.val();
+                        Object.entries(products).forEach(([productId, productData]) => {
+                            const option = document.createElement("option");
+                            option.value = productId; // Store product ID as value
+                            option.textContent = productData.ProductTitle; // ✅ Display only the name
+                            productsDropdown.appendChild(option);
+                        });
+                    } else {
+                        productsDropdown.innerHTML = "<option value=''>No products found</option>";
+                    }
+                } catch (error) {
+                    console.error("Error loading products:", error);
+                    document.getElementById("Products").innerHTML = "<option value=''>Error loading products</option>";
+                }
+            }
+
+            // ✅ Handle Form Submission
+            document.getElementById("offerForm").addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const title = document.getElementById("title").value;
+                const categories = Array.from(document.getElementById("categories").selectedOptions).map(opt => opt.value);
+                const products = Array.from(document.getElementById("Products").selectedOptions).map(opt => opt.value);
+                const discount = parseInt(document.getElementById("discount").value);
+                const validFrom = document.getElementById("validFrom").value;
+                const validTo = document.getElementById("validTo").value;
+
+                try {
+                    await addDoc(collection(firestore, "offers"), {
+                        title,
+                        categories,
+                        products,
+                        discount,
+                        validFrom,
+                        validTo
+                    });
+
+                    alert("Offer added successfully!");
+                    document.getElementById("offerForm").reset();
+                } catch (error) {
+                    console.error("Error adding offer: ", error);
+                }
+            });
+
+            // ✅ Load categories and products on page load
+            document.addEventListener("DOMContentLoaded", () => {
+                loadCategories();
+                loadProducts();
+            });
+
+        </script>
+
+</head>
+<body>
+    <div class="container">
+        <h2>Add New Offer</h2>
+        <form id="offerForm">
+            <label>Title:</label>
+            <input type="text" id="title" required>
+
+            <label>Category:</label>
+            <select id="categories" multiple required></select>
+
+            <label>Products:</label>
+            <select id="Products" multiple required></select>
+
+            <label>Discount (%):</label>
+            <input type="number" id="discount" required>
+
+            <label>Valid From:</label>
+            <input type="date" id="validFrom" required>
+
+            <label>Valid To:</label>
+            <input type="date" id="validTo" required>
+
+            <button type="submit">Add Offer</button>
+        </form>
+    </div>
+
+    
+</body>
+</html>
