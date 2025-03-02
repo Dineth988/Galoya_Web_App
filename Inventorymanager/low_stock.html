@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Low Stock Products</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #f8f9fa;
+        background: url(b.avif);
+        background-position: center;
+      }
+      .container {
+        margin-top: 20px;
+      }
+      @keyframes fadeInScale {
+        0% {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .low-stock-list {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 20px;
+        padding-bottom: 20px;
+      }
+
+      .product-card {
+        background: rgb(252, 245, 213);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        border: 3px solid #ddd;
+        animation: fadeInScale 0.5s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-direction: column;
+        min-width: 250px;
+        max-width: 250px;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .product-image {
+        width: 80px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        max-width: 100%;
+      }
+
+      .product-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+        color: #333;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+
+      @keyframes blink {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      h2 {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 50px;
+        text-align: center;
+        color: #333;
+      }
+
+      .product-stock {
+        font-size: 20px;
+        color: red;
+        margin: 10px 0;
+        font-weight: bold;
+        animation: blink 1s infinite;
+        padding: 5px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2 class="text-center">Low Stock Products</h2>
+      <div id="lowStockList" class="low-stock-list"></div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const lowStockProducts =
+          JSON.parse(localStorage.getItem("lowStockProducts")) || [];
+        const lowStockList = document.getElementById("lowStockList");
+
+        if (lowStockProducts.length === 0) {
+          lowStockList.innerHTML =
+            "<p class='text-center text-danger'>No low-stock products.</p>";
+        } else {
+          lowStockProducts.forEach((product) => {
+            const card = document.createElement("div");
+            card.classList.add("product-card");
+            card.innerHTML = `
+              <img class="product-image" src="${
+                product.ImageLinks?.[0] || "assets/default-image.jpg"
+              }" alt="Product Image">
+              <p class="product-title">${product.ProductTitle}</p>
+              <p class="product-stock">Stock: ${product.Stock}</p>
+            `;
+            lowStockList.appendChild(card);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
