@@ -6,12 +6,11 @@
     <title>Advanced Reports</title>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Load Chart.js -->
     <style>
       body {
         font-family: Arial, sans-serif;
         margin: 20px;
-        background-color: #cce2eb;
+        background: url(pexels-codioful-7135008.jpg);
         color: rgb(0, 0, 0);
         text-align: center;
       }
@@ -26,9 +25,19 @@
       canvas {
         max-width: 800px;
         margin-bottom: 40px;
-        background: white;
+        background: rgb(234, 248, 241);
         border-radius: 10px;
         padding: 10px;
+        max-height: 400px;
+      }
+
+      .head-container {
+        max-width: auto;
+        margin-bottom: 40px;
+        background: rgb(224, 245, 232);
+        border-radius: 10px;
+        padding: 10px;
+        max-height: 400px;
       }
       .filters {
         margin: 20px 0;
@@ -54,14 +63,15 @@
     </style>
   </head>
   <body>
-    <h2>Advanced Order Reports 📊</h2>
+    <div class="head-container">
+      <h2>View by cities📊</h2>
 
-    <div class="filters">
-      <label for="cityFilter">Filter by City: </label>
-      <select id="cityFilter">
-        <option value="all">All Cities</option>
-      </select>
-      <!-- <button onclick="downloadReport()">Download Report 📥</button> -->
+      <div class="filters">
+        <label for="cityFilter">Filter by City: </label>
+        <select id="cityFilter">
+          <option value="all">All Cities</option>
+        </select>
+      </div>
     </div>
 
     <div class="charts-container">
@@ -79,7 +89,6 @@
         getDocs,
       } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-      // Firebase config
       const firebaseConfig = {
         apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
         authDomain: "galoya-web-app.firebaseapp.com",
@@ -90,7 +99,6 @@
         measurementId: "G-322L3R40GC",
       };
 
-      // Initialize Firebase & Firestore
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
@@ -133,11 +141,6 @@
       }
 
       function renderCharts(data) {
-        document.getElementById("ordersChart").remove();
-        document.getElementById("paymentChart").remove();
-        document.getElementById("revenueChart").remove();
-        document.getElementById("topItemsChart").remove();
-
         document.querySelector(".charts-container").innerHTML = `
         <canvas id="ordersChart"></canvas>
         <canvas id="paymentChart"></canvas>
@@ -145,12 +148,29 @@
         <canvas id="topItemsChart"></canvas>
       `;
 
-        // 📊 1️⃣ Orders by City
         const cityCounts = {};
-        data.forEach(
-          (order) =>
-            (cityCounts[order.city] = (cityCounts[order.city] || 0) + 1)
-        );
+        const paymentCounts = {};
+        const salesData = {};
+        const itemCounts = {};
+
+        data.forEach((order) => {
+          cityCounts[order.city] = (cityCounts[order.city] || 0) + 1;
+          paymentCounts[order.paymentMethod] =
+            (paymentCounts[order.paymentMethod] || 0) + 1;
+
+          const date = new Date(
+            order.timestamp.seconds * 1000
+          ).toLocaleDateString();
+          salesData[date] =
+            (salesData[date] || 0) + Number(order.totalAmount || 0);
+
+          if (order.items) {
+            order.items.forEach((item) => {
+              itemCounts[item.name] =
+                (itemCounts[item.name] || 0) + Number(item.quantity || 0);
+            });
+          }
+        });
 
         new Chart(document.getElementById("ordersChart"), {
           type: "bar",
@@ -160,19 +180,11 @@
               {
                 label: "Orders by City",
                 data: Object.values(cityCounts),
-                backgroundColor: "#5d7bf4",
+                backgroundColor: "#559B59",
               },
             ],
           },
         });
-
-        // 📊 2️⃣ Payment Methods Distribution
-        const paymentCounts = {};
-        data.forEach(
-          (order) =>
-            (paymentCounts[order.paymentMethod] =
-              (paymentCounts[order.paymentMethod] || 0) + 1)
-        );
 
         new Chart(document.getElementById("paymentChart"), {
           type: "pie",
@@ -182,19 +194,10 @@
               {
                 label: "Payment Methods",
                 data: Object.values(paymentCounts),
-                backgroundColor: ["#5d7bf4", "#102da2", "#ffcd56"],
+                backgroundColor: ["#0D9254", "#102da2", "#ffcd56"],
               },
             ],
           },
-        });
-
-        // 📊 3️⃣ Sales Revenue Over Time
-        const salesData = {};
-        data.forEach((order) => {
-          const date = new Date(
-            order.timestamp.seconds * 1000
-          ).toLocaleDateString();
-          salesData[date] = (salesData[date] || 0) + order.totalAmount;
         });
 
         new Chart(document.getElementById("revenueChart"), {
@@ -212,16 +215,6 @@
           },
         });
 
-        // 📊 4️⃣ Top Ordered Items
-        data.forEach((order) => {
-          if (order.items) {
-            order.items.forEach((item) => {
-              itemCounts[item.name] =
-                (itemCounts[item.name] || 0) + parseInt(item.quantity);
-            });
-          }
-        });
-
         new Chart(document.getElementById("topItemsChart"), {
           type: "bar",
           data: {
@@ -236,51 +229,6 @@
           },
         });
       }
-
-      //   function downloadReport() {
-      //     const selectedCity = document.getElementById("cityFilter").value;
-      //     const filteredData =
-      //       selectedCity === "all"
-      //         ? orders
-      //         : orders.filter((order) => order.city === selectedCity);
-
-      //     if (filteredData.length === 0) {
-      //       alert("No data available for the selected city.");
-      //       return;
-      //     }
-
-      //     let csvRows = [];
-      //     csvRows.push([
-      //       "Order ID",
-      //       "City",
-      //       "Total Amount ($)",
-      //       "Payment Method",
-      //     ]); // Headers
-
-      //     filteredData.forEach((order) => {
-      //       const orderId = order.id || "N/A";
-      //       const city = order.city || "N/A";
-      //       const totalAmount = order.totalAmount
-      //         ? order.totalAmount.toFixed(2)
-      //         : "0.00";
-      //       const paymentMethod = order.paymentMethod || "Unknown";
-
-      //       csvRows.push([orderId, city, totalAmount, paymentMethod]);
-      //     });
-
-      //     // Convert to CSV format
-      //     const csvContent = csvRows.map((row) => row.join(",")).join("\n");
-      //     const blob = new Blob([csvContent], { type: "text/csv" });
-      //     const url = URL.createObjectURL(blob);
-
-      //     const link = document.createElement("a");
-      //     link.href = url;
-      //     link.download = `order_report_${selectedCity}.csv`;
-      //     document.body.appendChild(link);
-      //     link.click();
-      //     document.body.removeChild(link);
-      //     URL.revokeObjectURL(url);
-      //   }
 
       fetchOrders();
     </script>
