@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #9edfbb;
+        display: flex;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 250px;
+        height: auto;
+        background-color: #108a4d;
+        color: white;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .sidebar h2 {
+        margin-bottom: 20px;
+      }
+
+      .sidebar button {
+        width: 100%;
+        padding: 12px;
+        margin: 5px 0;
+        border: none;
+        background-color: white;
+        color: #63ac6f;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      .sidebar button:hover {
+        background-color: #0056b3;
+        color: white;
+      }
+
+      /* Main Content */
+      .main {
+        flex: 1;
+        padding: 20px;
+      }
+
+      .dashboard-container {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      /* Container for Total Orders and Completed Orders */
+      .orders-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+
+      .order-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        min-width: 280px;
+        text-align: center;
+      }
+
+      /* Style for Completed Orders List */
+      #completedOrdersList {
+        display: none;
+        margin-top: 20px;
+      }
+
+      /* Recent Orders */
+      .recent-orders-container {
+        margin-top: 20px;
+      }
+
+      .order-card-recent {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>Sales Dashboard</h2>
+      <button onclick="window.location.href='view-order.html'">
+        View Orders
+      </button>
+      <button onclick="window.location.href='report.html'">
+        Generate Report
+      </button>
+      <button onclick="window.location.href='updatePrice.html'">
+        Update Price
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+      <div id="contentArea">
+        <!-- <h2>Dashboard Overview</h2> -->
+        <div class="orders-container">
+          <!-- Total Orders -->
+          <div class="order-card" id="totalOrdersCard">
+            <h3>Total Orders</h3>
+            <p id="totalOrders">0</p>
+          </div>
+
+          <!-- Completed Orders -->
+          <div class="order-card" id="completedOrdersCard">
+            <h3>Completed Orders</h3>
+            <p id="completedOrders">0</p>
+          </div>
+        </div>
+
+        <div class="recent-orders-container">
+          <h3>Recent Orders</h3>
+          <div id="recentOrders"></div>
+        </div>
+
+        <!-- Completed Orders List (Initially Hidden) -->
+        <div id="completedOrdersList">
+          <h3>Completed Orders Details</h3>
+          <div id="completedOrdersDetails"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+        authDomain: "galoya-web-app.firebaseapp.com",
+        projectId: "galoya-web-app",
+        storageBucket: "gs://galoya-web-app.appspot.com",
+        messagingSenderId: "272214790341",
+        appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+        measurementId: "G-322L3R40GC",
+      };
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      async function fetchOrders() {
+        const querySnapshot = await getDocs(collection(db, "orders"));
+        return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      }
+
+      async function showDashboard() {
+        const orders = await fetchOrders();
+        const totalOrders = orders.length;
+        const completedOrders = orders.filter(
+          (order) => order.status === "completed"
+        ).length;
+
+        document.getElementById("totalOrders").innerText = totalOrders;
+        document.getElementById("completedOrders").innerText = completedOrders;
+
+        // Show recent orders (last 5)
+        const recentOrders = orders.slice(-5).map(
+          (order) => `
+            <div class="order-card-recent">
+              <p>Order ID: ${order.id}</p>
+              <p>Amount: ${order.totalAmount}</p>
+            </div>
+          `
+        );
+        document.getElementById("recentOrders").innerHTML =
+          recentOrders.join("");
+      }
+
+      async function showCompletedOrders() {
+        const orders = await fetchOrders();
+        const completedOrders = orders.filter(
+          (order) => order.status === "completed"
+        );
+
+        const completedOrdersDetails = completedOrders.map(
+          (order) => `
+            <div class="order-card-recent">
+              <p>Order ID: ${order.id}</p>
+              <p>Amount: ${order.totalAmount}</p>
+              <p>Date: ${new Date(order.date).toLocaleDateString()}</p>
+            </div>
+          `
+        );
+        document.getElementById("completedOrdersDetails").innerHTML =
+          completedOrdersDetails.join("");
+      }
+
+      document
+        .getElementById("completedOrdersCard")
+        .addEventListener("click", async () => {
+          const completedOrdersList = document.getElementById(
+            "completedOrdersList"
+          );
+
+          // Check if the completed orders details are already visible
+          if (completedOrdersList.style.display === "block") {
+            // If visible, hide it
+            completedOrdersList.style.display = "none";
+          } else {
+            // If hidden, show it and fetch the completed orders
+            await showCompletedOrders();
+            completedOrdersList.style.display = "block";
+          }
+        });
+
+      // Initial dashboard load
+      showDashboard();
+    </script>
+  </body>
+</html>
