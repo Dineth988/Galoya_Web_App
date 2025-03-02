@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inventory Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        text-align: center;
+        background: url(b.avif);
+        padding: 20px;
+      }
+      .dashboard {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 250px;
+        text-align: center;
+      }
+      .card h2 {
+        margin-bottom: 10px;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 15px;
+        margin-top: 10px;
+        background: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+      .button.red {
+        background: #dc3545;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Inventory Dashboard</h1>
+    <div class="dashboard">
+      <div class="card">
+        <h2>View Stock</h2>
+        <a href="inventory.html" class="button">View Stock</a>
+      </div>
+      <div class="card">
+        <h2>Low Stocked Items</h2>
+        <a href="low_stock.html" class="button red">Check Low Stock</a>
+      </div>
+    </div>
+  </body>
+</html>

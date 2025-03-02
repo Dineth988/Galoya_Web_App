@@ -21,6 +21,17 @@
         margin-top: 20px;
       }
 
+      @keyframes fadeInScale {
+        0% {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
       .product-list {
         display: flex;
         flex-wrap: wrap;
@@ -38,6 +49,7 @@
         width: 100%;
         transition: 0.3s;
         max-width: 500px;
+        animation: fadeInScale 0.5s ease-in-out;
       }
 
       .product-card:hover {
@@ -275,13 +287,19 @@
         const snapshot = await get(productsRef);
 
         if (snapshot.exists()) {
-          displayProducts(snapshot.val());
+          const products = snapshot.val();
+          displayProducts(products);
 
-          // Check for low stock products
-          const lowStockProducts = checkLowStock(products);
-          if (lowStockProducts.length > 0) {
-            showLowStockNotification(lowStockProducts);
-          }
+          // Filter low-stock products (less than 5)
+          const lowStockProducts = Object.values(products).filter(
+            (p) => p.Stock < 50
+          );
+
+          // Store them in localStorage for low_stock.html
+          localStorage.setItem(
+            "lowStockProducts",
+            JSON.stringify(lowStockProducts)
+          );
         } else {
           console.log("No products found.");
         }
