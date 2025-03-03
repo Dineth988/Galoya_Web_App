@@ -9,54 +9,74 @@
       body {
         font-family: Arial, sans-serif;
         margin: 20px;
-        background-color: #f8f8f8;
+        background: url(pexels-codioful-7135008.jpg) no-repeat center center
+          fixed;
+        background-size: cover;
       }
 
       h2 {
         text-align: center;
+        color: #ffffff;
+        text-decoration: solid;
+        font-weight: bold;
+        font-size: 30px;
       }
 
       .filter-buttons {
         text-align: center;
         margin-bottom: 20px;
+        font-weight: bold;
       }
 
       .filter-buttons button {
         margin: 5px;
         padding: 10px 15px;
         border: none;
-        background-color: #007bff;
+        background-color: #174709;
         color: white;
         border-radius: 5px;
         cursor: pointer;
-        transition: 0.3s;
+        transition: background 0.3s ease, transform 0.2s ease;
       }
 
       .filter-buttons button:hover {
-        background-color: #0056b3;
+        background-color: #146301;
+        transform: scale(1.05);
       }
 
       .orders-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
         gap: 20px;
         padding: 20px;
       }
 
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       .order-card {
-        background: white;
-        padding: 15px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 20px;
         border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        animation: fadeIn 0.5s ease-in-out;
       }
 
       .order-card:hover {
-        transform: scale(1.02);
+        transform: scale(1.03);
       }
 
       .order-card h3 {
-        margin: 0;
+        margin-bottom: 10px;
         color: #333;
       }
 
@@ -66,31 +86,34 @@
         color: #555;
       }
 
-      .order-card strong {
-        color: #222;
-      }
-
-      .divider {
-        border-top: 1px solid #ddd;
-        margin: 10px 0;
+      .completed,
+      .remove {
+        padding: 7px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
       }
 
       .completed {
-        background-color: #28a745; /* Green color */
+        background-color: #28a745;
         color: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 10px;
+        border: none;
+      }
+
+      .completed:hover {
+        background-color: #1e7a38;
+        transform: scale(1.05);
       }
 
       .remove {
-        background-color: #dc3545; /* Red color */
+        background-color: #dc3545;
         color: white;
-        padding: 5px 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 10px;
+        border: none;
+      }
+
+      .remove:hover {
+        background-color: #b22234;
+        transform: scale(1.05);
       }
 
       .highlight {
@@ -105,6 +128,7 @@
         margin-top: 20px;
         text-align: center;
         border-radius: 5px;
+        display: none;
       }
     </style>
   </head>

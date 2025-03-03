@@ -3,83 +3,105 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Advanced Reports</title>
+    <title>Sales Report</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <style>
       body {
         font-family: Arial, sans-serif;
         margin: 20px;
-        background: url(pexels-codioful-7135008.jpg);
-        color: rgb(0, 0, 0);
+        background: #f1dddd;
         text-align: center;
-      }
-      h2 {
-        margin-bottom: 20px;
-      }
-      .charts-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      canvas {
-        max-width: 800px;
-        margin-bottom: 40px;
-        background: rgb(234, 248, 241);
-        border-radius: 10px;
         padding: 10px;
-        max-height: 400px;
       }
 
-      .head-container {
-        max-width: auto;
-        margin-bottom: 40px;
-        background: rgb(224, 245, 232);
-        border-radius: 10px;
-        padding: 10px;
-        max-height: 400px;
+      h2 {
+        margin-bottom: 20px;
+        color: #333;
       }
+
       .filters {
         margin: 20px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
       }
-      select {
-        padding: 10px;
-        border-radius: 5px;
-        background-color: #333;
-        color: white;
-        border: none;
-      }
+
+      select,
       button {
         padding: 10px;
-        background: #ff4081;
-        color: white;
-        border: none;
         border-radius: 5px;
-        cursor: pointer;
+        border: none;
+        font-size: 16px;
       }
+
+      button {
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
       button:hover {
-        background: #ff0055;
+        background: #0056b3;
+      }
+
+      table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 10px;
+      }
+
+      th {
+        background: #28a745;
+        color: white;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      tr:hover {
+        background: #ddd;
+      }
+
+      #reportContainer {
+        margin-top: 20px;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
     </style>
   </head>
   <body>
-    <div class="head-container">
-      <h2>View by cities📊</h2>
-
-      <div class="filters">
-        <label for="cityFilter">Filter by City: </label>
-        <select id="cityFilter">
-          <option value="all">All Cities</option>
-        </select>
-      </div>
+    <h2>Sales Report</h2>
+    <div class="filters">
+      <label for="cityFilter">Filter by City: </label>
+      <select id="cityFilter">
+        <option value="all">All Cities</option>
+      </select>
+      <button id="generateReport">Generate Report</button>
     </div>
-
-    <div class="charts-container">
-      <canvas id="ordersChart"></canvas>
-      <canvas id="paymentChart"></canvas>
-      <canvas id="revenueChart"></canvas>
-      <canvas id="topItemsChart"></canvas>
-    </div>
+    <div id="reportContainer"></div>
 
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
@@ -101,133 +123,80 @@
 
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
-
       let orders = [];
 
       async function fetchOrders() {
-        try {
-          const querySnapshot = await getDocs(collection(db, "orders"));
-          orders = querySnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-
-          populateCityFilter(orders);
-          renderCharts(orders);
-        } catch (error) {
-          console.error("Error fetching orders:", error);
-        }
+        const querySnapshot = await getDocs(collection(db, "orders"));
+        orders = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        populateCityFilter(orders);
+        generateReport(orders); // Ensure report is generated initially
       }
 
       function populateCityFilter(data) {
-        const cities = new Set(data.map((order) => order.city));
         const cityFilter = document.getElementById("cityFilter");
+        cityFilter.innerHTML = '<option value="all">All Cities</option>';
 
+        const cities = [
+          ...new Set(data.map((order) => order.city).filter((city) => city)),
+        ];
         cities.forEach((city) => {
           const option = document.createElement("option");
           option.value = city;
           option.textContent = city;
           cityFilter.appendChild(option);
         });
+      }
 
-        cityFilter.addEventListener("change", () => {
-          const selectedCity = cityFilter.value;
+      document
+        .getElementById("generateReport")
+        .addEventListener("click", () => {
+          const selectedCity = document.getElementById("cityFilter").value;
           const filteredData =
             selectedCity === "all"
               ? orders
               : orders.filter((order) => order.city === selectedCity);
-          renderCharts(filteredData);
+          generateReport(filteredData);
         });
-      }
 
-      function renderCharts(data) {
-        document.querySelector(".charts-container").innerHTML = `
-        <canvas id="ordersChart"></canvas>
-        <canvas id="paymentChart"></canvas>
-        <canvas id="revenueChart"></canvas>
-        <canvas id="topItemsChart"></canvas>
-      `;
-
-        const cityCounts = {};
-        const paymentCounts = {};
-        const salesData = {};
-        const itemCounts = {};
+      function generateReport(data) {
+        let totalSales = 0;
+        let dailySales = {};
+        let reportHtml =
+          "<table><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Date</th><th>City</th></tr>";
 
         data.forEach((order) => {
-          cityCounts[order.city] = (cityCounts[order.city] || 0) + 1;
-          paymentCounts[order.paymentMethod] =
-            (paymentCounts[order.paymentMethod] || 0) + 1;
+          let amount = Number(order.totalAmount) || 0; // Convert to number
+          totalSales += amount;
 
-          const date = new Date(
-            order.timestamp.seconds * 1000
-          ).toLocaleDateString();
-          salesData[date] =
-            (salesData[date] || 0) + Number(order.totalAmount || 0);
+          let date = order.timestamp
+            ? new Date(order.timestamp.seconds * 1000).toLocaleDateString()
+            : "Unknown";
+          dailySales[date] = (dailySales[date] || 0) + amount;
 
-          if (order.items) {
-            order.items.forEach((item) => {
-              itemCounts[item.name] =
-                (itemCounts[item.name] || 0) + Number(item.quantity || 0);
-            });
-          }
+          reportHtml += `<tr>
+            <td>${order.id}</td>
+            <td>${order.fullName || "N/A"}</td>
+            <td>$${amount.toFixed(2)}</td>
+            <td>${date}</td>
+            <td>${order.city || "Unknown"}</td>
+          </tr>`;
         });
 
-        new Chart(document.getElementById("ordersChart"), {
-          type: "bar",
-          data: {
-            labels: Object.keys(cityCounts),
-            datasets: [
-              {
-                label: "Orders by City",
-                data: Object.values(cityCounts),
-                backgroundColor: "#559B59",
-              },
-            ],
-          },
-        });
+        reportHtml += `</table><h3>Total Sales: $${totalSales.toFixed(2)}</h3>`;
 
-        new Chart(document.getElementById("paymentChart"), {
-          type: "pie",
-          data: {
-            labels: Object.keys(paymentCounts),
-            datasets: [
-              {
-                label: "Payment Methods",
-                data: Object.values(paymentCounts),
-                backgroundColor: ["#0D9254", "#102da2", "#ffcd56"],
-              },
-            ],
-          },
+        reportHtml +=
+          "<h2>Daily Sales</h2><table><tr><th>Date</th><th>Sales ($)</th></tr>";
+        Object.keys(dailySales).forEach((date) => {
+          reportHtml += `<tr><td>${date}</td><td>$${dailySales[date].toFixed(
+            2
+          )}</td></tr>`;
         });
+        reportHtml += "</table>";
 
-        new Chart(document.getElementById("revenueChart"), {
-          type: "line",
-          data: {
-            labels: Object.keys(salesData),
-            datasets: [
-              {
-                label: "Total Sales ($)",
-                data: Object.values(salesData),
-                borderColor: "#ed0d23",
-                fill: false,
-              },
-            ],
-          },
-        });
-
-        new Chart(document.getElementById("topItemsChart"), {
-          type: "bar",
-          data: {
-            labels: Object.keys(itemCounts),
-            datasets: [
-              {
-                label: "Top Ordered Items",
-                data: Object.values(itemCounts),
-                backgroundColor: "#5ad77d",
-              },
-            ],
-          },
-        });
+        document.getElementById("reportContainer").innerHTML = reportHtml;
       }
 
       fetchOrders();
