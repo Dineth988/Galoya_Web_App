@@ -197,8 +197,8 @@
                         <p><strong>Total:</strong> $${order.totalAmount}</p>
                         <p><strong>Items:</strong> ${
                           Array.isArray(order.items)
-                            ? order.items.join(", ")
-                            : order.items
+                    ? order.items.map(item => `${item.name} ($${item.price}, Qty: ${item.quantity})`).join(", ")
+                    : order.items
                         }</p>
                         <p><strong>Timestamp:</strong> ${
                           order.timestamp
