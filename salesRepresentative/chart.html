@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Advanced Reports</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: url(pexels-codioful-7135008.jpg);
+        color: rgb(0, 0, 0);
+        text-align: center;
+      }
+      h2 {
+        margin-bottom: 20px;
+      }
+      .charts-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      canvas {
+        max-width: 800px;
+        margin-bottom: 40px;
+        background: rgb(234, 248, 241);
+        border-radius: 10px;
+        padding: 10px;
+        max-height: 400px;
+      }
+
+      .head-container {
+        max-width: auto;
+        margin-bottom: 40px;
+        background: rgb(224, 245, 232);
+        border-radius: 10px;
+        padding: 10px;
+        max-height: 400px;
+      }
+      .filters {
+        margin: 20px 0;
+      }
+      select {
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #333;
+        color: white;
+        border: none;
+      }
+      button {
+        padding: 10px;
+        background: #ff4081;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #ff0055;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head-container">
+      <h2>View by cities📊</h2>
+
+      <div class="filters">
+        <label for="cityFilter">Filter by City: </label>
+        <select id="cityFilter">
+          <option value="all">All Cities</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="charts-container">
+      <canvas id="ordersChart"></canvas>
+      <canvas id="paymentChart"></canvas>
+      <canvas id="revenueChart"></canvas>
+      <canvas id="topItemsChart"></canvas>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+        authDomain: "galoya-web-app.firebaseapp.com",
+        projectId: "galoya-web-app",
+        storageBucket: "gs://galoya-web-app.appspot.com",
+        messagingSenderId: "272214790341",
+        appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+        measurementId: "G-322L3R40GC",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      let orders = [];
+
+      async function fetchOrders() {
+        try {
+          const querySnapshot = await getDocs(collection(db, "orders"));
+          orders = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          populateCityFilter(orders);
+          renderCharts(orders);
+        } catch (error) {
+          console.error("Error fetching orders:", error);
+        }
+      }
+
+      function populateCityFilter(data) {
+        const cities = new Set(data.map((order) => order.city));
+        const cityFilter = document.getElementById("cityFilter");
+
+        cities.forEach((city) => {
+          const option = document.createElement("option");
+          option.value = city;
+          option.textContent = city;
+          cityFilter.appendChild(option);
+        });
+
+        cityFilter.addEventListener("change", () => {
+          const selectedCity = cityFilter.value;
+          const filteredData =
+            selectedCity === "all"
+              ? orders
+              : orders.filter((order) => order.city === selectedCity);
+          renderCharts(filteredData);
+        });
+      }
+
+      function renderCharts(data) {
+        document.querySelector(".charts-container").innerHTML = `
+        <canvas id="ordersChart"></canvas>
+        <canvas id="paymentChart"></canvas>
+        <canvas id="revenueChart"></canvas>
+        <canvas id="topItemsChart"></canvas>
+      `;
+
+        const cityCounts = {};
+        const paymentCounts = {};
+        const salesData = {};
+        const itemCounts = {};
+
+        data.forEach((order) => {
+          cityCounts[order.city] = (cityCounts[order.city] || 0) + 1;
+          paymentCounts[order.paymentMethod] =
+            (paymentCounts[order.paymentMethod] || 0) + 1;
+
+          const date = new Date(
+            order.timestamp.seconds * 1000
+          ).toLocaleDateString();
+          salesData[date] =
+            (salesData[date] || 0) + parseFloat(order.totalAmount) || 0;
+
+          if (order.items) {
+            order.items.forEach((item) => {
+              itemCounts[item.name] =
+                (itemCounts[item.name] || 0) + Number(item.quantity || 0);
+            });
+          }
+        });
+
+        new Chart(document.getElementById("ordersChart"), {
+          type: "bar",
+          data: {
+            labels: Object.keys(cityCounts),
+            datasets: [
+              {
+                label: "Orders by City",
+                data: Object.values(cityCounts),
+                backgroundColor: "#559B59",
+              },
+            ],
+          },
+        });
+
+        new Chart(document.getElementById("paymentChart"), {
+          type: "pie",
+          data: {
+            labels: Object.keys(paymentCounts),
+            datasets: [
+              {
+                label: "Payment Methods",
+                data: Object.values(paymentCounts),
+                backgroundColor: ["#0D9254", "#102da2", "#ffcd56"],
+              },
+            ],
+          },
+        });
+
+        new Chart(document.getElementById("revenueChart"), {
+          type: "line",
+          data: {
+            labels: Object.keys(salesData),
+            datasets: [
+              {
+                label: "Total Sales ($)",
+                data: Object.values(salesData),
+                borderColor: "#ed0d23",
+                fill: false,
+              },
+            ],
+          },
+        });
+
+        new Chart(document.getElementById("topItemsChart"), {
+          type: "bar",
+          data: {
+            labels: Object.keys(itemCounts),
+            datasets: [
+              {
+                label: "Top Ordered Items",
+                data: Object.values(itemCounts),
+                backgroundColor: "#5ad77d",
+              },
+            ],
+          },
+        });
+      }
+
+      fetchOrders();
+    </script>
+  </body>
+</html>
