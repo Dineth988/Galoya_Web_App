@@ -3,426 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
+    <title>Staff Details - Galoya Milk Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-        table {
-        width: 80%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        margin-left: 60px;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e6ecef, #d1dfe7);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
         }
-
+        h1 {
+            color: #2c3e50;
+            font-size: 32px;
+            margin-left: 60px;
+            margin-top: 40px;
+            font-weight: 700;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        }
         th, td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 15px;
             text-align: left;
+            font-size: 14px;
         }
-
         th {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
+            background: linear-gradient(90deg, #5e72e4, #4a5bbf);
+            color: #fff;
+            font-weight: 600;
         }
-
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background: #f9fafb;
         }
-
         tr:hover {
-            background-color: #ddd;
+            background: #e9ecef;
+            transition: background 0.3s ease;
+        }
+        .editBtn, .removeBtn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
-        .headTr{
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        .editBtn{
-            background-color: #f3f7fe;
+        .editBtn {
+            background: #f3f7fe;
             color: #3b82f6;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
-            width: 80px;
-            height: 35px;
-            transition: 0.3s;
         }
-        .editBtn:hover{
-            background-color: #3b82f6;
-            box-shadow: 0 0 0 5px #3b83f65f;
+        .editBtn:hover {
+            background: #3b82f6;
             color: #fff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
         }
-        .removeBtn{
-            background-color: #f3f7fe;
+        .removeBtn {
+            background: #f3f7fe;
             color: #c22929;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
-            width: 80px;
-            height: 35px;
-            transition: 0.3s;
         }
-        .removeBtn:hover{
-            background-color: #c22929;
-            box-shadow: 0 0 0 5px #c425255f;
+        .removeBtn:hover {
+            background: #c22929;
             color: #fff;
+            box-shadow: 0 0 0 4px rgba(194, 41, 41, 0.3);
         }
-        #addStaffBtn{
-            margin-left: 960px;
-            color: #ededed;
-            padding: 5px;
-            font-size: 12px;
-            border-radius: 0.5em;
-            background: #007bff;
+        #addStaffBtn {
+            margin-left: 60px;
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #5e72e4, #4a5bbf);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
             cursor: pointer;
-            border: 1px solid #0f1a89;
-            transition: all 0.3s;
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2), -4px -4px 10px rgba(255, 255, 255, 0.1);
-            font-weight: bold;
-            height: 35px;
-            width: 80px;
-            margin-top: 65px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2);
         }
-        #addStaffBtn:hover{
-            border: 1px solid white;
-
+        #addStaffBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(94, 114, 228, 0.4);
+            background: linear-gradient(90deg, #4a5bbf, #3a4ba0);
         }
-        #addStaffBtn:active {
-            box-shadow: 4px 4px 12px #c5c5c5, -4px -4px 12px #ffffff;
-        }
-        .confirmBtn{
-            padding: 12.5px 30px;
-            border: 0;
-            border-radius: 100px;
-            background-color: #2ba8fb;
-            color: #ffffff;
-            font-weight: Bold;
-            /* transition: all 0.5s; */
-            /* -webkit-transition: all 0.5s; */
-            width: 560px;
-            margin-top: 40px;
-        }
-      
-        .confirmBtn:active{
-            background-color: #3d94cf;
-            transition: all 0.25s;
-            -webkit-transition: all 0.25s;
-            box-shadow: none;
-            transform: scale(0.98);
-        }
-        .overlay{
+        .overlay {
             position: fixed;
             top: 0;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(0, 0, 0, 0.8);
-            transition: opacity 500ms;
+            background: rgba(0, 0, 0, 0.7);
             visibility: hidden;
             opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
         }
-        /* .overlay:target{
+        .overlay.active {
             visibility: visible;
             opacity: 1;
-        } */
-        .overlayForm{
-            background: #e7e7e7;
-            border-radius: 8px;
-            margin-top: 150px;
-            margin-left: 445px;
         }
-        #closeBtn{
+        .overlayForm {
+            background: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            width: 500px;
+            margin: 100px auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        #closeBtn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
             width: 40px;
             height: 40px;
-            margin-left: 280px;
-            margin-top: 10px;
+            background: #c22929;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
-        #closeBtn:target{
-            visibility: hidden;
+        #closeBtn:hover {
+            transform: scale(1.1);
+            background: #a11a1a;
         }
-        h2{
-            width: 400px;
+        .confirmBtn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #5e72e4, #4a5bbf);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .confirmBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(94, 114, 228, 0.4);
+            background: linear-gradient(90deg, #4a5bbf, #3a4ba0);
+        }
+        .confirmBtn:active {
+            transform: scale(0.98);
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: #5e72e4;
+            outline: none;
+            box-shadow: 0 0 5px rgba(94, 114, 228, 0.3);
+        }
+        label {
+            font-weight: 500;
+            color: #2c3e50;
         }
     </style>
-        <script type="module">
-            import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-            import { db, app } from "./firebase.js";
-            import { doc, setDoc } from "./firebase.js";
-            import { addDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-            import { getDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-            import { deleteDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
-            import { updateDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+    <script type="module">
+        import { getFirestore, collection, getDocs, doc, setDoc, addDoc, getDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            projectId: "galoya-web-app",
+            storageBucket: "gs://galoya-web-app.appspot.com",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC"
+        };
 
-            async function loadStaffData() {
-                const staffTableBody = document.getElementById("staffTableBody");
-                staffTableBody.innerHTML = ""; // Clear table before inserting data
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const database = getDatabase(app);
 
-                try {
-                    const staffRef = collection(db, "staff");
-                    const querySnapshot = await getDocs(staffRef);
+        async function loadStaffData() {
+            const staffTableBody = document.getElementById("staffTableBody");
+            staffTableBody.innerHTML = "";
 
-                    querySnapshot.forEach((doc) => {
-                        const staffData = doc.data();
+            try {
+                const staffRef = collection(db, "staff");
+                const querySnapshot = await getDocs(staffRef);
+                querySnapshot.forEach((doc) => {
+                    const staffData = doc.data();
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${staffData.name}</td>
+                        <td>${staffData.email}</td>
+                        <td>${staffData.role}</td>
+                        <td><button class="editBtn" data-id="${doc.id}">Edit</button></td>
+                        <td><button class="removeBtn" data-id="${doc.id}">Remove</button></td>
+                    `;
+                    staffTableBody.appendChild(row);
+                });
 
-                        // Create a new row
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td>${staffData.name}</td>
-                            <td>${staffData.email}</td>
-                            <td>${staffData.role}</td>
-                            <td><button class="editBtn" data-id="${doc.id}">Edit</button></td>
-                            <td><button class="removeBtn" data-id="${doc.id}">Remove</button></td>
-                        `;
-
-                        // Append row to the table body
-                        staffTableBody.appendChild(row);
-                    });
-
-                    
-                } catch (error) {
-                    console.error("Error fetching staff data:", error);
-                }
-
-                    document.querySelectorAll(".removeBtn").forEach(button => {
-                        button.addEventListener("click", async (event) => {
-                            const docId = event.target.getAttribute("data-id");
-                            if (!docId) {
-                                console.error("Error: No document ID found.");
-                                return;
-                            }
-
-                            try {
-                                await deleteDoc(doc(db, "staff", docId)); 
-                                event.target.closest("tr").remove(); 
-                                alert("Staff member removed successfully.");
-                            } catch (error) {
-                                console.error("Error deleting staff member:", error);
-                            }
-                        });
-                    });
-
-                    document.querySelectorAll(".editBtn").forEach(button => {
-                        button.addEventListener("click", async (event) => {
-                            const docId = event.target.getAttribute("data-id");
-                            if (!docId) {
-                                console.error("Error: No document ID found.");
-                                return;
-                            }
-
-                            try {
-                                // Fetch staff details from Firestore
-                                const staffDocRef = doc(db, "staff", docId);
-                                const staffDocSnap = await getDoc(staffDocRef);
-
-                                if (staffDocSnap.exists()) {
-                                    const staffData = staffDocSnap.data();
-
-                                    // Display modal
-                                    document.getElementById("divTwo").style.visibility = "visible";
-                                    document.getElementById("divTwo").style.opacity = 1;
-
-                                    // Prefill form fields
-                                    document.getElementById("nameStaffEdit").value = staffData.name;
-                                    document.getElementById("emailStaffEdit").value = staffData.email;
-                                    document.getElementById("role").value = staffData.role;
-
-                                    // Store docId in a hidden field for updating later
-                                    document.getElementById("editStaffId").value = docId;
-
-                                } else {
-                                    console.error("Staff document not found.");
-                                }
-
-                            } catch (error) {
-                                console.error("Error fetching staff details:", error);
-                            }
-                        });
-                    });
-
-                    // Fix the "Edit" button listener - Move outside loop to avoid multiple event bindings
-                    document.getElementById("edit").addEventListener("click", async function (event) {
-                        event.preventDefault();
-
-                        const docId = document.getElementById("editStaffId").value; // Get stored docId
-                        const name = document.getElementById("nameStaffEdit").value;
-                        const email = document.getElementById("emailStaffEdit").value;
-                        const role = document.getElementById("role").value;
-
-                        if (!docId || !name || !email || !role) {
-                            alert("Please fill all fields!");
-                            return;
-                        }
-
+                document.querySelectorAll(".removeBtn").forEach(button => {
+                    button.addEventListener("click", async (event) => {
+                        const docId = event.target.getAttribute("data-id");
+                        if (!docId) return;
                         try {
-                            const staffDocRef = doc(db, "staff", docId); // Reference to the document
-                            await updateDoc(staffDocRef, { name, email, role }); // Update document
-
-                            alert("Staff details updated successfully!");
-                            document.getElementById("divTwo").style.visibility = "hidden"; // Hide modal after update
-                            document.getElementById("divTwo").style.opacity = 0;
+                            await deleteDoc(doc(db, "staff", docId));
+                            event.target.closest("tr").remove();
+                            alert("Staff member removed successfully.");
+                            logActivity(`Staff member "${event.target.closest('tr').cells[0].textContent}" removed.`);
                         } catch (error) {
-                            console.error("Error updating staff details:", error);
+                            console.error("Error deleting staff member:", error);
                         }
                     });
+                });
+
+                document.querySelectorAll(".editBtn").forEach(button => {
+                    button.addEventListener("click", async (event) => {
+                        const docId = event.target.getAttribute("data-id");
+                        if (!docId) return;
+                        try {
+                            const staffDocRef = doc(db, "staff", docId);
+                            const staffDocSnap = await getDoc(staffDocRef);
+                            if (staffDocSnap.exists()) {
+                                const staffData = staffDocSnap.data();
+                                document.getElementById("divTwo").classList.add("active");
+                                document.getElementById("nameStaffEdit").value = staffData.name;
+                                document.getElementById("emailStaffEdit").value = staffData.email;
+                                document.getElementById("roleEdit").value = staffData.role;
+                                document.getElementById("editStaffId").value = docId;
+                            }
+                        } catch (error) {
+                            console.error("Error fetching staff details:", error);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error("Error fetching staff data:", error);
+            }
+        }
+
+        document.getElementById("edit").addEventListener("click", async (event) => {
+            event.preventDefault();
+            const docId = document.getElementById("editStaffId").value;
+            const name = document.getElementById("nameStaffEdit").value;
+            const email = document.getElementById("emailStaffEdit").value;
+            const role = document.getElementById("roleEdit").value;
+
+            if (!docId || !name || !email || !role) {
+                alert("Please fill all fields!");
+                return;
             }
 
-            // Load data when the page loads
-            loadStaffData();
+            try {
+                const staffDocRef = doc(db, "staff", docId);
+                await updateDoc(staffDocRef, { name, email, role });
+                alert("Staff details updated successfully!");
+                document.getElementById("divTwo").classList.remove("active");
+                loadStaffData();
+                logActivity(`Staff member "${name}" updated.`);
+            } catch (error) {
+                console.error("Error updating staff details:", error);
+            }
+        });
 
-            document.getElementById("closeBtn").addEventListener("click", function(event){
-                document.getElementById("divOne").style.visibility = "hidden";
-            }) 
-            document.getElementById("addStaffBtn").addEventListener("click", function(event){
-                
-                document.getElementById("divOne").style.visibility = "visible";
-                document.getElementById("divOne").style.opacity = 1;
+        document.getElementById("addStaffBtn").addEventListener("click", () => {
+            document.getElementById("divOne").classList.add("active");
+        });
 
-               
-             
-                document.getElementById("confirm").addEventListener("click", async function (event) {
-                event.preventDefault();
+        document.getElementById("confirm").addEventListener("click", async (event) => {
+            event.preventDefault();
+            const name = document.getElementById("nameStaff").value;
+            const email = document.getElementById("emailStaff").value;
+            const role = document.getElementById("role").value;
 
-                const name = document.getElementById("nameStaff").value;
-                const email = document.getElementById("emailStaff").value;
-                var comboBox = document.getElementById("role");
-                var selectedValue = comboBox.value;
+            if (!name || !email || !role) {
+                alert("Please fill all fields!");
+                return;
+            }
 
-                try {
-                    const docRef = await addDoc(collection(db, "staff"), {
-                        name: name,
-                        email: email,
-                        role: selectedValue,
-                        password: 123456
-                    });
-                    alert("Staff added");
+            try {
+                const docRef = await addDoc(collection(db, "staff"), {
+                    name: name,
+                    email: email,
+                    role: role,
+                    password: "123456"
+                });
+                alert("Staff added successfully!");
+                document.getElementById("divOne").classList.remove("active");
+                loadStaffData();
+                logActivity(`New staff member "${name}" added.`);
+                document.getElementById("nameStaff").value = "";
+                document.getElementById("emailStaff").value = "";
+                document.getElementById("role").value = "admin";
+            } catch (error) {
+                console.error("Error adding document: ", error);
+            }
+        });
 
-                } catch (error) {
-                    console.error("Error adding document: ", error);
-                }
-            })
-            })
+        document.getElementById("closeBtn").addEventListener("click", () => {
+            document.getElementById("divOne").classList.remove("active");
+            document.getElementById("divTwo").classList.remove("active");
+        });
 
-            // Log activity when a staff member is added
-            document.getElementById("confirm").addEventListener("click", async function (event) {
-                event.preventDefault();
+        async function logActivity(activity) {
+            const activitiesRef = ref(database, "Activities");
+            await push(activitiesRef, { activity, timestamp: new Date().toLocaleString() });
+        }
 
-                const name = document.getElementById("nameStaff").value;
-                const email = document.getElementById("emailStaff").value;
-                const role = document.getElementById("role").value;
-
-                try {
-                    const docRef = await addDoc(collection(db, "staff"), {
-                        name: name,
-                        email: email,
-                        role: role,
-                        password: 123456
-                     });
-
-                    // Log activity
-                    const activity = `New staff member "${name}" added.`;
-                    logActivity(activity);
-
-                    alert("Staff added");
-                } catch (error) {
-                    console.error("Error adding document: ", error);
-                }
-            });
-
-        </script>
-
+        loadStaffData();
+    </script>
 </head>
 <body>
-    <div style="display: flex; flex-direction: row;">
-        <input type="hidden" id="editStaffId">
-        <h1 style="margin-left: 60px; margin-top: 60px;" >Staff Details</h1>
-        <a href="#divOne"><button id="addStaffBtn">Add Staff</button></a>
+    <div style="display: flex; flex-direction: row; align-items: center;">
+        <h1>Staff Details</h1>
+        <button id="addStaffBtn">Add Staff</button>
     </div>
-    
-    <table boder="1">
+    <table>
         <thead>
-            <tr class="headTr">
+            <tr>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
-               
             </tr>
         </thead>
-        <tbody id="staffTableBody">
-
-        </tbody>
-
+        <tbody id="staffTableBody"></tbody>
     </table>
     <div class="overlay" id="divOne">
-        <div class="formWrapper">
-            <form class="overlayForm" style="width: 560px; height: 340px; padding: 20px;">
-                <div style="display: flex; flex-direction: row; width: 560px;">
-                    <h2 id="h2Overlay">Add staff details</h2>
-                    <a href="#divOne"><button id="closeBtn"><</button></a>
-                </div>
-               
-                <div style="display: flex; flex-direction: column;">
-                    <div style="display: flex; flex-direction: row;">
-                        <div style="display: flex; flex-direction: column;">
-                            <label for="email">Email</label>
-                            <input type="text" id="emailStaff" name="email" style="width: 250px; height: 20px; border-radius: 5px; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
-                        </div>
-                        <div style="display: flex; flex-direction: column;">
-                            <label for="name" style="margin-left: 20px;">Name</label>
-                            <input type="text" id="nameStaff" name="name" style="width: 250px; height: 20px; border-radius: 5px; border: 1px solid #ccc; padding: 10px; margin-left: 20px; margin-top: 10px;">
-                        </div>
-                        
+        <div class="overlayForm">
+            <h2>Add Staff Details</h2>
+            <button id="closeBtn">&times;</button>
+            <div>
+                <div style="display: flex; gap: 20px;">
+                    <div>
+                        <label>Email</label>
+                        <input type="text" id="emailStaff">
                     </div>
-                    <label for="role" style="margin-top: 10px;">Role</label>
-                        <select id="role" name="role" style="width: 560px; height: 40px; border-radius: 5px; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
-                            <option value="admin">Admin</option>
-                            <option value="marketingManager">Marketing manager</option>
-                            <option value="inventoryManager">Inventory Manager</option>
-                            <option value="salesRep">Sales Representative</option>
-                        </select>
-                        <button class="confirmBtn" id="confirm">Confirm</button>
-                      
+                    <div>
+                        <label>Name</label>
+                        <input type="text" id="nameStaff">
+                    </div>
                 </div>
-               
-            </form>
+                <label>Role</label>
+                <select id="role">
+                    <option value="admin">Admin</option>
+                    <option value="marketingManager">Marketing Manager</option>
+                    <option value="inventoryManager">Inventory Manager</option>
+                    <option value="salesRep">Sales Representative</option>
+                </select>
+                <button class="confirmBtn" id="confirm">Confirm</button>
+            </div>
         </div>
     </div>
     <div class="overlay" id="divTwo">
-        <div class="formWrapper">
-            <form class="overlayForm" style="width: 560px; height: 340px; padding: 20px;">
-                <div style="display: flex; flex-direction: row; width: 560px;">
-                    <h2 >Edit staff details</h2>
-                    <a href="#divOne"><button id="closeBtn"><</button></a>
-                </div>
-               
-                <div style="display: flex; flex-direction: column;">
-                    <div style="display: flex; flex-direction: row;">
-                        <div style="display: flex; flex-direction: column;">
-                            <label for="email">Email</label>
-                            <input type="text" id="emailStaffEdit" name="email" style="width: 250px; height: 20px; border-radius: 5px; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
-                        </div>
-                        <div style="display: flex; flex-direction: column;">
-                            <label for="name" style="margin-left: 20px;">Name</label>
-                            <input type="text" id="nameStaffEdit" name="name" style="width: 250px; height: 20px; border-radius: 5px; border: 1px solid #ccc; padding: 10px; margin-left: 20px; margin-top: 10px;">
-                        </div>
-                        
+        <div class="overlayForm">
+            <h2>Edit Staff Details</h2>
+            <button id="closeBtn">&times;</button>
+            <input type="hidden" id="editStaffId">
+            <div>
+                <div style="display: flex; gap: 20px;">
+                    <div>
+                        <label>Email</label>
+                        <input type="text" id="emailStaffEdit">
                     </div>
-                    <label for="role" style="margin-top: 10px;">Role</label>
-                        <select id="roleEdit" name="role" style="width: 560px; height: 40px; border-radius: 5px; border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
-                            <option value="admin">Admin</option>
-                            <option value="marketingManager">Marketing manager</option>
-                            <option value="inventoryManager">Inventory Manager</option>
-                            <option value="salesRep">Sales Representative</option>
-                        </select>
-                        <button class="confirmBtn" id="edit">Confirm</button>
-                      
+                    <div>
+                        <label>Name</label>
+                        <input type="text" id="nameStaffEdit">
+                    </div>
                 </div>
-               
-            </form>
+                <label>Role</label>
+                <select id="roleEdit">
+                    <option value="admin">Admin</option>
+                    <option value="marketingManager">Marketing Manager</option>
+                    <option value="inventoryManager">Inventory Manager</option>
+                    <option value="salesRep">Sales Representative</option>
+                </select>
+                <button class="confirmBtn" id="edit">Confirm</button>
+            </div>
         </div>
     </div>
-    
 </body>
 </html>

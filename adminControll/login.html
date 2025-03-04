@@ -1,98 +1,147 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login - Galoya Milk Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-        #containerDiv{
-            
-            place-items: center;
-            
-            text-align: center;
-            margin-top: 200px;
-            margin-left: 610px;
-            padding-top: 20px;
-            border: 2px solid black;
-            border-color: rgb(210, 204, 204);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1); /* Transparent white */
-            backdrop-filter: blur(20px);
-        }
-        body{
-            background-image: url(https://th.bing.com/th/id/R.fe26d3c4a72e919e161b497568bd7696?rik=NXsyTNxZ7Hynag&pid=ImgRaw&r=0);
+        body {
+            margin: 0;
+            height: 100vh;
+            background: url('https://th.bing.com/th/id/R.fe26d3c4a72e919e161b497568bd7696?rik=NXsyTNxZ7Hynag&pid=ImgRaw&r=0') no-repeat center center fixed;
             background-size: cover;
-            background-position: center; 
-            background-repeat: no-repeat; 
-            height: 70vh; 
-            margin: 0; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
         }
-        #logInBtn{
-            background: rgba(50,19,156,255);
-            color: aliceblue;
-            border: 1px solid;
-            border-color: rgba(50,19,156,255);
+        .login-container {
+            width: 400px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            text-align: center;
+            animation: fadeIn 0.5s ease-in-out;
         }
-        #logInBtn:hover{
-            background-color: rgba(35, 10, 140, 255);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-     
+        .login-container h2 {
+            color: #fff;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .login-container input:focus {
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 5px rgba(94, 114, 228, 0.5);
+        }
+        #logInBtn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: linear-gradient(90deg, #5e72e4, #4a5bbf);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        #logInBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(94, 114, 228, 0.4);
+            background: linear-gradient(90deg, #4a5bbf, #3a4ba0);
+        }
+        .register-link {
+            margin-top: 15px;
+            color: #e0e7ff;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .register-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
     <script type="module">
         import { auth, signInWithEmailAndPassword } from "./firebase.js";
-        import { db,doc, getDoc } from "./firebase.js";
+        import { db, doc, getDoc } from "./firebase.js";
 
-        document.getElementById("logInBtn").addEventListener("click",async function(event){
+        document.getElementById("logInBtn").addEventListener("click", async function(event) {
             event.preventDefault();
 
-            const email = document.getElementById("loginEmail").value;
-            const password = document.getElementById("loginPassword").value;
+            const email = document.getElementById("loginEmail").value.trim();
+            const password = document.getElementById("loginPassword").value.trim();
+            const errorMessage = document.querySelector(".error-message");
+
+            if (!email || !password) {
+                errorMessage.textContent = "Please fill in all fields!";
+                errorMessage.style.display = "block";
+                return;
+            }
 
             try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            const user = userCredential.user;
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
 
-            // Fetch user data from Firestore
-            const userDoc = await getDoc(doc(db, "users", user.uid));
-            if (userDoc.exists()) {
-            const userData = userDoc.data();
-            console.log("User data:", userData);
-            alert(`Welcome, ${userData.username}!`);
-            window.location.href = "dashboard.html";
-            } else {
-            console.log("No user data found!");
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    console.log("User data:", userData);
+                    alert(`Welcome, ${userData.username || user.email.split('@')[0]}! 🎉`);
+                    window.location.href = "dashboard.html";
+                } else {
+                    console.log("No user data found!");
+                    errorMessage.textContent = "User data not found!";
+                    errorMessage.style.display = "block";
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                errorMessage.textContent = error.message || "Invalid email or password! ❌";
+                errorMessage.style.display = "block";
             }
-           } 
-            catch (error) {
-            alert("Invalid email or password! ❌");
-            console.error(error);
-           }
         });
     </script>
 </head>
 <body>
-    
-    <form >
-        <div id="containerDiv" style="width: 300px; height: 300px ; ">
-            <div>
-                <h2 id="loginTxt" style="color: azure;">LOGIN</h2>
-                <div id="textBoxDiv" style="display: flex; flex-direction: column;">
-                     <input id="loginEmail" name="loginEmail" type="text" style="width: 200px; height:30px; text-align: center; margin-bottom: 20px; border-radius: 10px; border: 1px ; padding-left: 10px;" placeholder="Username">
-                     <input id="loginPassword" name="loginPassword" type="text" style="width: 200px; height:30px; text-align: center; margin-bottom: 40px; border-radius: 10px; border: 1px; padding-left: 10px;" placeholder="Password">
-                </div>
-                    
-                     <button name="loginBtn" type="submit" id="logInBtn" style="width: 200px; height: 30px; border-radius: 20px;">Log in</button>
-                     <div style="display: flex;">
-                        <h5 style="margin-left: 8px;">No account with us?</h5>
-                        <a href="/register.html" style="font-size: small; margin-top: 23px; margin-left: 5px; text-decoration: underline; color: rgb(186, 186, 190); cursor: pointer;">Register here</a>
-                     </div>
-            </div>
-           
-        </div>    
-
-    </form>
-   
-    
+    <div class="login-container">
+        <h2><i class='bx bx-lock'></i> Login</h2>
+        <div class="error-message"></div>
+        <form>
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button type="submit" id="logInBtn">Log In</button>
+        </form>
+        <div>
+            <p>No account? <a href="register.html" class="register-link">Register here</a></p>
+        </div>
+    </div>
 </body>
 </html>

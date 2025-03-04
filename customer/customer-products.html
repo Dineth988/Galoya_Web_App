@@ -148,23 +148,28 @@
 
         .cart-icon {
             position: fixed;
-            top: 20px;
+            top: 10px;
             right: 20px;
             font-size: 24px;
-            color: #5e72e4;
+            color: #000000;
             cursor: pointer;
-            z-index: 1000;
+            z-index: 2000; 
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .cart-badge {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background-color: red;
+            position: relative;
+            top: 0;
+            right: 0;
+            background-color: #ff6f61;
             color: white;
             border-radius: 50%;
             padding: 5px 10px;
             font-size: 14px;
+            min-width: 20px;
+            text-align: center;
         }
 
         .footer {
@@ -182,41 +187,99 @@
         .footer a:hover {
             text-decoration: underline;
         }
+
+        /* Wishlist Styles */
+        .wishlist-icon {
+            position: fixed;
+            top: 45px;
+            right: 20px;
+            font-size: 24px;
+            color: #ff6f61;
+            cursor: pointer;
+            z-index: 2000; 
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .wishlist-badge {
+            position: relative;
+            top: 0;
+            right: 0;
+            background-color: #ff6f61;
+            color: white;
+            border-radius: 50%;
+            padding: 5px 10px;
+            font-size: 14px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .bx-heart {
+            display: inline-block;
+            font-size: 24px; /* Ensure size matches design */
+        }
+
+        /* Wishlist Modal */
+        #wishlistModal .modal-body {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .wishlist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .wishlist-item .remove-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .wishlist-item .remove-btn:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
     <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#">GALOYA DAIRY PRODUCTS</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Products</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="../marketingManager/offersView.html">Deals</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="myorders.html">My Orders</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Contact</a>
-                </li>
-                <!-- Add the Profile Button Here -->
-                <li class="nav-item">
-                    <a class="nav-link" href="profile.html">Profile</a>
-                </li>
-            </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">GALOYA DAIRY PRODUCTS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../marketingManager/offersView.html">Deals</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="myorders.html">My Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="profile.html">Profile</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -227,54 +290,53 @@
         </div>
     </section>
 
-        <!-- Deals -->
-        <section class="deals">
-            <div class="container">
-                <h2 class="section-title">Hot Deals</h2>
-                <div class="row">
-                    <div class="col-md-4 mb-4">
-                        <div class="product-card">
-                            <img src="images/bottledshake.jpg" alt="Deal 1" class="product-image">
-                            <div class="product-details">
-                                <h3 class="product-title">Special Offer</h3>
-                                <p class="product-price">Rs. 500</p>
-                                <a href="#" class="btn btn-success">Buy Now</a>
-                            </div>
+    <!-- Deals -->
+    <section class="deals">
+        <div class="container">
+            <h2 class="section-title">Hot Deals</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <img src="images/bottledshake.jpg" alt="Deal 1" class="product-image">
+                        <div class="product-details">
+                            <h3 class="product-title">Special Offer</h3>
+                            <p class="product-price">Rs. 500</p>
+                            <a href="#" class="btn btn-success">Buy Now</a>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="product-card">
-                            <img src="images/drink.webp" alt="Deal 2" class="product-image">
-                            <div class="product-details">
-                                <h3 class="product-title">Limited Time Offer</h3>
-                                <p class="product-price">Rs. 700</p>
-                                <a href="#" class="btn btn-success">Buy Now</a>
-                            </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <img src="images/drink.webp" alt="Deal 2" class="product-image">
+                        <div class="product-details">
+                            <h3 class="product-title">Limited Time Offer</h3>
+                            <p class="product-price">Rs. 700</p>
+                            <a href="#" class="btn btn-success">Buy Now</a>
                         </div>
                     </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="product-card">
-                            <img src="images/packet.avif" alt="Deal 3" class="product-image">
-                            <div class="product-details">
-                                <h3 class="product-title">Exclusive Deal</h3>
-                                <p class="product-price">Rs. 900</p>
-                                <a href="#" class="btn btn-success">Buy Now</a>
-                            </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="product-card">
+                        <img src="images/packet.avif" alt="Deal 3" class="product-image">
+                        <div class="product-details">
+                            <h3 class="product-title">Exclusive Deal</h3>
+                            <p class="product-price">Rs. 900</p>
+                            <a href="#" class="btn btn-success">Buy Now</a>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
- <!-- Categories -->
-<section class="categories">
-    <div class="container">
-        <h2 class="section-title">Shop by Category</h2>
-        <div class="row" id="categoryList">
-            <!-- Categories will be dynamically inserted here -->
+    <!-- Categories -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="row" id="categoryList">
+                <!-- Categories will be dynamically inserted here -->
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
     <!-- Featured Products -->
     <section id="featured-products" class="featured-products">
@@ -289,7 +351,7 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Galoya Milk Products. All rights reserved.</p>
+            <p>© 2025 Galoya Milk Products. All rights reserved.</p>
             <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
         </div>
     </footer>
@@ -298,6 +360,12 @@
     <div class="cart-icon" onclick="openCartModal()">
         <i class='bx bx-cart'></i>
         <span class="cart-badge" id="cartBadge">0</span>
+    </div>
+
+    <!-- Wishlist Icon -->
+    <div class="wishlist-icon" onclick="openWishlistModal()">
+        <i class='bx bx-heart' id="wishlistIcon"></i>
+        <span class="wishlist-badge" id="wishlistBadge">0</span>
     </div>
 
     <!-- Cart Modal -->
@@ -313,7 +381,7 @@
                         <!-- Cart items will be dynamically inserted here -->
                     </div>
                     <div class="total-amount">
-                        <h5>Total: <span id="cartTotal">Rs.</span></h5>
+                        <h5>Total: <span id="cartTotal">Rs. 0.00</span></h5>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -324,18 +392,56 @@
         </div>
     </div>
 
+    <!-- Wishlist Modal -->
+    <div class="modal fade" id="wishlistModal" tabindex="-1" aria-labelledby="wishlistModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="wishlistModalLabel">Your Wishlist</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="wishlistItems">
+                        <!-- Wishlist items will be dynamically inserted here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Debug Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const wishlistIcon = document.getElementById("wishlistIcon");
+            if (!wishlistIcon) {
+                console.error("Wishlist icon not found in the DOM.");
+            } else {
+                console.log("Wishlist icon found:", wishlistIcon);
+                wishlistIcon.style.visibility = "visible"; // Force visibility
+                wishlistIcon.style.opacity = "1"; // Ensure opacity is not hidden
+            }
+
+            // Check if Boxicons is loaded
+            const boxiconsStyle = document.querySelector("link[href*='boxicons']");
+            if (!boxiconsStyle || !boxiconsStyle.sheet) {
+                console.error("Boxicons CSS not loaded.");
+            } else {
+                console.log("Boxicons CSS loaded successfully.");
+            }
+        });
+    </script>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Firebase Integration -->
     <script type="module">
         // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import {
-            getDatabase,
-            ref,
-            get,
-        } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // Firebase configuration
         const firebaseConfig = {
@@ -367,43 +473,39 @@
         }
 
         // Fetch categories from Firebase
-async function fetchCategories() {
-    const categoriesRef = ref(database, "Categories");
-    const snapshot = await get(categoriesRef);
+        async function fetchCategories() {
+            const categoriesRef = ref(database, "Categories");
+            const snapshot = await get(categoriesRef);
 
-    if (snapshot.exists()) {
-        const categories = snapshot.val();
-        renderCategories(categories);
-    } else {
-        console.log("No categories found.");
-    }
-}
+            if (snapshot.exists()) {
+                const categories = snapshot.val();
+                renderCategories(categories);
+            } else {
+                console.log("No categories found.");
+            }
+        }
 
-    // Render categories dynamically
-function renderCategories(categories) {
-    const categoryList = document.getElementById("categoryList");
-    categoryList.innerHTML = "";
-    
-    Object.keys(categories).forEach((key) => {
-           const category = categories[key];
-            const categoryCard = document.createElement("div");
-           categoryCard.classList.add("col-md-4", "mb-4");
-           categoryCard.innerHTML = `
-               <div class="product-card">
-                   <img src="${category.imageURL}" alt="${category.name}" class="product-image">
-                   <div class="product-details">
-                       <h3 class="product-title">${category.name}</h3>
-                       <a href="category_products.html?category=${key}" class="btn btn-primary">View Products</a>
-                   </div>
-               </div>
-           `;
-           categoryList.appendChild(categoryCard);
-    });
-}
-
-// Fetch categories when the page loads
-fetchCategories();
-    
+        // Render categories dynamically
+        function renderCategories(categories) {
+            const categoryList = document.getElementById("categoryList");
+            categoryList.innerHTML = "";
+            
+            Object.keys(categories).forEach((key) => {
+                const category = categories[key];
+                const categoryCard = document.createElement("div");
+                categoryCard.classList.add("col-md-4", "mb-4");
+                categoryCard.innerHTML = `
+                    <div class="product-card">
+                        <img src="${category.imageURL}" alt="${category.name}" class="product-image">
+                        <div class="product-details">
+                            <h3 class="product-title">${category.name}</h3>
+                            <a href="category_products.html?category=${key}" class="btn btn-primary">View Products</a>
+                        </div>
+                    </div>
+                `;
+                categoryList.appendChild(categoryCard);
+            });
+        }
 
         // Render products
         function renderProducts(products) {
@@ -416,7 +518,7 @@ fetchCategories();
                 productCard.classList.add("col-md-4", "mb-4");
                 productCard.innerHTML = `
                     <div class="product-card">
-                        <img src="${product.ImageLinks[0]}" alt="${product.name}" class="product-image">
+                        <img src="${product.ImageLinks[0]}" alt="${product.ProductTitle}" class="product-image">
                         <div class="product-details">
                             <h3 class="product-title">${product.ProductTitle}</h3>
                             <p class="product-price">Rs. ${product.Price}</p>
@@ -427,10 +529,15 @@ fetchCategories();
                                 <a href="product_details.html?id=${key}" class="btn btn-primary">View Details</a>
                                 <button class="btn btn-success" onclick="addToCart({
                                     id: '${key}',
-                                    name: '${product.name}',
+                                    ProductTitle: '${product.ProductTitle}',
                                     Price: ${product.Price},
                                     quantity: 1
                                 })">Add to Cart</button>
+                                <button class="btn btn-warning" onclick="addToWishlist({
+                                    id: '${key}',
+                                    ProductTitle: '${product.ProductTitle}',
+                                    Price: ${product.Price}
+                                })">Add to Wishlist</button>
                             </div>
                         </div>
                     </div>
@@ -454,34 +561,61 @@ fetchCategories();
             return stars;
         }
 
-        // Fetch products when the page loads
+        // Fetch products and categories when the page loads
         fetchProducts();
+        fetchCategories();
     </script>
 
-    <!-- Cart Script -->
+    <!-- Cart and Wishlist Script -->
     <script>
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
         function addToCart(product) {
-    const existingItem = cart.find((item) => item.id === product.id);
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            id: product.id,
-            ProductTitle: product.ProductTitle, 
-            Price: product.Price,
-            quantity: 1,
-            Stock: product.Stock 
-        });
-    }
-    updateCart();
-    openCartModal();
-}
+            const existingItem = cart.find((item) => item.id === product.id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    ProductTitle: product.ProductTitle,
+                    Price: product.Price,
+                    quantity: 1
+                });
+            }
+            updateCart();
+            openCartModal();
+        }
+
+        function addToWishlist(product) {
+            const existingItem = wishlist.find((item) => item.id === product.id);
+            if (!existingItem) {
+                wishlist.push({
+                    id: product.id,
+                    ProductTitle: product.ProductTitle,
+                    Price: product.Price
+                });
+                updateWishlist();
+                alert(`${product.ProductTitle} added to wishlist!`);
+            } else {
+                alert(`${product.ProductTitle} is already in your wishlist!`);
+            }
+        }
+
+        function removeFromWishlist(productId) {
+            wishlist = wishlist.filter((item) => item.id !== productId);
+            updateWishlist();
+            renderWishlist();
+        }
 
         function updateCart() {
             localStorage.setItem("cart", JSON.stringify(cart));
             updateCartBadge();
+        }
+
+        function updateWishlist() {
+            localStorage.setItem("wishlist", JSON.stringify(wishlist));
+            updateWishlistBadge();
         }
 
         function updateCartBadge() {
@@ -489,9 +623,53 @@ fetchCategories();
             document.getElementById("cartBadge").textContent = totalItems;
         }
 
+        function updateWishlistBadge() {
+            const totalItems = wishlist.length;
+            document.getElementById("wishlistBadge").textContent = totalItems;
+        }
+
         function openCartModal() {
+            const cartItemsDiv = document.getElementById("cartItems");
+            const cartTotalSpan = document.getElementById("cartTotal");
+            cartItemsDiv.innerHTML = "";
+            let total = 0;
+
+            cart.forEach((item) => {
+                const itemTotal = item.Price * item.quantity;
+                total += itemTotal;
+                cartItemsDiv.innerHTML += `
+                    <div class="wishlist-item">
+                        <span>${item.ProductTitle} - Rs. ${item.Price} x ${item.quantity}</span>
+                    </div>
+                `;
+            });
+
+            cartTotalSpan.textContent = `Rs. ${total.toFixed(2)}`;
             new bootstrap.Modal(document.getElementById("cartModal")).show();
         }
+
+        function openWishlistModal() {
+            renderWishlist();
+            new bootstrap.Modal(document.getElementById("wishlistModal")).show();
+        }
+
+        function renderWishlist() {
+            const wishlistItemsDiv = document.getElementById("wishlistItems");
+            wishlistItemsDiv.innerHTML = "";
+
+            wishlist.forEach((item) => {
+                wishlistItemsDiv.innerHTML += `
+                    <div class="wishlist-item">
+                        <span>${item.ProductTitle} - Rs. ${item.Price}</span>
+                        <button class="remove-btn" onclick="removeFromWishlist('${item.id}')">Remove</button>
+                    </div>
+                `;
+            });
+        }
+
+        // Initialize badges
+        updateCartBadge();
+        updateWishlistBadge();
     </script>
     <script src="cart.js"></script>
 </body>

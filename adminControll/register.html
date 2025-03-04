@@ -3,118 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Sign Up - Galoya Milk Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
         html, body {
-             overflow: hidden;
-       }
-       body{
-       
-        background-size: cover;
-       }
-
-        #imageDiv{
-            
-            background-image: url(https://th.bing.com/th/id/R.fe26d3c4a72e919e161b497568bd7696?rik=NXsyTNxZ7Hynag&pid=ImgRaw&r=0);
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+        body {
+            background: url('https://th.bing.com/th/id/R.fe26d3c4a72e919e161b497568bd7696?rik=NXsyTNxZ7Hynag&pid=ImgRaw&r=0') no-repeat center center fixed;
             background-size: cover;
-            width: 800px;
-            height: 720px;     
-            border-radius: 20px;        
-            
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        #formDiv{
-            
-            background: white;
-            width: 400px;
-            position: relative;
+        .signup-container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            height: 720px;
+            overflow: hidden;
             border-radius: 20px;
-            margin-left: 90px;
-            margin-top:70px;
-            padding: 30px;
-           
-            background: rgba(255, 255, 255, 0.1); /* Transparent white */
-            backdrop-filter: blur(20px);
-           
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        #signUpBtn{
-            background: rgba(50,19,156,255);
-            color: azure;
-            border: 1px;
+        #imageDiv {
+            flex: 1;
+            background: url('https://th.bing.com/th/id/R.fe26d3c4a72e919e161b497568bd7696?rik=NXsyTNxZ7Hynag&pid=ImgRaw&r=0') no-repeat center center;
+            background-size: cover;
         }
-        #signUpBtn:hover{
-            background-color: rgba(35, 10, 140, 255);
+        #formDiv {
+            flex: 1;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 0 20px 20px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideIn 0.5s ease-in-out;
         }
-    
-       
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        #formDiv p:first-child {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        #formDiv h1 {
+            font-size: 48px;
+            color: #fff;
+            margin: 0 0 20px 0;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+        }
+        #formDiv input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        #formDiv input:focus {
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 5px rgba(94, 114, 228, 0.5);
+        }
+        #signUpBtn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background: linear-gradient(90deg, #5e72e4, #4a5bbf);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        #signUpBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(94, 114, 228, 0.4);
+            background: linear-gradient(90deg, #4a5bbf, #3a4ba0);
+        }
+        .error-message {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
     <script type="module">
         import { auth, db, createUserWithEmailAndPassword } from "./firebase.js";
-        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        document.getElementById("signUpBtn").addEventListener("click",async function (event) {
+        document.getElementById("signUpBtn").addEventListener("click", async function(event) {
             event.preventDefault();
 
-            const email = document.getElementById("emailTxt").value;
-            const username = document.getElementById("usernameTxt").value;
-            const contactNumber = document.getElementById("contactNumberTxt").value;
-            const password = document.getElementById("passwordTxt").value;
+            const email = document.getElementById("emailTxt").value.trim();
+            const username = document.getElementById("usernameTxt").value.trim();
+            const contactNumber = document.getElementById("contactNumberTxt").value.trim();
+            const password = document.getElementById("passwordTxt").value.trim();
+            const errorMessage = document.querySelector(".error-message");
 
-            try{
+            if (!email || !username || !contactNumber || !password) {
+                errorMessage.textContent = "Please fill in all fields!";
+                errorMessage.style.display = "block";
+                return;
+            }
+
+            try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
                 await setDoc(doc(db, "users", user.uid), {
-                email: email,
-                username: username,
-                conatactNumber: contactNumber,
-                
-                createdAt: new Date()
+                    email: email,
+                    username: username,
+                    contactNumber: contactNumber,
+                    shippingInfo: {
+                        fullName: username,
+                        address: "",
+                        phoneNumber: contactNumber
+                    },
+                    createdAt: new Date().toISOString()
                 });
 
-                alert("Signup successful! 🎉");
+                alert("Signup successful! 🎉 Welcome to Galoya!");
                 console.log("User registered:", user);
                 window.location.href = "dashboard.html";
+            } catch (error) {
+                console.error("Error:", error);
+                errorMessage.textContent = error.message || "Signup failed! Please try again.";
+                errorMessage.style.display = "block";
             }
-            catch (error) {
-            alert(error.message);
-            console.error("Error:", error);
-            }
-        })
+        });
     </script>
 </head>
 <body>
-
-    <div style="display: flex; flex-direction: row">
-      <div id="imageDiv">
-
-      </div> 
-        <div>
-           <form >
-                <div id="formDiv" style="display: flex; flex-direction: column;">
-                    <div>
-                        <p style="font-size: large;">Welcome to Galoya products</p>
-                        <h1 style="font-size: 60px; margin-top: 6px;">Sign up</h1>
-                    </div>
-                    <P>Email</P>
-                    <input type="text" id="emailTxt" style="border-radius: 5px; width: 410px; height: 30px; border: 2px solid gray; padding-left: 10px;">
-                    <div style="display: flex; width: 400px;">
-                        <div>
-                            <p>Username</p>
-                            <input type="text" id="usernameTxt" style="width: 187px; height: 30px; border-radius: 5px; margin-right: 20px; border: 2px solid gray; padding-left: 10px;">
-                        </div>
-                        <div>
-                            <p>Contact number</p>
-                            <input type="text" id="contactNumberTxt" style="width: 187px; height: 30px; border-radius: 5px; border: 2px solid gray; padding-left: 10px;">
-                        </div>
-                        
-                    </div>
-                    <p>Password</p>
-                    <input type="text" id="passwordTxt" style="border-radius: 5px; width: 410px; height: 30px; border: 2px solid gray; padding-left: 10px;">
-                    <button name="signUpBtn" style="border-radius: 5px; width: 425px; height: 35px; margin-top: 60px;" id="signUpBtn">Sign up</button>
+    <div class="signup-container">
+        <div id="imageDiv"></div>
+        <div id="formDiv">
+            <p>Welcome to Galoya Products</p>
+            <h1>Sign Up</h1>
+            <div class="error-message"></div>
+            <form>
+                <input type="email" id="emailTxt" placeholder="Email" required>
+                <div style="display: flex; gap: 20px;">
+                    <input type="text" id="usernameTxt" placeholder="Username" required style="flex: 1;">
+                    <input type="text" id="contactNumberTxt" placeholder="Contact Number" required style="flex: 1;">
                 </div>
-           </form> 
+                <input type="password" id="passwordTxt" placeholder="Password" required>
+                <button type="submit" id="signUpBtn">Sign Up</button>
+            </form>
         </div>
     </div>
-    
 </body>
 </html>

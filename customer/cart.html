@@ -76,6 +76,12 @@
             font-size: 18px;
             color: #333;
         }
+        /* Add a message for empty cart */
+        .empty-cart {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -104,7 +110,7 @@
             const cartTotalElement = document.getElementById("cartTotal");
 
             if (cart.length === 0) {
-                cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+                cartItemsContainer.innerHTML = "<p class='empty-cart'>Your cart is empty.</p>";
                 cartTotalElement.textContent = "Rs. 0.00";
                 return;
             }
@@ -112,11 +118,13 @@
             let totalAmount = 0;
             cartItemsContainer.innerHTML = cart.map((item, index) => {
                 totalAmount += item.Price * item.quantity;
+                // Set a reasonable max quantity (e.g., 10) since Stock isn't available
+                const maxQuantity = 10; // Adjust this value as needed
                 return `
                     <div class="cart-item">
-                        <h5>${item.name}</h5>
+                        <h5>${item.ProductTitle}</h5>
                         <p>Price: Rs. ${item.Price}</p>
-                        <p>Quantity: <input type="number" value="${item.quantity}" min="1" max="${item.Stock}" onchange="updateQuantity(${index}, this.value)"></p>
+                        <p>Quantity: <input type="number" value="${item.quantity}" min="1" max="${maxQuantity}" onchange="updateQuantity(${index}, this.value)"></p>
                         <p>Total: Rs. ${item.Price * item.quantity}</p>
                         <button onclick="removeItem(${index})" class="btn btn-danger btn-sm">Remove</button>
                     </div>
@@ -128,8 +136,10 @@
 
         // Update item quantity
         function updateQuantity(index, quantity) {
-            if (quantity < 1 || quantity > cart[index].Stock) {
-                alert(`Quantity cannot exceed available stock (${cart[index].Stock}).`);
+            const maxQuantity = 10; // Reasonable limit since Stock isn't available
+            if (quantity < 1 || quantity > maxQuantity) {
+                alert(`Quantity must be between 1 and ${maxQuantity}.`);
+                renderCartItems(); // Re-render to restore the original value
                 return;
             }
             cart[index].quantity = parseInt(quantity);
@@ -146,7 +156,12 @@
 
         // Proceed to checkout
         function proceedToCheckout() {
-            // Redirect to checkout.html
+            if (cart.length === 0) {
+                alert("Your cart is empty. Add items before checking out.");
+                return;
+            }
+            // Save cart to localStorage and redirect
+            localStorage.setItem("cart", JSON.stringify(cart));
             window.location.href = "checkout.html";
         }
 

@@ -11,7 +11,9 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
             color: #333;
-            background:  url('images/Galoya.webp');
+            background: url('images/Galoya.webp');
+            background-size: cover;
+            background-position: center;
         }
         .checkout-container {
             max-width: 800px;
@@ -91,6 +93,10 @@
                 <label>CVV</label>
                 <input type="text" id="cvv" class="form-control" placeholder="123">
             </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" class="form-control" placeholder="example@example.com">
+            </div>
             <button class="btn-next" id="nextToDelivery">Next</button>
         </div>
 
@@ -148,16 +154,14 @@
     <!-- Firebase Integration -->
     <script type="module">
         // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
             authDomain: "galoya-web-app.firebaseapp.com",
-            databaseURL: "galoya-web-app-default-rtdb.firebaseio.com",
             projectId: "galoya-web-app",
             storageBucket: "gs://galoya-web-app.appspot.com",
             messagingSenderId: "272214790341",
@@ -169,35 +173,35 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const database = getDatabase(app);
-
-        function fetchUserShippingDetails(user) {
-            const userRef = doc(db, "users", user.uid);
-            getDoc(userRef).then(userSnapshot => {
-                if (userSnapshot.exists()) {
-                    const userData = userSnapshot.data();
-                    document.getElementById("fullName").value = userData.shippingInfo.fullName || '';
-                    document.getElementById("address").value = userData.shippingInfo.address || '';
-                    document.getElementById("phoneNumber").value = userData.shippingInfo.phoneNumber || '';
-                    document.getElementById("email").value = userData.email || '';
-                    document.getElementById("codFullName").value = userData.shippingInfo.fullName || '';
-                    document.getElementById("codAddress").value = userData.shippingInfo.address || '';
-                    document.getElementById("codPhoneNumber").value = userData.shippingInfo.phoneNumber || '';
-                    document.getElementById("codEmail").value = userData.email || '';
-                } else {
-                    alert("User data not found.");
-                }
-            }).catch(error => {
-                alert("Error fetching user data.");
-            });
-        }
-
 
         // Load cart items from localStorage
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
         if (!Array.isArray(cart)) {
             console.error("Invalid cart data in localStorage");
             cart = [];
+        }
+
+        // Fetch user shipping details
+        function fetchUserShippingDetails(user) {
+            const userRef = doc(db, "users", user.uid);
+            getDoc(userRef).then((userSnapshot) => {
+                if (userSnapshot.exists()) {
+                    const userData = userSnapshot.data();
+                    document.getElementById("fullName").value = userData.shippingInfo?.fullName || '';
+                    document.getElementById("address").value = userData.shippingInfo?.address || '';
+                    document.getElementById("phoneNumber").value = userData.shippingInfo?.phoneNumber || '';
+                    document.getElementById("email").value = userData.email || '';
+                    document.getElementById("codFullName").value = userData.shippingInfo?.fullName || '';
+                    document.getElementById("codAddress").value = userData.shippingInfo?.address || '';
+                    document.getElementById("codPhoneNumber").value = userData.shippingInfo?.phoneNumber || '';
+                    document.getElementById("codEmail").value = userData.email || '';
+                } else {
+                    alert("User data not found.");
+                }
+            }).catch((error) => {
+                console.error("Error fetching user data:", error);
+                alert("Error fetching user data.");
+            });
         }
 
         // Show payment method section based on selection
@@ -229,20 +233,29 @@
             const fullName = paymentMethod === "cod" ? document.getElementById("codFullName").value : document.getElementById("fullName").value;
             const address = paymentMethod === "cod" ? document.getElementById("codAddress").value : document.getElementById("address").value;
             const phoneNumber = paymentMethod === "cod" ? document.getElementById("codPhoneNumber").value : document.getElementById("phoneNumber").value;
+            const email = paymentMethod === "cod" ? document.getElementById("codEmail").value : document.getElementById("email").value;
+
+            // Validate required fields
+            if (!fullName || !address || !phoneNumber || !email) {
+                alert("Please fill in all required fields.");
+                return;
+            }
 
             // Calculate total amount
             const totalAmount = cart.reduce((total, item) => total + item.Price * item.quantity, 0);
 
             // Display order summary
-            document.getElementById("summaryContent").innerHTML = `
+            const summaryContent = document.getElementById("summaryContent");
+            summaryContent.innerHTML = `
                 <p><strong>Payment Method:</strong> ${paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment"}</p>
                 <p><strong>Full Name:</strong> ${fullName}</p>
                 <p><strong>Address:</strong> ${address}</p>
                 <p><strong>Phone Number:</strong> ${phoneNumber}</p>
+                <p><strong>Email:</strong> ${email}</p>
                 <p><strong>Items:</strong></p>
                 <ul>
                     ${cart.map(item => `
-                        <li>${item.name} - Rs. ${item.Price} x ${item.quantity}</li>
+                        <li>${item.ProductTitle} - Rs. ${item.Price} x ${item.quantity}</li>
                     `).join("")}
                 </ul>
                 <p><strong>Total Amount:</strong> Rs. ${totalAmount.toFixed(2)}</p>
@@ -258,9 +271,10 @@
             const fullName = paymentMethod === "cod" ? document.getElementById("codFullName").value.trim() : document.getElementById("fullName").value.trim();
             const address = paymentMethod === "cod" ? document.getElementById("codAddress").value.trim() : document.getElementById("address").value.trim();
             const phoneNumber = paymentMethod === "cod" ? document.getElementById("codPhoneNumber").value.trim() : document.getElementById("phoneNumber").value.trim();
+            const email = paymentMethod === "cod" ? document.getElementById("codEmail").value.trim() : document.getElementById("email").value.trim();
 
             // Validate required fields
-            if (!fullName || !address || !phoneNumber) {
+            if (!fullName || !address || !phoneNumber || !email) {
                 alert("Please fill in all required fields.");
                 return;
             }
@@ -277,18 +291,20 @@
 
             // Prepare order data
             const orderData = {
-                
+                userId: user.uid,
                 paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card Payment",
                 fullName,
                 address,
                 phoneNumber,
+                email,
                 items: cart.map(item => ({
-                    name: item.name,
-                    price: item.Price,
+                    ProductTitle: item.ProductTitle,
+                    Price: item.Price,
                     quantity: item.quantity
                 })),
-                totalAmount,
-                timestamp: new Date().toISOString()
+                totalAmount: totalAmount.toFixed(2),
+                timestamp: new Date().toISOString(),
+                status: "pending"
             };
 
             // Save the order to Firestore
@@ -303,6 +319,15 @@
                 alert("There was an error confirming your order. Please try again.");
             }
         }
+
+        // Listen for authentication state changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                fetchUserShippingDetails(user);
+            } else {
+                window.location.href = "login.html"; // Redirect to login if not logged in
+            }
+        });
 
         // Event Listeners
         document.getElementById("paymentMethod").addEventListener("change", showPaymentMethodSection);
