@@ -4,119 +4,218 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galoya Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff;
+        :root {
+            --primary: #4f46e5;
+            --secondary: #4338ca;
+            --text: #333;
+            --light: #f8f9fa;
+            --border: #ccc;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f2f5, #e5e7eb);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
         }
 
         .container {
-            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
         }
 
-        .form-container {
-            margin-bottom: 20px;
-            
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
         .logo {
-            width: 80px;
+            width: 100px;
             height: auto;
-
+            margin-bottom: 15px;
         }
 
         h2 {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text);
         }
 
         .form-box {
-            background-color: #fff;
-            padding: 20px;
-         
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 01, 1, 0.1);
-            width: 300px;
-            text-align: left;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .form-box:hover {
+            transform: translateY(-5px);
         }
 
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            font-size: 14px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 8px;
         }
 
-        input {
+        input, select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 5px rgba(79, 70, 229, 0.3);
         }
 
         .password-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 8px;
         }
 
         .password-container a {
-            font-size: 12px;
-            color: #4f46e5;
+            font-size: 0.8rem;
+            color: var(--primary);
             text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .password-container a:hover {
+            color: var(--secondary);
+        }
+
+        .role-select {
+            margin-bottom: 25px;
+        }
+
+        select {
+            appearance: none;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="%23333" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>') no-repeat right 12px center;
         }
 
         button {
             width: 100%;
-            padding: 10px;
-            background-color: #4f46e5;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         button:hover {
-            background-color: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .register-text {
-            margin-top: 15px;
-            font-size: 14px;
+            margin-top: 20px;
+            font-size: 0.85rem;
             color: #666;
+            text-align: center;
         }
 
         .register-text a {
-            color: #4f46e5;
+            color: var(--primary);
             text-decoration: none;
-        }
-        .comboBoxRole{
-            margin-bottom: 40px;
-          
-
+            font-weight: 500;
         }
 
+        .register-text a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
     </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-header">
+            <img class="logo" src="https://th.bing.com/th/id/OIP.k892_jJGJaO_5MM308emUAAAAA?rs=1&pid=ImgDetMain" alt="Galoya Milk Products">
+            <h2>Admin Login</h2>
+        </div>
+
+        <div class="form-box">
+            <form id="loginForm">
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" autocomplete="email" required>
+                    <div class="error-message" id="emailError"></div>
+                </div>
+
+                <div class="input-group">
+                    <div class="password-container">
+                        <label for="password">Password</label>
+                        <a href="#" id="forgotPassword">Forgot password?</a>
+                    </div>
+                    <input type="password" id="password" name="password" autocomplete="current-password" required>
+                    <div class="error-message" id="passwordError"></div>
+                </div>
+
+                <div class="role-select">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required>
+                        <option value="admin">Admin</option>
+                        <option value="marketingManager">Marketing Manager</option>
+                        <option value="inventoryManager">Inventory Manager</option>
+                        <option value="salesRep">Sales Representative</option>
+                        <option value="customerSupport">Customer Support</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="signInBtn">Sign In</button>
+            </form>
+
+            <div class="register-text">
+                Don't have an account? <a href="#">Contact Admin</a>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
-      
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
-        // ✅ Initialize Firebase (Only Once)
         const firebaseConfig = {
             apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
             authDomain: "galoya-web-app.firebaseapp.com",
@@ -127,92 +226,118 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app); // ✅ Pass app instance
+        const db = getFirestore(app);
 
-        // ✅ Listen for Sign In Button Click
-        document.getElementById("signInBtn").addEventListener("click", async function (event) {
-            event.preventDefault();
+        const roleRoutes = {
+            "admin": "dashboard.html",
+            "marketingManager": "../marketingManager/mangerDashboard.html",
+            "inventoryManager": "inventoryManager.html",
+            "salesRep": "../salesRepresentative/salesRepDash.html",
+            "customerSupport": "../customerSupport/customerSupportWindow.html"
+        };
 
-            const email = document.getElementById("email").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const role = document.getElementById("role").value; // ✅ Get selected role
+        const loginForm = document.getElementById('loginForm');
+        const signInBtn = document.getElementById('signInBtn');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const roleSelect = document.getElementById('role');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+            const role = roleSelect.value;
+
+            if (!validateInputs(email, password)) return;
+
+            signInBtn.disabled = true;
+            signInBtn.textContent = 'Signing In...';
 
             try {
                 const staffRef = collection(db, "staff");
-                const q = query(staffRef, where("email", "==", email)); 
+                const q = query(staffRef, where("email", "==", email));
                 const querySnapshot = await getDocs(q);
 
-                if (!querySnapshot.empty) {
-                    const userDoc = querySnapshot.docs[0];
-                    const userData = userDoc.data();
-
-                    if (userData.password === password) {
-                        console.log("Login successful:", userData);
-
-                        // ✅ Navigate based on role
-                        const roleRoutes = {
-                            "admin": "dashboard.html",
-                            "marketingManager": "../marketingManager/mangerDashboard.html",
-                            "inventoryManager": "inventoryManager.html",
-                            "salesRep": "../salesRepresentative/salesRepDash.html"
-                        };
-
-                        if (roleRoutes[role]) {
-                            window.location.href = roleRoutes[role];
-                        } else {
-                            alert("Invalid role selected ❌");
-                        }
-                    } else {
-                        alert("Invalid password ❌");
-                    }
-                } else {
-                    alert("No user found with this email ❌");
+                if (querySnapshot.empty) {
+                    showError(emailError, "No user found with this email");
+                    return;
                 }
+
+                const userDoc = querySnapshot.docs[0];
+                const userData = userDoc.data();
+
+                if (userData.password !== password) {
+                    showError(passwordError, "Incorrect password");
+                    return;
+                }
+
+                if (userData.role !== role) {
+                    showError(passwordError, "Selected role doesn't match account");
+                    return;
+                }
+
+                // Store user data in session (consider using more secure methods)
+                sessionStorage.setItem('user', JSON.stringify({
+                    email: userData.email,
+                    role: userData.role
+                }));
+
+                window.location.href = roleRoutes[role];
             } catch (error) {
-                console.error("Firestore Login Error:", error);
-                alert("Something went wrong! ❌");
+                console.error("Login Error:", error);
+                alert("An error occurred during login. Please try again.");
+            } finally {
+                signInBtn.disabled = false;
+                signInBtn.textContent = 'Sign In';
             }
         });
 
-    </script>
-</head>
-<body>
-    <div class="container">
-        <div class="form-container">
-            <img class="logo" src="https://th.bing.com/th/id/OIP.k892_jJGJaO_5MM308emUAAAAA?rs=1&pid=ImgDetMain" alt="Your Company">
-            <h2>Sign in to your account</h2>
-        </div>
-        
-        <div class="form-box">
-            <form >
-                <div class="input-group">
-                    <label for="email">Email address</label>
-                    <input type="email" name="email" id="email" autocomplete="email" required style="width: 279px;;">
-                </div>
-                
-                <div class="input-group">
-                    <div class="password-container">
-                        <label for="password">Password</label>
-                        <a href="#">Forgot password?</a>
-                    </div>
-                    <input type="password" name="password" id="password" autocomplete="current-password" required style="width: 279px; ;">
-                </div>
-                <div class="comboBoxRole">
-                    <label for="role">Role</label>
-                    <select id="role" name="role" style="width: 299px; height: 40px; border-radius: 5px; border: 1px solid #ccc; padding: 10px;">
-                        <option value="admin">Admin</option>
-                        <option value="marketingManager">Marketing manager</option>
-                        <option value="inventoryManager">Inventory Manager</option>
-                        <option value="salesRep">Sales Representative</option>
-                    </select>
-                </div>
-                <div>
-                    <button type="submit" id="signInBtn">Sign in</button>
-                </div>
-            </form>
+        function validateInputs(email, password) {
+            let isValid = true;
+            
+            if (!email) {
+                showError(emailError, "Email is required");
+                isValid = false;
+            } else if (!isValidEmail(email)) {
+                showError(emailError, "Invalid email format");
+                isValid = false;
+            }
 
-        </div>
-    </div>
-  
+            if (!password) {
+                showError(passwordError, "Password is required");
+                isValid = false;
+            } else if (password.length < 6) {
+                showError(passwordError, "Password must be at least 6 characters");
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function showError(element, message) {
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+
+        function clearErrors() {
+            emailError.style.display = 'none';
+            passwordError.style.display = 'none';
+        }
+
+        // Forgot password placeholder (implement proper reset functionality)
+        document.getElementById('forgotPassword').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('Please contact your administrator for password reset.');
+        });
+    </script>
 </body>
 </html>
