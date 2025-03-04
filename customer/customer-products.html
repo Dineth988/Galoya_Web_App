@@ -87,7 +87,7 @@
             background: linear-gradient(90deg, #4a5bbf, #3a4ba0);
         }
 
-        .featured-products, .categories, .deals {
+        .featured-products, .categories, .deals, .ads-section {
             background: rgba(230, 232, 243, 0.9);
             backdrop-filter: blur(5px);
             padding: 60px 0;
@@ -370,6 +370,120 @@
             transform: scale(0.98);
         }
 
+        /* Ads Section */
+        .ads-section .ad-container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .ads-section .ad-item {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .ads-section .ad-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .ads-section .ad-image-container {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+            border-bottom: 1px solid #eee;
+        }
+
+        .ads-section .ad-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .ads-section .ad-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .ads-section .ad-content {
+            padding: 15px;
+            flex-grow: 1;
+        }
+
+        .ads-section .ad-item h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .ads-section .ad-item p {
+            color: #4a5568;
+            font-size: 0.9em;
+            line-height: 1.4;
+            margin: 0;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ads-section .ad-container > button {
+            grid-column: 1 / -1;
+            max-width: 200px;
+            margin: 20px auto;
+            padding: 12px 25px;
+            background: linear-gradient(90deg, #5e72e4, #4a5bbf);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(94, 114, 228, 0.2);
+        }
+
+        .ads-section .ad-container > button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(94, 114, 228, 0.3);
+            background: linear-gradient(90deg, #4a5bbf, #3a4ba0);
+        }
+
+        .ads-section .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(90deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9;
+            transition: all 0.2s ease;
+        }
+
+        .ads-section .remove-btn:hover {
+            opacity: 1;
+            background: linear-gradient(90deg, #c82333, #a11a1a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero-section {
@@ -383,6 +497,9 @@
             }
             .product-card {
                 width: 100%;
+            }
+            .ads-section .ad-container {
+                grid-template-columns: 1fr;
             }
             .cart-icon, .wishlist-icon {
                 top: 10px;
@@ -437,6 +554,15 @@
             <h1>Welcome to Galoya Dairy Products</h1>
             <p>Discover the finest dairy products for your family.</p>
             <a href="#featured-products" class="btn btn-primary">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Ads Section -->
+    <section class="ads-section">
+        <div class="container">
+            <div class="ad-container" id="adList">
+                <!-- Ads will be dynamically inserted here -->
+            </div>
         </div>
     </section>
 
@@ -614,6 +740,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
@@ -628,6 +755,7 @@
 
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+        const firestore = getFirestore(app);
 
         async function fetchProducts() {
             const productsRef = ref(database, "Products");
@@ -649,6 +777,42 @@
             } else {
                 console.log("No categories found.");
             }
+        }
+
+        async function fetchAds() {
+            const adsRef = collection(firestore, "ads");
+            const snapshot = await getDocs(adsRef);
+            const adList = document.getElementById("adList");
+            adList.innerHTML = "";
+            if (snapshot.empty) {
+                adList.innerHTML = `<p style='color: #4a5568; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);'>No ads available.</p>`;
+                return;
+            }
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const adCard = document.createElement("div");
+                adCard.classList.add("ad-item");
+                adCard.dataset.docId = doc.id;
+                adCard.innerHTML = `
+                    <div class="ad-image-container">
+                        <img src="${data.imageUrl || 'https://via.placeholder.com/300'}" alt="${data.title || 'Ad Image'}" loading="lazy">
+                        <button class="remove-btn">×</button>
+                    </div>
+                    <div class="ad-content">
+                        <h3>${data.title || 'No Title'}</h3>
+                        <p>${data.description || 'No Description'}</p>
+                    </div>
+                `;
+                adList.appendChild(adCard);
+
+                // Add delete functionality (for admin access, optional for customer view)
+                const deleteButton = adCard.querySelector('.remove-btn');
+                deleteButton.addEventListener('click', () => {
+                    if (confirm("Are you sure you want to remove this ad? This action is for admins only.")) {
+                        alert("This feature is restricted to admins. Please contact support.");
+                    }
+                });
+            });
         }
 
         function renderCategories(categories) {
@@ -724,6 +888,7 @@
 
         fetchProducts();
         fetchCategories();
+        fetchAds();
     </script>
 
     <!-- Cart and Wishlist Script -->
