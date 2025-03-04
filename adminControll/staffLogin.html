@@ -112,45 +112,55 @@
 
     </style>
     <script type="module">
-        import { auth, signInWithEmailAndPassword }  from "./firebase.js";
-        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+      
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
         import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
+        // ✅ Initialize Firebase (Only Once)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            projectId: "galoya-web-app",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app); // ✅ Pass app instance
+
+        // ✅ Listen for Sign In Button Click
         document.getElementById("signInBtn").addEventListener("click", async function (event) {
             event.preventDefault();
 
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            var comboBox = document.getElementById("role");
-            var selectedValue = comboBox.value;
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const role = document.getElementById("role").value; // ✅ Get selected role
 
             try {
-                const db = getFirestore();
-                
-                
                 const staffRef = collection(db, "staff");
                 const q = query(staffRef, where("email", "==", email)); 
                 const querySnapshot = await getDocs(q);
 
                 if (!querySnapshot.empty) {
-                    const userDoc = querySnapshot.docs[0]; // Get the first matching document
+                    const userDoc = querySnapshot.docs[0];
                     const userData = userDoc.data();
 
-                    // Check if passwords match
                     if (userData.password === password) {
                         console.log("Login successful:", userData);
 
-                        if (selectedValue === "admin") {
-                            window.location.href = "admin.html";
-                        } 
-                        else if(selectedValue === "marketingManager") {
-                            window.location.href = "marketingManager.html";
-                        }
-                        else if(selectedValue === "inventoryManager") {
-                            window.location.href = "inventoryManager.html";
-                        }
-                        else if(selectedValue === "salesRep") {
-                            window.location.href = "salesRep.html";
+                        // ✅ Navigate based on role
+                        const roleRoutes = {
+                            "admin": "dashboard.html",
+                            "marketingManager": "../marketingManager/mangerDashboard.html",
+                            "inventoryManager": "inventoryManager.html",
+                            "salesRep": "../salesRepresentative/salesRepDash.html"
+                        };
+
+                        if (roleRoutes[role]) {
+                            window.location.href = roleRoutes[role];
+                        } else {
+                            alert("Invalid role selected ❌");
                         }
                     } else {
                         alert("Invalid password ❌");
@@ -162,7 +172,8 @@
                 console.error("Firestore Login Error:", error);
                 alert("Something went wrong! ❌");
             }
-        })
+        });
+
     </script>
 </head>
 <body>
