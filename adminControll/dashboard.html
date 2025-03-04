@@ -183,7 +183,7 @@
             </div>
             <div class="card">
                 <h3>Total Sales</h3>
-                <p>Rs. 1,50,000</p>
+                <p id="totalSales">Loading...</p> <!-- Updated to use dynamic value -->
             </div>
             <div class="card">
                 <h3>Active Users</h3>
@@ -194,28 +194,31 @@
         <!-- Recent Activities -->
         <div class="recent-activities">
             <h2>Recent Activities</h2>
-            <div class="activity-item">
-                <i class='bx bx-plus'></i>
-                <span>New product "Strawberry Yoghurt" added.</span>
-            </div>
-            <div class="activity-item">
-                <i class='bx bx-edit'></i>
-                <span>Category "Milkshake" updated.</span>
-            </div>
-            <div class="activity-item">
-                <i class='bx bx-trash'></i>
-                <span>Product "Chocolate Cheese" deleted.</span>
+            <div id="activitiesList">
+                <div class="activity-item">
+                    <i class='bx bx-plus'></i>
+                    <span>New product "Strawberry Yoghurt" added.</span>
+                </div>
+                <div class="activity-item">
+                    <i class='bx bx-edit'></i>
+                    <span>Category "Milkshake" updated.</span>
+                </div>
+                <div class="activity-item">
+                    <i class='bx bx-trash'></i>
+                    <span>Product "Chocolate Cheese" deleted.</span>
+                </div>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, get, push } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getDatabase, ref, get, push, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"; // Added for Firestore
 
         // Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
             authDomain: "galoya-web-app.firebaseapp.com",
             databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
             projectId: "galoya-web-app",
@@ -228,6 +231,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
+        const db = getFirestore(app); // Added Firestore instance
 
         // Fetch total number of products from Firebase
         async function fetchTotalProducts() {
@@ -257,9 +261,73 @@
             }
         }
 
+        // Fetch total sales from Firestore
+        async function fetchTotalSales() {
+            try {
+                const ordersRef = collection(db, "orders");
+                const snapshot = await getDocs(ordersRef);
+                let totalSales = 0;
+                if (!snapshot.empty) {
+                    snapshot.forEach((doc) => {
+                        const order = doc.data();
+                        const amount = Number(order.totalAmount) || 0;
+                        totalSales += amount;
+                    });
+                    document.getElementById("totalSales").textContent = `Rs. ${totalSales.toFixed(2)}`;
+                } else {
+                    document.getElementById("totalSales").textContent = "Rs. 0.00";
+                }
+            } catch (error) {
+                console.error("Error fetching total sales:", error);
+                document.getElementById("totalSales").textContent = "Error";
+            }
+        }
+
+        // Fetch and display recent activities
+        function fetchRecentActivities() {
+            const activitiesRef = ref(database, "Activities");
+            onValue(activitiesRef, (snapshot) => {
+                const activitiesList = document.getElementById("activitiesList");
+                activitiesList.innerHTML = ""; // Clear existing activities
+
+                if (snapshot.exists()) {
+                    const activities = snapshot.val();
+                    const activityArray = Object.values(activities).sort(
+                        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+                    ); // Sort by timestamp descending
+
+                    activityArray.forEach((activity) => {
+                        const activityItem = document.createElement("div");
+                        activityItem.classList.add("activity-item");
+
+                        // Determine the activity type and assign appropriate icon
+                        let iconClass = "bx-plus";
+                        if (activity.activity.toLowerCase().includes("edit")) {
+                            iconClass = "bx-edit";
+                        } else if (activity.activity.toLowerCase().includes("delete")) {
+                            iconClass = "bx-trash";
+                        }
+
+                        activityItem.innerHTML = `
+                            <i class='bx ${iconClass}'></i>
+                            <span>${activity.activity} - ${activity.timestamp}</span>
+                        `;
+                        activitiesList.appendChild(activityItem);
+                    });
+                } else {
+                    activitiesList.innerHTML = "<p>No recent activities found.</p>";
+                }
+            }, (error) => {
+                console.error("Error fetching activities:", error);
+                activitiesList.innerHTML = "<p>Error loading activities.</p>";
+            });
+        }
+
         // Fetch data when the page loads
         fetchTotalProducts();
         fetchTotalCategories();
+        fetchTotalSales(); // Added fetchTotalSales call
+        fetchRecentActivities();
 
         // Load product.html content when the "Products" link is clicked
         document.getElementById("productsLink").addEventListener("click", function (e) {
@@ -354,7 +422,7 @@
         // Function to log out the user
         function logoutUser() {
             // Clear any user session or token (if applicable)
-            localStorage.removeItem("user"); // Example: Remove user data from localStorage
+            localStorage.removeItem("user"); // Remove user data from localStorage
             alert("You have been logged out.");
             window.location.href = "staffLogin.html"; // Redirect to login page
         }
@@ -367,32 +435,6 @@
                 timestamp: new Date().toLocaleString(),
             });
         }
-        // Fetch and display recent activities
-        function fetchRecentActivities() {
-        const activitiesRef = ref(database, "Activities");
-        onValue(activitiesRef, (snapshot) => {
-        const activitiesDiv = document.querySelector(".recent-activities");
-        activitiesDiv.innerHTML = "<h2>Recent Activities</h2>";
-
-        if (snapshot.exists()) {
-            const activities = snapshot.val();
-            Object.values(activities).forEach((activity) => {
-                const activityItem = document.createElement("div");
-                activityItem.classList.add("activity-item");
-                activityItem.innerHTML = `
-                    <i class='bx bx-plus'></i>
-                    <span>${activity.activity} - ${activity.timestamp}</span>
-                `;
-                activitiesDiv.appendChild(activityItem);
-            });
-        } else {
-            activitiesDiv.innerHTML = "<p>No recent activities found.</p>";
-        }
-        });
-        }
-
-        // Fetch activities when the page loads
-        fetchRecentActivities();
     </script>
 
     <!-- Your Existing Sidebar Script -->
