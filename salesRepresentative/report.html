@@ -1,205 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sales Report</title>
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+    <title>Sales Report - Galoya Dairy Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        background: #f1dddd;
-        text-align: center;
-        padding: 10px;
-      }
-
-      h2 {
-        margin-bottom: 20px;
-        color: #333;
-      }
-
-      .filters {
-        margin: 20px 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-      }
-
-      select,
-      button {
-        padding: 10px;
-        border-radius: 5px;
-        border: none;
-        font-size: 16px;
-      }
-
-      button {
-        background: #007bff;
-        color: white;
-        cursor: pointer;
-        transition: 0.3s;
-      }
-
-      button:hover {
-        background: #0056b3;
-      }
-
-      table {
-        width: 80%;
-        margin: 20px auto;
-        border-collapse: collapse;
-        background: white;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-      }
-
-      th,
-      td {
-        border: 1px solid black;
-        padding: 10px;
-      }
-
-      th {
-        background: #28a745;
-        color: white;
-      }
-
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-
-      tr:hover {
-        background: #ddd;
-      }
-
-      #reportContainer {
-        margin-top: 20px;
-        animation: fadeIn 0.5s ease-in-out;
-      }
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: url('pexels-codioful-7135008.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #333;
+            overflow-x: hidden;
         }
-        to {
-          opacity: 1;
-          transform: translateY(0);
+
+        h2 {
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin: 20px 0;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
         }
-      }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filters {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        select, button {
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        select {
+            background: rgba(255, 255, 255, 0.8);
+            color: #2c3e50;
+            width: 200px;
+        }
+
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(94, 114, 228, 0.5);
+        }
+
+        button {
+            background: linear-gradient(90deg, #5e72e4, #4a5bbf);
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(94, 114, 228, 0.3);
+            background: linear-gradient(90deg, #4a5bbf, #3a4ba0);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        table {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            color: #2c3e50;
+        }
+
+        th {
+            background: linear-gradient(90deg, #28a745, #1e7a38);
+            color: #fff;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(242, 242, 242, 0.5);
+        }
+
+        tr:hover {
+            background: rgba(221, 221, 221, 0.7);
+            transition: background 0.3s ease;
+        }
+
+        #reportContainer {
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            margin: 20px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h2 {
+                font-size: 28px;
+            }
+            .filters {
+                flex-direction: column;
+                gap: 10px;
+            }
+            select, button {
+                width: 80%;
+                font-size: 14px;
+            }
+            table {
+                width: 95%;
+                font-size: 14px;
+            }
+            th, td {
+                padding: 8px;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <h2>Sales Report</h2>
+</head>
+<body>
+    <h2><i class='bx bx-chart'></i> Sales Report</h2>
     <div class="filters">
-      <label for="cityFilter">Filter by City: </label>
-      <select id="cityFilter">
-        <option value="all">All Cities</option>
-      </select>
-      <button id="generateReport">Generate Report</button>
+        <label for="cityFilter" style="color: #fff; font-weight: 600;">Filter by City: </label>
+        <select id="cityFilter">
+            <option value="all">All Cities</option>
+        </select>
+        <button id="generateReport">Generate Report</button>
     </div>
     <div id="reportContainer"></div>
 
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-      import {
-        getFirestore,
-        collection,
-        getDocs,
-      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
-        authDomain: "galoya-web-app.firebaseapp.com",
-        projectId: "galoya-web-app",
-        storageBucket: "gs://galoya-web-app.appspot.com",
-        messagingSenderId: "272214790341",
-        appId: "1:272214790341:web:4b7238b47d601a378da0ac",
-        measurementId: "G-322L3R40GC",
-      };
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+            authDomain: "galoya-web-app.firebaseapp.com",
+            projectId: "galoya-web-app",
+            storageBucket: "gs://galoya-web-app.appspot.com",
+            messagingSenderId: "272214790341",
+            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+            measurementId: "G-322L3R40GC",
+        };
 
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      let orders = [];
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let orders = [];
 
-      async function fetchOrders() {
-        const querySnapshot = await getDocs(collection(db, "orders"));
-        orders = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        populateCityFilter(orders);
-        generateReport(orders); // Ensure report is generated initially
-      }
+        async function fetchOrders() {
+            try {
+                const querySnapshot = await getDocs(collection(db, "orders"));
+                orders = querySnapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                populateCityFilter(orders);
+                generateReport(orders); // Ensure report is generated initially
+            } catch (error) {
+                console.error("Error fetching orders:", error.message, error.code);
+                document.getElementById("reportContainer").innerHTML = `<p style='color: #fff; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);'>Error loading orders: ${error.message}. Check console for details.</p>`;
+            }
+        }
 
-      function populateCityFilter(data) {
-        const cityFilter = document.getElementById("cityFilter");
-        cityFilter.innerHTML = '<option value="all">All Cities</option>';
+        function populateCityFilter(data) {
+            const cityFilter = document.getElementById("cityFilter");
+            cityFilter.innerHTML = '<option value="all">All Cities</option>';
 
-        const cities = [
-          ...new Set(data.map((order) => order.city).filter((city) => city)),
-        ];
-        cities.forEach((city) => {
-          const option = document.createElement("option");
-          option.value = city;
-          option.textContent = city;
-          cityFilter.appendChild(option);
-        });
-      }
+            const cities = [...new Set(data.map((order) => order.city).filter((city) => city))];
+            cities.forEach((city) => {
+                const option = document.createElement("option");
+                option.value = city;
+                option.textContent = city;
+                cityFilter.appendChild(option);
+            });
+        }
 
-      document
-        .getElementById("generateReport")
-        .addEventListener("click", () => {
-          const selectedCity = document.getElementById("cityFilter").value;
-          const filteredData =
-            selectedCity === "all"
-              ? orders
-              : orders.filter((order) => order.city === selectedCity);
-          generateReport(filteredData);
+        document.getElementById("generateReport").addEventListener("click", () => {
+            const selectedCity = document.getElementById("cityFilter").value;
+            const filteredData = selectedCity === "all" ? orders : orders.filter((order) => order.city === selectedCity);
+            generateReport(filteredData);
         });
 
-      function generateReport(data) {
-        let totalSales = 0;
-        let dailySales = {};
-        let reportHtml =
-          "<table><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Date</th><th>City</th></tr>";
+        function generateReport(data) {
+            let totalSales = 0;
+            let dailySales = {};
+            let reportHtml = "<table><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Date</th><th>City</th></tr>";
 
-        data.forEach((order) => {
-          let amount = Number(order.totalAmount) || 0; // Convert to number
-          totalSales += amount;
+            data.forEach((order) => {
+                let amount = Number(order.totalAmount) || 0;
+                totalSales += amount;
 
-          let date = order.timestamp
-            ? new Date(order.timestamp.seconds * 1000).toLocaleDateString()
-            : "Unknown";
-          dailySales[date] = (dailySales[date] || 0) + amount;
+                let date = order.timestamp
+                    ? new Date(order.timestamp.seconds * 1000).toLocaleDateString()
+                    : "Unknown";
+                dailySales[date] = (dailySales[date] || 0) + amount;
 
-          reportHtml += `<tr>
-            <td>${order.id}</td>
-            <td>${order.fullName || "N/A"}</td>
-            <td>$${amount.toFixed(2)}</td>
-            <td>${date}</td>
-            <td>${order.city || "Unknown"}</td>
-          </tr>`;
-        });
+                reportHtml += `<tr>
+                    <td>${order.id}</td>
+                    <td>${order.fullName || "N/A"}</td>
+                    <td>Rs. ${amount.toFixed(2)}</td>
+                    <td>${date}</td>
+                    <td>${order.city || "Unknown"}</td>
+                </tr>`;
+            });
 
-        reportHtml += `</table><h3>Total Sales: $${totalSales.toFixed(2)}</h3>`;
+            reportHtml += `</table><h3>Total Sales: Rs. ${totalSales.toFixed(2)}</h3>`;
 
-        reportHtml +=
-          "<h2>Daily Sales</h2><table><tr><th>Date</th><th>Sales ($)</th></tr>";
-        Object.keys(dailySales).forEach((date) => {
-          reportHtml += `<tr><td>${date}</td><td>$${dailySales[date].toFixed(
-            2
-          )}</td></tr>`;
-        });
-        reportHtml += "</table>";
+            reportHtml += "<h2>Daily Sales</h2><table><tr><th>Date</th><th>Sales (Rs.)</th></tr>";
+            Object.keys(dailySales).forEach((date) => {
+                reportHtml += `<tr><td>${date}</td><td>Rs. ${dailySales[date].toFixed(2)}</td></tr>`;
+            });
+            reportHtml += "</table>";
 
-        document.getElementById("reportContainer").innerHTML = reportHtml;
-      }
+            document.getElementById("reportContainer").innerHTML = reportHtml;
+        }
 
-      fetchOrders();
+        fetchOrders();
     </script>
-  </body>
+</head>
+<body>
+    <h2><i class='bx bx-chart'></i> Sales Report</h2>
+    <div class="filters">
+        <label for="cityFilter" style="color: #fff; font-weight: 600;">Filter by City: </label>
+        <select id="cityFilter">
+            <option value="all">All Cities</option>
+        </select>
+        <button id="generateReport">Generate Report</button>
+    </div>
+    <div id="reportContainer"></div>
+</body>
 </html>
