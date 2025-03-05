@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Sales Report - Galoya Dairy Products</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        background: url("pexels-codioful-7135008.jpg") no-repeat center center
+          fixed;
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #333;
+        overflow-x: hidden;
+      }
+
+      h2 {
+        font-size: 36px;
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        margin: 20px 0;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .filter-buttons {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 10px 0;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .filter-buttons button {
+        margin: 5px 10px;
+        padding: 12px 20px;
+        border: none;
+        background: linear-gradient(90deg, #28a745, #1e7a38);
+        color: #fff;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
+      }
+
+      .filter-buttons button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        background: linear-gradient(90deg, #1e7a38, #146301);
+      }
+
+      .filter-buttons button.active {
+        background: linear-gradient(90deg, #1e7a38, #146301);
+        transform: translateY(-2px);
+      }
+
+      .filter-buttons input[type="date"] {
+        margin: 5px 10px;
+        padding: 10px;
+        border-radius: 25px;
+        border: none;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        font-family: "Poppins", sans-serif;
+      }
+
+      .report-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(5px);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 1200px;
+        margin-bottom: 20px;
+      }
+
+      canvas#salesChart {
+        max-height: 400px;
+      }
+
+      .notification {
+        background: linear-gradient(90deg, #28a745, #1e7a38);
+        color: #fff;
+        padding: 12px 20px;
+        margin-top: 20px;
+        text-align: center;
+        border-radius: 25px;
+        display: none;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        animation: slideIn 0.5s ease-out;
+      }
+
+      @keyframes slideIn {
+        from {
+          transform: translateY(-20px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @media (max-width: 768px) {
+        h2 {
+          font-size: 28px;
+        }
+        .filter-buttons {
+          padding: 5px 0;
+        }
+        .filter-buttons button,
+        .filter-buttons input {
+          padding: 8px;
+          font-size: 14px;
+        }
+        .report-container {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h2><i class="bx bx-money"></i> Daily Sales Report</h2>
+    <div class="filter-buttons" id="filterButtons">
+      <button class="active" onclick="filterByPeriod('7days')">
+        Last 7 Days
+      </button>
+      <button onclick="filterByPeriod('30days')">Last 30 Days</button>
+      <input type="date" id="startDate" onchange="filterByCustomRange()" />
+      <input type="date" id="endDate" onchange="filterByCustomRange()" />
+    </div>
+    <div class="report-container">
+      <canvas id="salesChart"></canvas>
+    </div>
+    <div class="notification" id="notification"></div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+        authDomain: "galoya-web-app.firebaseapp.com",
+        projectId: "galoya-web-app",
+        storageBucket: "gs://galoya-web-app.appspot.com",
+        messagingSenderId: "272214790341",
+        appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+        measurementId: "G-322L3R40GC",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      const filterButtonsDiv = document.getElementById("filterButtons");
+      const notificationDiv = document.getElementById("notification");
+      let ordersData = [];
+      let chartInstance = null;
+
+      async function fetchOrders() {
+        try {
+          const querySnapshot = await getDocs(collection(db, "orders"));
+          ordersData = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          if (ordersData.length === 0) {
+            document.getElementById("salesChart").style.display = "none";
+            notificationDiv.innerText = "No sales data found.";
+            notificationDiv.style.display = "block";
+          } else {
+            renderChart("7days");
+          }
+        } catch (error) {
+          console.error("Error fetching orders:", error.message, error.code);
+          notificationDiv.innerText = `Error loading sales data: ${error.message}`;
+          notificationDiv.style.display = "block";
+        }
+      }
+
+      function aggregateDailySales(startDate, endDate) {
+        const salesData = {};
+        ordersData.forEach((order) => {
+          if (!order.timestamp || !order.totalAmount) return;
+          const date = new Date(order.timestamp.seconds * 1000);
+          if (date >= startDate && date <= endDate) {
+            const key = date.toISOString().split("T")[0]; // YYYY-MM-DD
+            salesData[key] =
+              (salesData[key] || 0) + parseFloat(order.totalAmount);
+          }
+        });
+        return salesData;
+      }
+
+      function renderChart(period) {
+        let startDate,
+          endDate = new Date(); // Today as default end date
+        if (period === "7days") {
+          startDate = new Date();
+          startDate.setDate(endDate.getDate() - 6); // Last 7 days including today
+        } else if (period === "30days") {
+          startDate = new Date();
+          startDate.setDate(endDate.getDate() - 29); // Last 30 days including today
+        }
+
+        const salesData = aggregateDailySales(startDate, endDate);
+        const labels = Object.keys(salesData).sort();
+        const data = labels.map((label) => salesData[label]);
+
+        if (chartInstance) chartInstance.destroy();
+
+        const ctx = document.getElementById("salesChart").getContext("2d");
+        chartInstance = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: `Daily Sales (Rs.)`,
+                data: data,
+                backgroundColor: "rgba(40, 167, 69, 0.6)",
+                borderColor: "#28a745",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: { display: true, text: "Sales Amount (Rs.)" },
+                ticks: { callback: (value) => `Rs. ${value}` },
+              },
+              x: { title: { display: true, text: "Date" } },
+            },
+            plugins: {
+              legend: { position: "top" },
+              tooltip: {
+                mode: "index",
+                intersect: false,
+                callbacks: {
+                  label: (context) => `Rs. ${context.raw.toFixed(2)}`,
+                },
+              },
+            },
+          },
+        });
+      }
+
+      window.filterByPeriod = (period) => {
+        const buttons = filterButtonsDiv.getElementsByTagName("button");
+        for (let btn of buttons) btn.classList.remove("active");
+        event.target.classList.add("active");
+        document.getElementById("startDate").value = "";
+        document.getElementById("endDate").value = "";
+        renderChart(period);
+      };
+
+      window.filterByCustomRange = () => {
+        const startDateInput = document.getElementById("startDate").value;
+        const endDateInput = document.getElementById("endDate").value;
+        if (startDateInput && endDateInput) {
+          const startDate = new Date(startDateInput);
+          const endDate = new Date(endDateInput);
+          if (startDate <= endDate) {
+            const buttons = filterButtonsDiv.getElementsByTagName("button");
+            for (let btn of buttons) btn.classList.remove("active");
+            const salesData = aggregateDailySales(startDate, endDate);
+            const labels = Object.keys(salesData).sort();
+            const data = labels.map((label) => salesData[label]);
+
+            if (chartInstance) chartInstance.destroy();
+
+            const ctx = document.getElementById("salesChart").getContext("2d");
+            chartInstance = new Chart(ctx, {
+              type: "bar",
+              data: {
+                labels: labels,
+                datasets: [
+                  {
+                    label: `Daily Sales (Rs.)`,
+                    data: data,
+                    backgroundColor: "rgba(40, 167, 69, 0.6)",
+                    borderColor: "#28a745",
+                    borderWidth: 1,
+                  },
+                ],
+              },
+              options: {
+                responsive: true,
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    title: { display: true, text: "Sales Amount (Rs.)" },
+                    ticks: { callback: (value) => `Rs. ${value}` },
+                  },
+                  x: { title: { display: true, text: "Date" } },
+                },
+                plugins: {
+                  legend: { position: "top" },
+                  tooltip: {
+                    mode: "index",
+                    intersect: false,
+                    callbacks: {
+                      label: (context) => `Rs. ${context.raw.toFixed(2)}`,
+                    },
+                  },
+                },
+              },
+            });
+          } else {
+            notificationDiv.innerText = "Start date must be before end date.";
+            notificationDiv.style.display = "block";
+            setTimeout(() => (notificationDiv.style.display = "none"), 3000);
+          }
+        }
+      };
+
+      fetchOrders();
+    </script>
+  </body>
+</html>
