@@ -275,10 +275,6 @@
                     return;
                 }
 
-                if (userData.role !== role) {
-                    showError(passwordError, "Selected role doesn't match account");
-                    return;
-                }
 
                 // Store user data in session (consider using more secure methods)
                 sessionStorage.setItem('user', JSON.stringify({
