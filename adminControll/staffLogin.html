@@ -1,339 +1,371 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Galoya Admin Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --primary: #4f46e5;
-            --secondary: #4338ca;
-            --text: #333;
-            --light: #f8f9fa;
-            --border: #ccc;
-            --shadow: rgba(0, 0, 0, 0.1);
-        }
+      :root {
+        --primary: #4f46e5;
+        --secondary: #4338ca;
+        --text: #333;
+        --light: #f8f9fa;
+        --border: #ccc;
+        --shadow: rgba(0, 0, 0, 0.1);
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Poppins', Arial, sans-serif;
-            background: linear-gradient(135deg, #f0f2f5, #e5e7eb);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+      body {
+        font-family: "Poppins", Arial, sans-serif;
+        background: linear-gradient(135deg, #f0f2f5, #e5e7eb);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        .container {
-            max-width: 400px;
-            width: 100%;
-            padding: 20px;
-        }
+      .container {
+        max-width: 400px;
+        width: 100%;
+        padding: 20px;
+      }
 
-        .form-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+      .form-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
 
-        .logo {
-            width: 100px;
-            height: auto;
-            margin-bottom: 15px;
-        }
+      .logo {
+        width: 100px;
+        height: auto;
+        margin-bottom: 15px;
+      }
 
-        h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--text);
-        }
+      h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--text);
+      }
 
-        .form-box {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px var(--shadow);
-            transition: transform 0.3s ease;
-        }
+      .form-box {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px var(--shadow);
+        transition: transform 0.3s ease;
+      }
 
-        .form-box:hover {
-            transform: translateY(-5px);
-        }
+      .form-box:hover {
+        transform: translateY(-5px);
+      }
 
-        .input-group {
-            margin-bottom: 20px;
-        }
+      .input-group {
+        margin-bottom: 20px;
+      }
 
-        label {
-            display: block;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text);
-            margin-bottom: 8px;
-        }
+      label {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
 
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
+      input,
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+      }
 
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 5px rgba(79, 70, 229, 0.3);
-        }
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 5px rgba(79, 70, 229, 0.3);
+      }
 
-        .password-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
+      .password-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
 
-        .password-container a {
-            font-size: 0.8rem;
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
+      .password-container a {
+        font-size: 0.8rem;
+        color: var(--primary);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
 
-        .password-container a:hover {
-            color: var(--secondary);
-        }
+      .password-container a:hover {
+        color: var(--secondary);
+      }
 
-        .role-select {
-            margin-bottom: 25px;
-        }
+      .role-select {
+        margin-bottom: 25px;
+      }
 
-        select {
-            appearance: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="%23333" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>') no-repeat right 12px center;
-        }
+      select {
+        appearance: none;
+        background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="%23333" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>')
+          no-repeat right 12px center;
+      }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+      button {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        }
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      }
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
 
-        .register-text {
-            margin-top: 20px;
-            font-size: 0.85rem;
-            color: #666;
-            text-align: center;
-        }
+      .register-text {
+        margin-top: 20px;
+        font-size: 0.85rem;
+        color: #666;
+        text-align: center;
+      }
 
-        .register-text a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
+      .register-text a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+      }
 
-        .register-text a:hover {
-            text-decoration: underline;
-        }
+      .register-text a:hover {
+        text-decoration: underline;
+      }
 
-        .error-message {
-            color: #dc3545;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            display: none;
-        }
+      .error-message {
+        color: #dc3545;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        display: none;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="form-header">
-            <img class="logo" src="https://th.bing.com/th/id/OIP.k892_jJGJaO_5MM308emUAAAAA?rs=1&pid=ImgDetMain" alt="Galoya Milk Products">
-            <h2>Admin Login</h2>
-        </div>
+      <div class="form-header">
+        <img
+          class="logo"
+          src="https://th.bing.com/th/id/OIP.k892_jJGJaO_5MM308emUAAAAA?rs=1&pid=ImgDetMain"
+          alt="Galoya Milk Products"
+        />
+        <h2>Admin Login</h2>
+      </div>
 
-        <div class="form-box">
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" autocomplete="email" required>
-                    <div class="error-message" id="emailError"></div>
-                </div>
+      <div class="form-box">
+        <form id="loginForm">
+          <div class="input-group">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              autocomplete="email"
+              required
+            />
+            <div class="error-message" id="emailError"></div>
+          </div>
 
-                <div class="input-group">
-                    <div class="password-container">
-                        <label for="password">Password</label>
-                        <a href="#" id="forgotPassword">Forgot password?</a>
-                    </div>
-                    <input type="password" id="password" name="password" autocomplete="current-password" required>
-                    <div class="error-message" id="passwordError"></div>
-                </div>
-
-                <div class="role-select">
-                    <label for="role">Role</label>
-                    <select id="role" name="role" required>
-                        <option value="admin">Admin</option>
-                        <option value="marketingManager">Marketing Manager</option>
-                        <option value="inventoryManager">Inventory Manager</option>
-                        <option value="salesRep">Sales Representative</option>
-                        <option value="customerSupport">Customer Support</option>
-                    </select>
-                </div>
-
-                <button type="submit" id="signInBtn">Sign In</button>
-            </form>
-
-            <div class="register-text">
-                Don't have an account? <a href="#">Contact Admin</a>
+          <div class="input-group">
+            <div class="password-container">
+              <label for="password">Password</label>
+              <a href="#" id="forgotPassword">Forgot password?</a>
             </div>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              autocomplete="current-password"
+              required
+            />
+            <div class="error-message" id="passwordError"></div>
+          </div>
+
+          <div class="role-select">
+            <label for="role">Role</label>
+            <select id="role" name="role" required>
+              <option value="admin">Admin</option>
+              <option value="marketingManager">Marketing Manager</option>
+              <option value="inventoryManager">Inventory Manager</option>
+              <option value="salesRep">Sales Representative</option>
+              <option value="customerSupport">Customer Support</option>
+            </select>
+          </div>
+
+          <button type="submit" id="signInBtn">Sign In</button>
+        </form>
+
+        <div class="register-text">
+          Don't have an account? <a href="#">Contact Admin</a>
         </div>
+      </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/11.3.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
-            authDomain: "galoya-web-app.firebaseapp.com",
-            projectId: "galoya-web-app",
-            messagingSenderId: "272214790341",
-            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
-            measurementId: "G-322L3R40GC"
-        };
+      const firebaseConfig = {
+        apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZk",
+        authDomain: "galoya-web-app.firebaseapp.com",
+        projectId: "galoya-web-app",
+        messagingSenderId: "272214790341",
+        appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+        measurementId: "G-322L3R40GC",
+      };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
 
-        const roleRoutes = {
-            "admin": "dashboard.html",
-            "marketingManager": "../marketingManager/mangerDashboard.html",
-            "inventoryManager": "inventoryManager.html",
-            "salesRep": "../salesRepresentative/salesRepDash.html",
-            "customerSupport": "../customerSupport/customerSupportWindow.html"
-        };
+      const roleRoutes = {
+        admin: "dashboard.html",
+        marketingManager: "../marketingManager/mangerDashboard.html",
+        inventoryManager: "../inventorymanager/inventoryDash.html",
+        salesRep: "../salesRepresentative/salesRepDash.html",
+        customerSupport: "../customerSupport/customerSupportWindow.html",
+      };
 
-        const loginForm = document.getElementById('loginForm');
-        const signInBtn = document.getElementById('signInBtn');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const roleSelect = document.getElementById('role');
-        const emailError = document.getElementById('emailError');
-        const passwordError = document.getElementById('passwordError');
+      const loginForm = document.getElementById("loginForm");
+      const signInBtn = document.getElementById("signInBtn");
+      const emailInput = document.getElementById("email");
+      const passwordInput = document.getElementById("password");
+      const roleSelect = document.getElementById("role");
+      const emailError = document.getElementById("emailError");
+      const passwordError = document.getElementById("passwordError");
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            clearErrors();
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        clearErrors();
 
-            const email = emailInput.value.trim();
-            const password = passwordInput.value.trim();
-            const role = roleSelect.value;
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        const role = roleSelect.value;
 
-            if (!validateInputs(email, password)) return;
+        if (!validateInputs(email, password)) return;
 
-            signInBtn.disabled = true;
-            signInBtn.textContent = 'Signing In...';
+        signInBtn.disabled = true;
+        signInBtn.textContent = "Signing In...";
 
-            try {
-                const staffRef = collection(db, "staff");
-                const q = query(staffRef, where("email", "==", email));
-                const querySnapshot = await getDocs(q);
+        try {
+          const staffRef = collection(db, "staff");
+          const q = query(staffRef, where("email", "==", email));
+          const querySnapshot = await getDocs(q);
 
-                if (querySnapshot.empty) {
-                    showError(emailError, "No user found with this email");
-                    return;
-                }
+          if (querySnapshot.empty) {
+            showError(emailError, "No user found with this email");
+            return;
+          }
 
-                const userDoc = querySnapshot.docs[0];
-                const userData = userDoc.data();
+          const userDoc = querySnapshot.docs[0];
+          const userData = userDoc.data();
 
-                if (userData.password !== password) {
-                    showError(passwordError, "Incorrect password");
-                    return;
-                }
+          if (userData.password !== password) {
+            showError(passwordError, "Incorrect password");
+            return;
+          }
 
+          // Store user data in session (consider using more secure methods)
+          sessionStorage.setItem(
+            "user",
+            JSON.stringify({
+              email: userData.email,
+              role: userData.role,
+            })
+          );
 
-                // Store user data in session (consider using more secure methods)
-                sessionStorage.setItem('user', JSON.stringify({
-                    email: userData.email,
-                    role: userData.role
-                }));
+          window.location.href = roleRoutes[role];
+        } catch (error) {
+          console.error("Login Error:", error);
+          alert("An error occurred during login. Please try again.");
+        } finally {
+          signInBtn.disabled = false;
+          signInBtn.textContent = "Sign In";
+        }
+      });
 
-                window.location.href = roleRoutes[role];
-            } catch (error) {
-                console.error("Login Error:", error);
-                alert("An error occurred during login. Please try again.");
-            } finally {
-                signInBtn.disabled = false;
-                signInBtn.textContent = 'Sign In';
-            }
-        });
+      function validateInputs(email, password) {
+        let isValid = true;
 
-        function validateInputs(email, password) {
-            let isValid = true;
-            
-            if (!email) {
-                showError(emailError, "Email is required");
-                isValid = false;
-            } else if (!isValidEmail(email)) {
-                showError(emailError, "Invalid email format");
-                isValid = false;
-            }
-
-            if (!password) {
-                showError(passwordError, "Password is required");
-                isValid = false;
-            } else if (password.length < 6) {
-                showError(passwordError, "Password must be at least 6 characters");
-                isValid = false;
-            }
-
-            return isValid;
+        if (!email) {
+          showError(emailError, "Email is required");
+          isValid = false;
+        } else if (!isValidEmail(email)) {
+          showError(emailError, "Invalid email format");
+          isValid = false;
         }
 
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
+        if (!password) {
+          showError(passwordError, "Password is required");
+          isValid = false;
+        } else if (password.length < 6) {
+          showError(passwordError, "Password must be at least 6 characters");
+          isValid = false;
         }
 
-        function showError(element, message) {
-            element.textContent = message;
-            element.style.display = 'block';
-        }
+        return isValid;
+      }
 
-        function clearErrors() {
-            emailError.style.display = 'none';
-            passwordError.style.display = 'none';
-        }
+      function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+      }
 
-        // Forgot password placeholder (implement proper reset functionality)
-        document.getElementById('forgotPassword').addEventListener('click', (e) => {
-            e.preventDefault();
-            alert('Please contact your administrator for password reset.');
+      function showError(element, message) {
+        element.textContent = message;
+        element.style.display = "block";
+      }
+
+      function clearErrors() {
+        emailError.style.display = "none";
+        passwordError.style.display = "none";
+      }
+
+      // Forgot password placeholder (implement proper reset functionality)
+      document
+        .getElementById("forgotPassword")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("Please contact your administrator for password reset.");
         });
     </script>
-</body>
+  </body>
 </html>

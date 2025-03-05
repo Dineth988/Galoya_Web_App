@@ -1,443 +1,480 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>DashBoard</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!--CSS-->
-    <link rel="stylesheet" href="dashboardStyle.css">
+    <link rel="stylesheet" href="dashboardStyle.css" />
 
     <!--Boxicons CSS-->
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
 
     <style>
-        /* Main Content */
-        #productContainer {
-            margin-left: 250px;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
+      /* Main Content */
+      #productContainer {
+        margin-left: 250px;
+        padding: 20px;
+        transition: all 0.3s ease;
+      }
 
-        .sidebar.close ~ #productContainer {
-            margin-left: 80px;
-        }
+      .sidebar.close ~ #productContainer {
+        margin-left: 80px;
+      }
 
-        /* Dashboard Cards */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+      /* Dashboard Cards */
+      .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
 
-        .card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
+      .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-        }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      }
 
-        .card h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #2d3e50;
-        }
+      .card h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #2d3e50;
+      }
 
-        .card p {
-            font-size: 24px;
-            font-weight: 700;
-            color: #5e72e4;
-        }
+      .card p {
+        font-size: 24px;
+        font-weight: 700;
+        color: #5e72e4;
+      }
 
-        /* Recent Activities */
-        .recent-activities {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
+      /* Recent Activities */
+      .recent-activities {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+      }
 
-        .recent-activities h2 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #2d3e50;
-        }
+      .recent-activities h2 {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #2d3e50;
+      }
 
-        .activity-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
+      .activity-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #e0e0e0;
+      }
 
-        .activity-item:last-child {
-            border-bottom: none;
-        }
+      .activity-item:last-child {
+        border-bottom: none;
+      }
 
-        .activity-item i {
-            font-size: 20px;
-            margin-right: 10px;
-            color: #5e72e4;
-        }
+      .activity-item i {
+        font-size: 20px;
+        margin-right: 10px;
+        color: #5e72e4;
+      }
 
-        .activity-item span {
-            font-size: 14px;
-            color: #666;
-        }
+      .activity-item span {
+        font-size: 14px;
+        color: #666;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Sidebar -->
     <nav class="sidebar close">
-        <header>
-            <div class="image-text">
-                <span class="image">
-                    <img src="images/logo.jpg" alt="logo">
-                </span>
-                <div class="text header-text">
-                    <span class="name">Galoya</span>
-                    <span class="profession">Milk Products</span>
-                </div>
-            </div>
-            <i class='bx bx-chevron-right toggle'></i>
-        </header>
-
-        <div class="menu-bar">
-            <div class="menu">
-                <li class="search-box">                  
-                    <i class='bx bx-search-alt icon'></i>
-                    <input type="text" placeholder="Search...">
-                </li>
-                <div class="menu-links">
-                    <li class="nav-link">
-                        <a href="#" id="dashboardLink">
-                            <i class='bx bx-home icon'></i>
-                            <span class="text nav-text">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#" id="productsLink">
-                            <i class='bx bx-food-menu icon'></i>
-                            <span class="text nav-text">Products</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#" id="categoriesLink">
-                            <i class='bx bx-category icon'></i>
-                            <span class="text nav-text">Categories</span>
-                        </a>
-                    </li>
-                    <li class="nav-link">
-                        <a href="#" id="staffLink">
-                            <i class='bx bx-child icon'></i>
-                            <span class="text nav-text">Staff</span>
-                        </a>
-                    </li>
-                </div>
-            </div>
-
-            <div class="bottom-content">
-                <li class="">
-                    <a href="#" id="logoutLink">
-                        <i class='bx bx-log-out icon'></i>
-                        <span class="text nav-text">Logout</span>
-                    </a>
-                </li>
-
-                <li class="mode">
-                    <div class="moon-sun">
-                        <i class='bx bx-moon icon moon'></i>
-                        <i class='bx bx-sun icon sun'></i>
-                    </div>
-                    <span class="text nav-text">Dark Mode</span>
-                    <div class="toggle-switch">
-                        <span class="switch"></span>
-                    </div>
-                </li>           
-            </div>
+      <header>
+        <div class="image-text">
+          <span class="image">
+            <img src="images/logo.jpg" alt="logo" />
+          </span>
+          <div class="text header-text">
+            <span class="name">Galoya</span>
+            <span class="profession">Milk Products</span>
+          </div>
         </div>
+        <i class="bx bx-chevron-right toggle"></i>
+      </header>
+
+      <div class="menu-bar">
+        <div class="menu">
+          <li class="search-box">
+            <i class="bx bx-search-alt icon"></i>
+            <input type="text" placeholder="Search..." />
+          </li>
+          <div class="menu-links">
+            <li class="nav-link">
+              <a href="#" id="dashboardLink">
+                <i class="bx bx-home icon"></i>
+                <span class="text nav-text">Dashboard</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="#" id="productsLink">
+                <i class="bx bx-food-menu icon"></i>
+                <span class="text nav-text">Products</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="#" id="categoriesLink">
+                <i class="bx bx-category icon"></i>
+                <span class="text nav-text">Categories</span>
+              </a>
+            </li>
+            <li class="nav-link">
+              <a href="#" id="staffLink">
+                <i class="bx bx-child icon"></i>
+                <span class="text nav-text">Staff</span>
+              </a>
+            </li>
+          </div>
+        </div>
+
+        <div class="bottom-content">
+          <li class="">
+            <a href="#" id="logoutLink">
+              <i class="bx bx-log-out icon"></i>
+              <span class="text nav-text">Logout</span>
+            </a>
+          </li>
+
+          <li class="mode">
+            <div class="moon-sun">
+              <i class="bx bx-moon icon moon"></i>
+              <i class="bx bx-sun icon sun"></i>
+            </div>
+            <span class="text nav-text">Dark Mode</span>
+            <div class="toggle-switch">
+              <span class="switch"></span>
+            </div>
+          </li>
+        </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
     <div id="productContainer">
-        <!-- Default Dashboard Content -->
-        <div class="dashboard-cards">
-            <div class="card">
-                <h3>Total Products</h3>
-                <p id="totalProducts">Loading...</p>
-            </div>
-            <div class="card">
-                <h3>Total Categories</h3>
-                <p id="totalCategories">Loading...</p>
-            </div>
-            <div class="card">
-                <h3>Total Sales</h3>
-                <p id="totalSales">Loading...</p> <!-- Updated to use dynamic value -->
-            </div>
-            <div class="card">
-                <h3>Active Users</h3>
-                <p>45</p>
-            </div>
+      <!-- Default Dashboard Content -->
+      <div class="dashboard-cards">
+        <div class="card">
+          <h3>Total Products</h3>
+          <p id="totalProducts">Loading...</p>
         </div>
+        <div class="card">
+          <h3>Total Categories</h3>
+          <p id="totalCategories">Loading...</p>
+        </div>
+        <div class="card">
+          <h3>Total Sales</h3>
+          <p id="totalSales">Loading...</p>
+          <!-- Updated to use dynamic value -->
+        </div>
+        <div class="card">
+          <h3>Active Users</h3>
+          <p>1</p>
+        </div>
+      </div>
 
-        <!-- Recent Activities -->
-        <div class="recent-activities">
-            <h2>Recent Activities</h2>
-            <div id="activitiesList">
-                <div class="activity-item">
-                    <i class='bx bx-plus'></i>
-                    <span>New product "Strawberry Yoghurt" added.</span>
-                </div>
-                <div class="activity-item">
-                    <i class='bx bx-edit'></i>
-                    <span>Category "Milkshake" updated.</span>
-                </div>
-                <div class="activity-item">
-                    <i class='bx bx-trash'></i>
-                    <span>Product "Chocolate Cheese" deleted.</span>
-                </div>
-            </div>
+      <!-- Recent Activities -->
+      <div class="recent-activities">
+        <h2>Recent Activities</h2>
+        <div id="activitiesList">
+          <div class="activity-item">
+            <i class="bx bx-plus"></i>
+            <span>New product "Strawberry Yoghurt" added.</span>
+          </div>
+          <div class="activity-item">
+            <i class="bx bx-edit"></i>
+            <span>Category "Milkshake" updated.</span>
+          </div>
+          <div class="activity-item">
+            <i class="bx bx-trash"></i>
+            <span>Product "Chocolate Cheese" deleted.</span>
+          </div>
         </div>
+      </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, get, push, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"; // Added for Firestore
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        get,
+        push,
+        onValue,
+      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"; // Added for Firestore
 
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
-            authDomain: "galoya-web-app.firebaseapp.com",
-            databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
-            projectId: "galoya-web-app",
-            storageBucket: "gs://galoya-web-app.firebasestorage.app",
-            messagingSenderId: "272214790341",
-            appId: "1:272214790341:web:4b7238b47d601a378da0ac",
-            measurementId: "G-322L3R40GC"
-        };
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyDhThO6iR48f6loaQU40yCiA1IGInq_ZZ",
+        authDomain: "galoya-web-app.firebaseapp.com",
+        databaseURL: "galoya-web-app-default-rtdb.firebaseio.com/",
+        projectId: "galoya-web-app",
+        storageBucket: "gs://galoya-web-app.firebasestorage.app",
+        messagingSenderId: "272214790341",
+        appId: "1:272214790341:web:4b7238b47d601a378da0ac",
+        measurementId: "G-322L3R40GC",
+      };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        const db = getFirestore(app); // Added Firestore instance
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      const db = getFirestore(app); // Added Firestore instance
 
-        // Fetch total number of products from Firebase
-        async function fetchTotalProducts() {
-            const productsRef = ref(database, "Products");
-            const snapshot = await get(productsRef);
+      // Fetch total number of products from Firebase
+      async function fetchTotalProducts() {
+        const productsRef = ref(database, "Products");
+        const snapshot = await get(productsRef);
+
+        if (snapshot.exists()) {
+          const products = snapshot.val();
+          const totalProducts = Object.keys(products).length;
+          document.getElementById("totalProducts").textContent = totalProducts;
+        } else {
+          document.getElementById("totalProducts").textContent = "0";
+        }
+      }
+
+      // Fetch total number of categories from Firebase
+      async function fetchTotalCategories() {
+        const categoriesRef = ref(database, "Categories");
+        const snapshot = await get(categoriesRef);
+
+        if (snapshot.exists()) {
+          const categories = snapshot.val();
+          const totalCategories = Object.keys(categories).length;
+          document.getElementById("totalCategories").textContent =
+            totalCategories;
+        } else {
+          document.getElementById("totalCategories").textContent = "0";
+        }
+      }
+
+      // Fetch total sales from Firestore
+      async function fetchTotalSales() {
+        try {
+          const ordersRef = collection(db, "orders");
+          const snapshot = await getDocs(ordersRef);
+          let totalSales = 0;
+          if (!snapshot.empty) {
+            snapshot.forEach((doc) => {
+              const order = doc.data();
+              const amount = Number(order.totalAmount) || 0;
+              totalSales += amount;
+            });
+            document.getElementById(
+              "totalSales"
+            ).textContent = `Rs. ${totalSales.toFixed(2)}`;
+          } else {
+            document.getElementById("totalSales").textContent = "Rs. 0.00";
+          }
+        } catch (error) {
+          console.error("Error fetching total sales:", error);
+          document.getElementById("totalSales").textContent = "Error";
+        }
+      }
+
+      // Fetch and display recent activities
+      function fetchRecentActivities() {
+        const activitiesRef = ref(database, "Activities");
+        onValue(
+          activitiesRef,
+          (snapshot) => {
+            const activitiesList = document.getElementById("activitiesList");
+            activitiesList.innerHTML = ""; // Clear existing activities
 
             if (snapshot.exists()) {
-                const products = snapshot.val();
-                const totalProducts = Object.keys(products).length;
-                document.getElementById("totalProducts").textContent = totalProducts;
-            } else {
-                document.getElementById("totalProducts").textContent = "0";
-            }
-        }
+              const activities = snapshot.val();
+              const activityArray = Object.values(activities).sort(
+                (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+              ); // Sort by timestamp descending
 
-        // Fetch total number of categories from Firebase
-        async function fetchTotalCategories() {
-            const categoriesRef = ref(database, "Categories");
-            const snapshot = await get(categoriesRef);
+              activityArray.forEach((activity) => {
+                const activityItem = document.createElement("div");
+                activityItem.classList.add("activity-item");
 
-            if (snapshot.exists()) {
-                const categories = snapshot.val();
-                const totalCategories = Object.keys(categories).length;
-                document.getElementById("totalCategories").textContent = totalCategories;
-            } else {
-                document.getElementById("totalCategories").textContent = "0";
-            }
-        }
-
-        // Fetch total sales from Firestore
-        async function fetchTotalSales() {
-            try {
-                const ordersRef = collection(db, "orders");
-                const snapshot = await getDocs(ordersRef);
-                let totalSales = 0;
-                if (!snapshot.empty) {
-                    snapshot.forEach((doc) => {
-                        const order = doc.data();
-                        const amount = Number(order.totalAmount) || 0;
-                        totalSales += amount;
-                    });
-                    document.getElementById("totalSales").textContent = `Rs. ${totalSales.toFixed(2)}`;
-                } else {
-                    document.getElementById("totalSales").textContent = "Rs. 0.00";
+                // Determine the activity type and assign appropriate icon
+                let iconClass = "bx-plus";
+                if (activity.activity.toLowerCase().includes("edit")) {
+                  iconClass = "bx-edit";
+                } else if (activity.activity.toLowerCase().includes("delete")) {
+                  iconClass = "bx-trash";
                 }
-            } catch (error) {
-                console.error("Error fetching total sales:", error);
-                document.getElementById("totalSales").textContent = "Error";
-            }
-        }
 
-        // Fetch and display recent activities
-        function fetchRecentActivities() {
-            const activitiesRef = ref(database, "Activities");
-            onValue(activitiesRef, (snapshot) => {
-                const activitiesList = document.getElementById("activitiesList");
-                activitiesList.innerHTML = ""; // Clear existing activities
-
-                if (snapshot.exists()) {
-                    const activities = snapshot.val();
-                    const activityArray = Object.values(activities).sort(
-                        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
-                    ); // Sort by timestamp descending
-
-                    activityArray.forEach((activity) => {
-                        const activityItem = document.createElement("div");
-                        activityItem.classList.add("activity-item");
-
-                        // Determine the activity type and assign appropriate icon
-                        let iconClass = "bx-plus";
-                        if (activity.activity.toLowerCase().includes("edit")) {
-                            iconClass = "bx-edit";
-                        } else if (activity.activity.toLowerCase().includes("delete")) {
-                            iconClass = "bx-trash";
-                        }
-
-                        activityItem.innerHTML = `
+                activityItem.innerHTML = `
                             <i class='bx ${iconClass}'></i>
                             <span>${activity.activity} - ${activity.timestamp}</span>
                         `;
-                        activitiesList.appendChild(activityItem);
-                    });
-                } else {
-                    activitiesList.innerHTML = "<p>No recent activities found.</p>";
-                }
-            }, (error) => {
-                console.error("Error fetching activities:", error);
-                activitiesList.innerHTML = "<p>Error loading activities.</p>";
-            });
-        }
-
-        // Fetch data when the page loads
-        fetchTotalProducts();
-        fetchTotalCategories();
-        fetchTotalSales(); // Added fetchTotalSales call
-        fetchRecentActivities();
-
-        // Load product.html content when the "Products" link is clicked
-        document.getElementById("productsLink").addEventListener("click", function (e) {
-            e.preventDefault(); // Prevent default link behavior
-            loadProductPage();
-        });
-
-        // Function to load product.html content
-        async function loadProductPage() {
-            const response = await fetch("product.html"); // Fetch product.html
-            const html = await response.text(); // Get the HTML content
-            document.getElementById("productContainer").innerHTML = html; // Insert into productContainer
-
-            // Reinitialize any scripts from product.html
-            const scripts = document.getElementById("productContainer").getElementsByTagName("script");
-            for (let script of scripts) {
-                const newScript = document.createElement("script");
-                newScript.type = script.type;
-                if (script.src) {
-                    newScript.src = script.src;
-                } else {
-                    newScript.textContent = script.textContent;
-                }
-                document.body.appendChild(newScript).remove(); // Execute the script
+                activitiesList.appendChild(activityItem);
+              });
+            } else {
+              activitiesList.innerHTML = "<p>No recent activities found.</p>";
             }
-        }
+          },
+          (error) => {
+            console.error("Error fetching activities:", error);
+            activitiesList.innerHTML = "<p>Error loading activities.</p>";
+          }
+        );
+      }
 
-        // Load category.html content when the "Categories" link is clicked
-        document.getElementById("categoriesLink").addEventListener("click", function (e) {
-            e.preventDefault(); // Prevent default link behavior
-            loadCategoryPage();
+      // Fetch data when the page loads
+      fetchTotalProducts();
+      fetchTotalCategories();
+      fetchTotalSales(); // Added fetchTotalSales call
+      fetchRecentActivities();
+
+      // Load product.html content when the "Products" link is clicked
+      document
+        .getElementById("productsLink")
+        .addEventListener("click", function (e) {
+          e.preventDefault(); // Prevent default link behavior
+          loadProductPage();
         });
 
-        // Function to load category.html content
-        async function loadCategoryPage() {
-            const response = await fetch("category.html"); // Fetch category.html
-            const html = await response.text(); // Get the HTML content
-            document.getElementById("productContainer").innerHTML = html; // Insert into productContainer
+      // Function to load product.html content
+      async function loadProductPage() {
+        const response = await fetch("product.html"); // Fetch product.html
+        const html = await response.text(); // Get the HTML content
+        document.getElementById("productContainer").innerHTML = html; // Insert into productContainer
 
-            // Reinitialize any scripts from category.html
-            const scripts = document.getElementById("productContainer").getElementsByTagName("script");
-            for (let script of scripts) {
-                const newScript = document.createElement("script");
-                newScript.type = script.type;
-                if (script.src) {
-                    newScript.src = script.src;
-                } else {
-                    newScript.textContent = script.textContent;
-                }
-                document.body.appendChild(newScript).remove(); // Execute the script
-            }
+        // Reinitialize any scripts from product.html
+        const scripts = document
+          .getElementById("productContainer")
+          .getElementsByTagName("script");
+        for (let script of scripts) {
+          const newScript = document.createElement("script");
+          newScript.type = script.type;
+          if (script.src) {
+            newScript.src = script.src;
+          } else {
+            newScript.textContent = script.textContent;
+          }
+          document.body.appendChild(newScript).remove(); // Execute the script
         }
+      }
 
-        // Load staff.html content when the "Staff" link is clicked
-        document.getElementById("staffLink").addEventListener("click", function (e) {
-            e.preventDefault(); // Prevent default link behavior
-            loadStaffPage();
+      // Load category.html content when the "Categories" link is clicked
+      document
+        .getElementById("categoriesLink")
+        .addEventListener("click", function (e) {
+          e.preventDefault(); // Prevent default link behavior
+          loadCategoryPage();
         });
 
-        // Function to load staff.html content
-        async function loadStaffPage() {
-            const response = await fetch("staffDetail.html"); // Fetch staff.html
-            const html = await response.text(); // Get the HTML content
-            document.getElementById("productContainer").innerHTML = html; // Insert into productContainer
+      // Function to load category.html content
+      async function loadCategoryPage() {
+        const response = await fetch("category.html"); // Fetch category.html
+        const html = await response.text(); // Get the HTML content
+        document.getElementById("productContainer").innerHTML = html; // Insert into productContainer
 
-            // Reinitialize any scripts from staff.html
-            const scripts = document.getElementById("productContainer").getElementsByTagName("script");
-            for (let script of scripts) {
-                const newScript = document.createElement("script");
-                newScript.type = script.type;
-                if (script.src) {
-                    newScript.src = script.src;
-                } else {
-                    newScript.textContent = script.textContent;
-                }
-                document.body.appendChild(newScript).remove(); // Execute the script
-            }
+        // Reinitialize any scripts from category.html
+        const scripts = document
+          .getElementById("productContainer")
+          .getElementsByTagName("script");
+        for (let script of scripts) {
+          const newScript = document.createElement("script");
+          newScript.type = script.type;
+          if (script.src) {
+            newScript.src = script.src;
+          } else {
+            newScript.textContent = script.textContent;
+          }
+          document.body.appendChild(newScript).remove(); // Execute the script
         }
+      }
 
-        // Redirect to dashboard when the dashboard link is clicked
-        document.getElementById("dashboardLink").addEventListener("click", function (e) {
-            e.preventDefault(); // Prevent default link behavior
-            window.location.href = "dashboard.html"; // Redirect to dashboard
+      // Load staff.html content when the "Staff" link is clicked
+      document
+        .getElementById("staffLink")
+        .addEventListener("click", function (e) {
+          e.preventDefault(); // Prevent default link behavior
+          loadStaffPage();
         });
 
-        // Logout functionality
-        document.getElementById("logoutLink").addEventListener("click", function (e) {
-            e.preventDefault(); // Prevent default link behavior
-            logoutUser();
+      // Function to load staff.html content
+      async function loadStaffPage() {
+        const response = await fetch("staffDetail.html"); // Fetch staff.html
+        const html = await response.text(); // Get the HTML content
+        document.getElementById("productContainer").innerHTML = html; // Insert into productContainer
+
+        // Reinitialize any scripts from staff.html
+        const scripts = document
+          .getElementById("productContainer")
+          .getElementsByTagName("script");
+        for (let script of scripts) {
+          const newScript = document.createElement("script");
+          newScript.type = script.type;
+          if (script.src) {
+            newScript.src = script.src;
+          } else {
+            newScript.textContent = script.textContent;
+          }
+          document.body.appendChild(newScript).remove(); // Execute the script
+        }
+      }
+
+      // Redirect to dashboard when the dashboard link is clicked
+      document
+        .getElementById("dashboardLink")
+        .addEventListener("click", function (e) {
+          e.preventDefault(); // Prevent default link behavior
+          window.location.href = "dashboard.html"; // Redirect to dashboard
         });
 
-        // Function to log out the user
-        function logoutUser() {
-            // Clear any user session or token (if applicable)
-            localStorage.removeItem("user"); // Remove user data from localStorage
-            alert("You have been logged out.");
-            window.location.href = "staffLogin.html"; // Redirect to login page
-        }
+      // Logout functionality
+      document
+        .getElementById("logoutLink")
+        .addEventListener("click", function (e) {
+          e.preventDefault(); // Prevent default link behavior
+          logoutUser();
+        });
 
-        // Function to log activities
-        async function logActivity(activity) {
-            const activitiesRef = ref(database, "Activities");
-            await push(activitiesRef, {
-                activity: activity,
-                timestamp: new Date().toLocaleString(),
-            });
-        }
+      // Function to log out the user
+      function logoutUser() {
+        // Clear any user session or token (if applicable)
+        localStorage.removeItem("user"); // Remove user data from localStorage
+        alert("You have been logged out.");
+        window.location.href = "staffLogin.html"; // Redirect to login page
+      }
+
+      // Function to log activities
+      async function logActivity(activity) {
+        const activitiesRef = ref(database, "Activities");
+        await push(activitiesRef, {
+          activity: activity,
+          timestamp: new Date().toLocaleString(),
+        });
+      }
     </script>
 
     <!-- Your Existing Sidebar Script -->
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
